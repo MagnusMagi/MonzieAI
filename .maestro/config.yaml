@@ -1,0 +1,6 @@
+# Maestro E2E Test Configuration
+# See: https://maestro.mobile.dev/
+
+appId: com.someplanets.monzieaiv2
+name: MonzieAI E2E Tests
+

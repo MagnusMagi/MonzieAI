@@ -1,0 +1,18 @@
+# Maestro E2E Test: Image Generation Flow
+# Tests the complete image generation flow
+
+appId: com.someplanets.monzieaiv2
+---
+- launchApp
+- assertVisible: "Home"
+- tapOn: "Generate"
+- assertVisible: "Select Scene"
+- tapOn: "Professional Portrait"
+- assertVisible: "Upload Photo"
+- tapOn: "Choose from Library"
+- # Note: This will require manual photo selection in actual test
+- assertVisible: "Generating"
+- # Wait for generation to complete (adjust timeout as needed)
+- waitForAnimationToEnd
+- assertVisible: "Generated Image"
+

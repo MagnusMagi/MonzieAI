@@ -108,74 +108,6 @@ export default function HomeScreen() {
   const SCENE_CARD_WIDTH = width * 0.7;
   const SCENE_CARD_MARGIN = spacing.md;
 
-  // SceneCard component - removed TouchableOpacity, using Pressable wrapper instead
-  const SceneCard = ({
-    scene,
-    imageState,
-    onLoadStart,
-    onLoadEnd,
-  }: {
-    scene: Scene;
-    imageState?: { loading: boolean };
-    onLoadStart: (id: string) => void;
-    onLoadEnd: (id: string) => void;
-  }) => {
-    const isLoading = imageState?.loading ?? false;
-
-    return (
-      <View style={styles.sceneCard}>
-        <Image
-          source={{
-            uri:
-              scene.previewUrl ||
-              'https://via.placeholder.com/400x600?text=' + encodeURIComponent(scene.name),
-          }}
-          style={styles.sceneImage}
-          resizeMode="cover"
-          onLoadStart={() => onLoadStart(scene.id)}
-          onLoadEnd={() => onLoadEnd(scene.id)}
-        />
-        {isLoading && (
-          <View style={styles.imageLoader} pointerEvents="none">
-            <ActivityIndicator size="small" color={colors.text.inverse} />
-          </View>
-        )}
-        <View style={styles.sceneOverlay} pointerEvents="none">
-          <View style={styles.sceneInfo}>
-            <Text style={styles.sceneTitle} numberOfLines={2}>
-              {scene.name}
-            </Text>
-            {scene.description && (
-              <Text style={styles.sceneDescription} numberOfLines={2}>
-                {scene.description}
-              </Text>
-            )}
-          </View>
-        </View>
-      </View>
-    );
-  };
-
-  // Render scene card
-  const renderSceneCard = useCallback(
-    ({ item: scene }: { item: Scene }) => (
-      <Pressable
-        onPress={() => handleScenePress(scene)}
-        style={({ pressed }) => [
-          styles.sceneCardWrapper,
-          pressed && styles.sceneCardPressed,
-        ]}
-      >
-        <SceneCard
-          scene={scene}
-          imageState={imageStates[scene.id]}
-          onLoadStart={handleImageLoadStart}
-          onLoadEnd={handleImageLoadEnd}
-        />
-      </Pressable>
-    ),
-    [imageStates, handleScenePress, handleImageLoadStart, handleImageLoadEnd]
-  );
 
   if (loading) {
     return (
@@ -301,45 +233,53 @@ export default function HomeScreen() {
               </Text>
             </View>
           ) : (
-            <View style={styles.scenesListContainer} pointerEvents="box-none">
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scenesContainer}
-                nestedScrollEnabled={true}
-                scrollEventThrottle={16}
-                bounces={false}
-                decelerationRate="fast"
-                directionalLockEnabled={true}
-                alwaysBounceHorizontal={false}
-                alwaysBounceVertical={false}
-                scrollEnabled={true}
-                removeClippedSubviews={false}
-                keyboardShouldPersistTaps="handled"
-              >
-                {filteredScenes.map(scene => (
-                  <Pressable
-                    key={scene.id}
-                    style={({ pressed }) => [
-                      styles.sceneCardWrapper,
-                      pressed && styles.sceneCardPressed,
-                    ]}
-                    onPress={() => {
-                      logger.debug('Scene card pressed (Pressable)', { sceneId: scene.id });
-                      handleScenePress(scene);
-                    }}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <SceneCard
-                      scene={scene}
-                      imageState={imageStates[scene.id]}
-                      onLoadStart={handleImageLoadStart}
-                      onLoadEnd={handleImageLoadEnd}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.scenesContainer}
+              nestedScrollEnabled={true}
+            >
+              {filteredScenes.map(scene => (
+                <TouchableOpacity
+                  key={scene.id}
+                  style={styles.sceneCardWrapper}
+                  onPress={() => handleScenePress(scene)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.sceneCard}>
+                    <Image
+                      source={{
+                        uri:
+                          scene.previewUrl ||
+                          'https://via.placeholder.com/400x600?text=' + encodeURIComponent(scene.name),
+                      }}
+                      style={styles.sceneImage}
+                      resizeMode="cover"
+                      onLoadStart={() => handleImageLoadStart(scene.id + '_horizontal')}
+                      onLoadEnd={() => handleImageLoadEnd(scene.id + '_horizontal')}
+                      onLoad={() => handleImageLoadEnd(scene.id + '_horizontal')}
                     />
-                  </Pressable>
-                ))}
-              </ScrollView>
-            </View>
+                    {imageStates[scene.id + '_horizontal']?.loading && (
+                      <View style={styles.imageLoader} pointerEvents="none">
+                        <ActivityIndicator size="small" color={colors.text.inverse} />
+                      </View>
+                    )}
+                    <View style={styles.sceneOverlay} pointerEvents="none">
+                      <View style={styles.sceneInfo}>
+                        <Text style={styles.sceneTitle} numberOfLines={2}>
+                          {scene.name}
+                        </Text>
+                        {scene.description && (
+                          <Text style={styles.sceneDescription} numberOfLines={2}>
+                            {scene.description}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           )}
         </View>
 
@@ -547,20 +487,15 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.medium,
     color: colors.text.secondary,
   },
-  scenesListContainer: {
-    height: 280 + spacing.md * 2, // Card height + margins
-  },
   scenesContainer: {
     paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
     gap: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
   },
   sceneCardWrapper: {
     marginRight: spacing.md,
-  },
-  sceneCardPressed: {
-    opacity: 0.8,
   },
   sceneCard: {
     width: width * 0.7,

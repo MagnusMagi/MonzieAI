@@ -143,10 +143,14 @@ See [ENV_SETUP.md](./ENV_SETUP.md) for complete security documentation.
 - [TEST_COVERAGE_REPORT.md](./TEST_COVERAGE_REPORT.md) - Test coverage details
 - [LOGGING.md](./LOGGING.md) - Logging system documentation
 - [README_SECURITY.md](./README_SECURITY.md) - Security quick start
+- [DYNAMIC_TYPE_GUIDE.md](./DYNAMIC_TYPE_GUIDE.md) - Dynamic Type support guide
+- [PERFORMANCE_MONITORING.md](./PERFORMANCE_MONITORING.md) - Performance monitoring guide
+- [ANALYTICS_GUIDE.md](./ANALYTICS_GUIDE.md) - Analytics tracking guide
+- [MAESTRO_E2E_TESTS.md](./MAESTRO_E2E_TESTS.md) - E2E testing with Maestro
 
 ## 🛠️ Tech Stack
 
-- **Framework:** React Native 0.81.5
+- **Framework:** React Native 0.83.0
 - **Expo:** ~54.0.27
 - **Language:** TypeScript 5.9
 - **State Management:** React Query (@tanstack/react-query)
@@ -154,6 +158,8 @@ See [ENV_SETUP.md](./ENV_SETUP.md) for complete security documentation.
 - **Backend:** Supabase
 - **AI Service:** Fal AI
 - **Authentication:** Supabase Auth (Email, Google, Apple)
+- **Testing:** Jest 30, Maestro (E2E)
+- **Linting:** ESLint 9, TypeScript ESLint 8
 
 ## 📁 Project Structure
 
@@ -181,11 +187,18 @@ src/
 - User authentication
 - Subscription management
 - Test coverage (~70%)
+- ESLint v9 + TypeScript ESLint v8
+- Jest v30
+- React Native 0.83.0
+- E2E tests (Maestro)
+- Dynamic Type support
+- Bundle size monitoring
+- Performance monitoring
+- Analytics service
+- Comprehensive documentation
 
 ### 🔄 In Progress
-- ViewModel coverage for all screens
-- Type safety improvements
-- Test coverage increase to 80%+
+- Test coverage increase to 80%+ (see [TEST_COVERAGE_PLAN.md](./TEST_COVERAGE_PLAN.md))
 
 ### 📋 Planned
 - CI/CD pipeline

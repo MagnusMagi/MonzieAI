@@ -122,35 +122,50 @@ class FalAIService {
       }
 
       // Prepare request body for Fal AI queue API
-      // Using Flux model which supports both text-to-image and image-to-image
+      // Using Nano Banana model for image-to-image generation and editing
       // Fal AI queue API expects direct parameters, NOT 'input' wrapper
-      const requestBody: {
-        prompt: string;
-        image_size: string;
-        num_images: number;
-        image_url?: string;
-        strength?: number; // Image-to-image strength (0.0-1.0), higher = more reference influence
-        guidance_scale?: number; // How closely to follow the prompt (higher = more strict)
-      } = {
-        prompt: params.prompt,
-        image_size: params.aspectRatio === '9:16' ? 'portrait_4_3' : 'square_hd',
-        num_images: params.numImages || 1,
-        guidance_scale: 7.5, // Balanced guidance for face preservation
+      // Map aspect ratio from our format to Nano Banana format
+      const mapAspectRatio = (ratio?: string): string => {
+        if (!ratio) return 'auto';
+        const ratioMap: { [key: string]: string } = {
+          '9:16': '9:16',
+          '16:9': '16:9',
+          '3:2': '3:2',
+          '4:3': '4:3',
+          '5:4': '5:4',
+          '1:1': '1:1',
+          '4:5': '4:5',
+          '3:4': '3:4',
+          '2:3': '2:3',
+        };
+        return ratioMap[ratio] || 'auto';
       };
 
-      // Add image_url and strength if provided (for image-to-image)
-      if (imageUrlForFal) {
-        requestBody.image_url = imageUrlForFal;
-        // Higher strength (0.7-0.9) preserves face better, lower (0.3-0.5) allows more scene variation
-        // Using 0.8 for strong face preservation while allowing scene adaptation
-        requestBody.strength = 0.8;
+      const requestBody: {
+        prompt: string;
+        image_urls: string[];
+        num_images?: number;
+        aspect_ratio?: string;
+        output_format?: string;
+      } = {
+        prompt: params.prompt,
+        image_urls: imageUrlForFal ? [imageUrlForFal] : [],
+        num_images: params.numImages || 1,
+        aspect_ratio: mapAspectRatio(params.aspectRatio),
+        output_format: 'png', // Nano Banana default is png
+      };
+
+      if (!imageUrlForFal) {
+        throw new Error('Image URL or data URI is required for Nano Banana model');
       }
 
-      logger.debug('Calling Fal AI...', {
+      logger.debug('Calling Fal AI Nano Banana...', {
         promptLength: params.prompt.length,
         hasImage: !!imageUrlForFal,
         imageType: imageUrlForFal?.startsWith('data:') ? 'base64' : 'url',
-        model: 'fal-ai/flux/dev',
+        model: 'fal-ai/nano-banana/edit',
+        numImages: requestBody.num_images,
+        aspectRatio: requestBody.aspect_ratio,
       });
 
       // Submit request to Fal AI queue with retry logic
@@ -158,7 +173,7 @@ class FalAIService {
       // Fal AI queue endpoint format: https://queue.fal.run/{model_id}
       const submitResponse = await retry(
         async () => {
-          const response = await fetch(`${this.baseUrl}/fal-ai/flux/dev`, {
+          const response = await fetch(`${this.baseUrl}/fal-ai/nano-banana/edit`, {
             method: 'POST',
             headers: {
               Authorization: `Key ${this.apiKey}`,
@@ -174,7 +189,7 @@ class FalAIService {
               status: response.status,
               statusText: response.statusText,
               errorText: errorText.substring(0, 200),
-              url: `${this.baseUrl}/fal-ai/flux/dev`,
+              url: `${this.baseUrl}/fal-ai/nano-banana/edit`,
               requestBody: JSON.stringify(requestBody).substring(0, 200),
             });
           }
@@ -266,7 +281,7 @@ class FalAIService {
           async () => {
             // Use status URL from submit response, or construct from requestId
             const statusEndpoint =
-              statusUrl || `${this.baseUrl}/fal-ai/flux/requests/${requestId}/status`;
+              statusUrl || `${this.baseUrl}/fal-ai/nano-banana/edit/requests/${requestId}/status`;
             const response = await fetch(statusEndpoint, {
               method: 'GET',
               headers: {
@@ -308,7 +323,7 @@ class FalAIService {
 
           // Get the result
           // Use response URL from submit response, or construct from requestId
-          const resultEndpoint = responseUrl || `${this.baseUrl}/fal-ai/flux/requests/${requestId}`;
+          const resultEndpoint = responseUrl || `${this.baseUrl}/fal-ai/nano-banana/edit/requests/${requestId}`;
           const resultResponse = await fetch(resultEndpoint, {
             method: 'GET',
             headers: {

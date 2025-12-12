@@ -346,7 +346,16 @@ export default function GeneratedScreen() {
       <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
         {/* Header */}
         <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity 
+          onPress={() => {
+            // Navigate to Home and reset navigation stack
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            });
+          }} 
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Generated Image</Text>
