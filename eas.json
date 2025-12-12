@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "local",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EAS_SKIP_AUTO_FINGERPRINT": "1"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EAS_SKIP_AUTO_FINGERPRINT": "1"
+      }
+    },
+    "production": {
+      "env": {
+        "EAS_SKIP_AUTO_FINGERPRINT": "1"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6756293363"
+      }
+    }
+  }
+}
