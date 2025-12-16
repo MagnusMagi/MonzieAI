@@ -34,7 +34,7 @@ function analyzeBundleSize() {
       const stats = fs.statSync(bundlePath);
       const size = stats.size;
       const formattedSize = formatBytes(size);
-      
+
       results.push({
         path: bundlePath,
         size,
@@ -47,7 +47,7 @@ function analyzeBundleSize() {
   // Generate report
   console.log('\n📦 Bundle Size Analysis Report\n');
   console.log('='.repeat(50));
-  
+
   if (results.length === 0) {
     console.log('⚠️  No bundle files found. Run a build first.');
     return;
@@ -64,10 +64,10 @@ function analyzeBundleSize() {
   });
 
   console.log('\n' + '='.repeat(50));
-  
+
   const totalSize = results.reduce((sum, r) => sum + r.size, 0);
   console.log(`Total Bundle Size: ${formatBytes(totalSize)}`);
-  
+
   if (totalSize > BUNDLE_SIZE_LIMIT) {
     console.log('\n❌ Bundle size exceeds recommended limit!');
     process.exit(1);
@@ -79,4 +79,3 @@ function analyzeBundleSize() {
 }
 
 analyzeBundleSize();
-

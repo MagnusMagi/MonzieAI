@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "revenuecat": {
+      "url": "https://mcp.revenuecat.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_REVENUECAT_API_V2_SECRET_KEY"
+      }
+    }
+  }
+}
+

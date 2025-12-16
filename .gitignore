@@ -47,6 +47,9 @@ config.local.json
 app.json.backup
 app.json.local
 
+# MCP configuration with API keys
+mcp.json
+
 # typescript
 *.tsbuildinfo
 

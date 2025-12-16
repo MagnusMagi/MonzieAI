@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Linking from 'expo-linking';
+import { colors } from '../theme/colors';
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 import { Alert } from 'react-native';
@@ -38,6 +39,10 @@ import ChangePlanScreen from '../screens/ChangePlanScreen';
 import CancelSubscriptionScreen from '../screens/CancelSubscriptionScreen';
 import PremiumSuccessScreen from '../screens/PremiumSuccessScreen';
 import PremiumActivatingScreen from '../screens/PremiumActivatingScreen';
+import CategoryDetailScreen from '../screens/CategoryDetailScreen';
+import SubcategoryScenesScreen from '../screens/SubcategoryScenesScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
+import RevenueCatTestScreen from '../screens/RevenueCatTestScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -66,12 +71,14 @@ export type RootStackParamList = {
   About: undefined;
   Changelog: undefined;
   Gallery: undefined;
+  Analytics: undefined;
   GenderSelection: {
     // Optional scene information (if coming from SceneDetail)
     sceneId?: string;
     sceneName?: string;
     scenePrompt?: string;
     sceneCategory?: string;
+    sceneImage?: string;
   };
   PhotoUpload: {
     gender: string;
@@ -119,6 +126,21 @@ export type RootStackParamList = {
     sceneName?: string;
     scenePrompt?: string;
     sceneCategory?: string;
+  };
+  CategoryDetail: {
+    categoryId: string;
+  };
+  SubcategoryScenes: {
+    categoryId: string;
+    subcategoryName: string;
+    scenes: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      category: string;
+      previewUrl?: string;
+      promptTemplate?: string;
+    }>;
   };
 };
 
@@ -274,6 +296,13 @@ export default function AppNavigator() {
           }}
         />
         <Stack.Screen
+          name="Gallery"
+          component={GalleryScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
           name="Profile"
           component={ProfileScreen}
           options={{
@@ -323,8 +352,15 @@ export default function AppNavigator() {
           }}
         />
         <Stack.Screen
-          name="Gallery"
-          component={GalleryScreen}
+          name="Analytics"
+          component={AnalyticsScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="RevenueCatTest"
+          component={RevenueCatTestScreen}
           options={{
             animation: 'fade',
           }}
@@ -451,6 +487,20 @@ export default function AppNavigator() {
         <Stack.Screen
           name="SceneDetail"
           component={SceneDetailScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="CategoryDetail"
+          component={CategoryDetailScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="SubcategoryScenes"
+          component={SubcategoryScenesScreen}
           options={{
             animation: 'fade',
           }}

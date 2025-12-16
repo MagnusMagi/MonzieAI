@@ -5,11 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   Platform,
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -73,7 +73,13 @@ export default function FavoritesScreen() {
                   });
                 }}
               >
-                <Image source={{ uri: item.imageUrl }} style={styles.image} resizeMode="cover" />
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.image}
+                  contentFit="cover"
+                  transition={200}
+                  cachePolicy="memory-disk"
+                />
                 <View style={styles.overlay}>
                   <Text style={styles.cardTitle} numberOfLines={1}>
                     {item.sceneName || item.title || 'Favorite'}

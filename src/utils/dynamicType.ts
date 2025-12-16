@@ -52,4 +52,3 @@ export function hasIncreasedFontSize(): boolean {
 export function getFontScale(): number {
   return PixelRatio.getFontScale();
 }
-

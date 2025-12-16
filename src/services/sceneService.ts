@@ -27,7 +27,7 @@ class SceneService {
    */
   async getScenes(
     category?: string,
-    limit: number = 50,
+    limit: number = 200, // Increased to load all 150+ scenes
     offset: number = 0
   ): Promise<{ data: Scene[]; hasMore: boolean }> {
     try {
@@ -115,7 +115,7 @@ class SceneService {
    */
   async getScenesByCategory(
     category: string,
-    limit: number = 20,
+    limit: number = 50, // Increased to cover all scenes per category (15 scenes per category)
     offset: number = 0
   ): Promise<{ data: Scene[]; hasMore: boolean }> {
     try {

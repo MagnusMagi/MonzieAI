@@ -7,7 +7,7 @@
 - [x] **Bundle ID**: Verified `bundleIdentifier` in `app.json` is `com.someplanets.monzieaiv2`.
 - [x] **Version & Build**: 
   - Version: `1.0.0`
-  - Build Number: `14`
+  - Build Number: `15`
 
 ## 📱 Privacy & Compliance
 - [x] **Privacy Manifest**: `PrivacyInfo.xcprivacy` exists in `ios/`. (Ensure it is included in the build resources).

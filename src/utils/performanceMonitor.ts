@@ -82,11 +82,7 @@ export const performanceMonitor = new PerformanceMonitor();
  * Performance decorator for functions
  */
 export function measurePerformance(name?: string) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     const metricName = name || `${target.constructor.name}.${propertyKey}`;
 
@@ -110,4 +106,3 @@ export function measurePerformance(name?: string) {
     return descriptor;
   };
 }
-

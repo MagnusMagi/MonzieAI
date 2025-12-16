@@ -4,10 +4,12 @@ import { errorLoggingService } from './errorLoggingService';
 import { retry } from '../utils/retry';
 import { optimizeImageForBase64 } from '../utils/imageOptimization';
 import { logger } from '../utils/logger';
+import { supabase } from '../config/supabase';
 
 /**
  * Fal AI Service
- * Direct integration with Fal AI API (no backend required)
+ * Uses Supabase Edge Functions for secure server-side API calls
+ * API keys are stored server-side, not exposed to client
  */
 
 export interface FalAIGenerateParams {
@@ -36,19 +38,26 @@ export interface FalAIEnhanceResponse {
 }
 
 class FalAIService {
-  private apiKey: string;
   private baseUrl = 'https://queue.fal.run';
+  private useEdgeFunctions = true; // Feature flag: use Edge Functions by default
 
   constructor() {
-    // Get API key from environment variable (preferred) or app.json extra config (fallback)
-    const falKey =
-      process.env.EXPO_PUBLIC_FAL_API_KEY || Constants.expoConfig?.extra?.falApiKey;
-    if (!falKey) {
-      throw new Error(
-        'FAL_API_KEY is not configured. Please set EXPO_PUBLIC_FAL_API_KEY environment variable or falApiKey in app.json extra config.'
-      );
+    // API keys are now stored server-side in Edge Functions
+    // No need to load API key in client
+  }
+
+  /**
+   * Get current session token for Edge Functions authentication
+   */
+  private async getSessionToken(): Promise<string> {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
+    if (error || !session?.access_token) {
+      throw new Error('Not authenticated. Please sign in to generate images.');
     }
-    this.apiKey = falKey;
+    return session.access_token;
   }
 
   /**
@@ -95,13 +104,12 @@ class FalAIService {
   }
 
   /**
-   * Generate image using Fal AI directly
+   * Generate image using Supabase Edge Functions (secure server-side API calls)
    */
   async generateImage(params: FalAIGenerateParams): Promise<FalAIResponse> {
     try {
-      if (!this.apiKey) {
-        throw new Error('FAL_API_KEY is not configured. Please set EXPO_PUBLIC_FAL_API_KEY environment variable.');
-      }
+      // Get session token for Edge Functions authentication
+      const sessionToken = await this.getSessionToken();
 
       // Determine image source (dataUri takes priority)
       let imageUrlForFal = params.dataUri || params.imageUrl;
@@ -121,139 +129,126 @@ class FalAIService {
         throw new Error('Image URL or data URI is required');
       }
 
-      // Prepare request body for Fal AI queue API
-      // Using Nano Banana model for image-to-image generation and editing
-      // Fal AI queue API expects direct parameters, NOT 'input' wrapper
-      // Map aspect ratio from our format to Nano Banana format
-      const mapAspectRatio = (ratio?: string): string => {
-        if (!ratio) return 'auto';
-        const ratioMap: { [key: string]: string } = {
-          '9:16': '9:16',
-          '16:9': '16:9',
-          '3:2': '3:2',
-          '4:3': '4:3',
-          '5:4': '5:4',
-          '1:1': '1:1',
-          '4:5': '4:5',
-          '3:4': '3:4',
-          '2:3': '2:3',
-        };
-        return ratioMap[ratio] || 'auto';
-      };
-
-      const requestBody: {
-        prompt: string;
-        image_urls: string[];
-        num_images?: number;
-        aspect_ratio?: string;
-        output_format?: string;
-      } = {
-        prompt: params.prompt,
-        image_urls: imageUrlForFal ? [imageUrlForFal] : [],
-        num_images: params.numImages || 1,
-        aspect_ratio: mapAspectRatio(params.aspectRatio),
-        output_format: 'png', // Nano Banana default is png
-      };
-
-      if (!imageUrlForFal) {
-        throw new Error('Image URL or data URI is required for Nano Banana model');
-      }
-
-      logger.debug('Calling Fal AI Nano Banana...', {
+      logger.debug('Calling Edge Function for image generation...', {
         promptLength: params.prompt.length,
         hasImage: !!imageUrlForFal,
         imageType: imageUrlForFal?.startsWith('data:') ? 'base64' : 'url',
-        model: 'fal-ai/nano-banana/edit',
-        numImages: requestBody.num_images,
-        aspectRatio: requestBody.aspect_ratio,
+        useEdgeFunctions: this.useEdgeFunctions,
       });
 
-      // Submit request to Fal AI queue with retry logic
-      // Note: We don't retry on 4xx errors (client errors), only on 5xx (server errors)
-      // Fal AI queue endpoint format: https://queue.fal.run/{model_id}
-      const submitResponse = await retry(
-        async () => {
-          const response = await fetch(`${this.baseUrl}/fal-ai/nano-banana/edit`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Key ${this.apiKey}`,
-              'Content-Type': 'application/json',
+      // Call Edge Function with retry and better error handling
+      let edgeResponse;
+      let edgeError;
+      const maxRetries = 2;
+      let lastError: Error | null = null;
+
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const result = await supabase.functions.invoke('generate-image', {
+            body: {
+              prompt: params.prompt,
+              imageUrl: !imageUrlForFal.startsWith('data:') ? imageUrlForFal : undefined,
+              dataUri: imageUrlForFal.startsWith('data:') ? imageUrlForFal : undefined,
+              aspectRatio: params.aspectRatio || '9:16',
+              numImages: params.numImages || 1,
             },
-            body: JSON.stringify(requestBody),
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+            },
           });
 
-          // Log response details for debugging
-          if (!response.ok) {
-            const errorText = await response.text().catch(() => 'Unable to read error response');
-            logger.debug('Fal AI submit response error', {
-              status: response.status,
-              statusText: response.statusText,
-              errorText: errorText.substring(0, 200),
-              url: `${this.baseUrl}/fal-ai/nano-banana/edit`,
-              requestBody: JSON.stringify(requestBody).substring(0, 200),
+          edgeResponse = result.data;
+          edgeError = result.error;
+
+          // If successful, break out of retry loop
+          if (!edgeError && edgeResponse) {
+            break;
+          }
+
+          // If error but not a network error, don't retry
+          if (
+            edgeError &&
+            !edgeError.message?.includes('Failed to send') &&
+            !edgeError.message?.includes('network')
+          ) {
+            break;
+          }
+
+          lastError = edgeError;
+
+          // Wait before retry (exponential backoff)
+          if (attempt < maxRetries) {
+            const delay = Math.min(1000 * Math.pow(2, attempt), 3000);
+            logger.debug(`Edge Function call failed, retrying in ${delay}ms...`, {
+              attempt: attempt + 1,
+              maxRetries,
+              error: edgeError?.message,
             });
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        } catch (invokeError) {
+          lastError = invokeError;
+          logger.error(
+            'Edge Function invoke exception',
+            invokeError instanceof Error ? invokeError : new Error('Unknown error'),
+            { attempt: attempt + 1, maxRetries }
+          );
+
+          // If it's the last attempt, throw
+          if (attempt === maxRetries) {
+            throw invokeError;
           }
 
-          // Only retry on server errors (5xx), not client errors (4xx)
-          if (!response.ok && response.status >= 500) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-
-          return response;
-        },
-        {
-          maxRetries: 3,
-          initialDelay: 1000,
-          maxDelay: 5000,
+          // Wait before retry
+          const delay = Math.min(1000 * Math.pow(2, attempt), 3000);
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
-      );
+      }
 
-      if (!submitResponse.ok) {
-        const errorText = await submitResponse.text();
-        let errorMessage = `Fal AI request failed: ${submitResponse.status} ${submitResponse.statusText}`;
-
-        try {
-          const errorJson = JSON.parse(errorText);
-          if (errorJson.detail) {
-            errorMessage = `Image generation failed: ${errorJson.detail}`;
-          } else if (errorJson.message) {
-            errorMessage = `Image generation failed: ${errorJson.message}`;
-          } else if (errorJson.error) {
-            errorMessage = `Image generation failed: ${errorJson.error}`;
-          }
-        } catch {
-          // If errorText is not JSON, use the text as is
-          if (errorText) {
-            errorMessage = `Image generation failed: ${errorText}`;
-          }
-        }
-
-        logger.error('Fal AI submit error', new Error(errorMessage), {
-          status: submitResponse.status,
-          statusText: submitResponse.statusText,
-          body: errorText,
-          requestBody: {
-            promptLength: params.prompt.length,
-            hasImage: !!imageUrlForFal,
-            imageType: imageUrlForFal.startsWith('data:') ? 'base64' : 'url',
-            imageLength: imageUrlForFal.length,
-            strength: requestBody.strength,
-            guidanceScale: requestBody.guidance_scale,
-          },
+      if (edgeError || lastError) {
+        const errorMessage =
+          edgeError?.message ||
+          lastError?.message ||
+          'Failed to send a request to the Edge Function';
+        logger.error('Edge Function error', edgeError || lastError, {
+          errorType: edgeError?.name || lastError?.name,
+          errorMessage,
+          attempts: maxRetries + 1,
         });
-        throw new Error(errorMessage);
+
+        // Provide more helpful error message
+        let userFriendlyMessage = 'Failed to connect to image generation service. ';
+        if (errorMessage.includes('network') || errorMessage.includes('Failed to send')) {
+          userFriendlyMessage += 'Please check your internet connection and try again.';
+        } else if (errorMessage.includes('timeout')) {
+          userFriendlyMessage += 'The request timed out. Please try again.';
+        } else {
+          userFriendlyMessage += errorMessage;
+        }
+
+        throw new Error(userFriendlyMessage);
       }
 
-      const submitData = await submitResponse.json();
-      const requestId = submitData.request_id;
-      const statusUrl = submitData.status_url; // Use the status URL from response
-      const responseUrl = submitData.response_url; // Use the response URL from response
-
-      if (!requestId) {
-        throw new Error('Failed to get request ID from Fal AI');
+      if (!edgeResponse) {
+        logger.error(
+          'No response from Edge Function',
+          new Error('No response from Edge Function'),
+          {
+            hasError: !!edgeError,
+            hasLastError: !!lastError,
+          }
+        );
+        throw new Error('No response from Edge Function. Please try again.');
       }
 
-      logger.debug('Request submitted', {
+      // Edge Function returns: { requestId, statusUrl, responseUrl }
+      const { requestId, statusUrl, responseUrl } = edgeResponse;
+
+      if (!requestId || !statusUrl || !responseUrl) {
+        throw new Error('Invalid response from Edge Function');
+      }
+
+      logger.debug('Request submitted via Edge Function', {
         requestId,
         statusUrl,
         responseUrl,
@@ -279,13 +274,10 @@ class FalAIService {
 
         const statusResponse = await retry(
           async () => {
-            // Use status URL from submit response, or construct from requestId
-            const statusEndpoint =
-              statusUrl || `${this.baseUrl}/fal-ai/nano-banana/edit/requests/${requestId}/status`;
-            const response = await fetch(statusEndpoint, {
+            const response = await fetch(statusUrl, {
               method: 'GET',
               headers: {
-                Authorization: `Key ${this.apiKey}`,
+                Authorization: `Bearer ${sessionToken}`,
               },
             });
 
@@ -321,13 +313,11 @@ class FalAIService {
         } else if (statusData.status === 'COMPLETED') {
           params.onProgress?.(95, 'Finalizing...');
 
-          // Get the result
-          // Use response URL from submit response, or construct from requestId
-          const resultEndpoint = responseUrl || `${this.baseUrl}/fal-ai/nano-banana/edit/requests/${requestId}`;
-          const resultResponse = await fetch(resultEndpoint, {
+          // Get the result from responseUrl
+          const resultResponse = await fetch(responseUrl, {
             method: 'GET',
             headers: {
-              Authorization: `Key ${this.apiKey}`,
+              Authorization: `Bearer ${sessionToken}`,
             },
           });
 
@@ -358,7 +348,7 @@ class FalAIService {
           };
         } else if (statusData.status === 'FAILED') {
           params.onProgress?.(0, 'Generation failed');
-          throw new Error('Image generation failed');
+          throw new Error(statusData.error || 'Image generation failed');
         }
 
         attempts++;
@@ -380,13 +370,12 @@ class FalAIService {
   }
 
   /**
-   * Enhance/upscale image using Fal AI Crystal Upscaler
+   * Enhance/upscale image using Supabase Edge Functions (secure server-side API calls)
    */
   async enhanceImage(params: FalAIEnhanceParams): Promise<FalAIEnhanceResponse> {
     try {
-      if (!this.apiKey) {
-        throw new Error('FAL_API_KEY is not configured. Please set EXPO_PUBLIC_FAL_API_KEY environment variable.');
-      }
+      // Get session token for Edge Functions authentication
+      const sessionToken = await this.getSessionToken();
 
       // Determine image source (dataUri takes priority)
       let imageUrlForFal = params.dataUri || params.imageUrl;
@@ -408,56 +397,130 @@ class FalAIService {
         throw new Error('Image URL or data URI is required for enhancement');
       }
 
-      logger.info('Starting image enhancement with Crystal Upscaler', {
+      logger.info('Starting image enhancement via Edge Function', {
         hasImage: !!imageUrlForFal,
         isDataUri: imageUrlForFal.startsWith('data:'),
       });
 
-      // Prepare request body for crystal-upscaler
-      const requestBody: {
-        image_url?: string;
-        scale?: number;
-      } = {};
+      // Call Edge Function with retry and better error handling
+      let edgeResponse;
+      let edgeError;
+      const maxRetries = 2;
+      let lastError: Error | null = null;
 
-      if (imageUrlForFal.startsWith('data:')) {
-        requestBody.image_url = imageUrlForFal;
-      } else {
-        requestBody.image_url = imageUrlForFal;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const result = await supabase.functions.invoke('enhance-image', {
+            body: {
+              imageUrl: !imageUrlForFal.startsWith('data:') ? imageUrlForFal : undefined,
+              dataUri: imageUrlForFal.startsWith('data:') ? imageUrlForFal : undefined,
+            },
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          });
+
+          edgeResponse = result.data;
+          edgeError = result.error;
+
+          // If successful, break out of retry loop
+          if (!edgeError && edgeResponse) {
+            break;
+          }
+
+          // If error but not a network error, don't retry
+          if (
+            edgeError &&
+            !edgeError.message?.includes('Failed to send') &&
+            !edgeError.message?.includes('network')
+          ) {
+            break;
+          }
+
+          lastError = edgeError;
+
+          // Wait before retry (exponential backoff)
+          if (attempt < maxRetries) {
+            const delay = Math.min(1000 * Math.pow(2, attempt), 3000);
+            logger.debug(`Edge Function call failed, retrying in ${delay}ms...`, {
+              attempt: attempt + 1,
+              maxRetries,
+              error: edgeError?.message,
+            });
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        } catch (invokeError) {
+          lastError = invokeError;
+          logger.error(
+            'Edge Function invoke exception',
+            invokeError instanceof Error ? invokeError : new Error('Unknown error'),
+            { attempt: attempt + 1, maxRetries }
+          );
+
+          // If it's the last attempt, throw
+          if (attempt === maxRetries) {
+            throw invokeError;
+          }
+
+          // Wait before retry
+          const delay = Math.min(1000 * Math.pow(2, attempt), 3000);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
       }
 
-      // Submit enhancement request
-      const submitResponse = await fetch(`${this.baseUrl}/clarityai/crystal-upscaler`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Key ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
+      if (edgeError || lastError) {
+        const errorMessage =
+          edgeError?.message ||
+          lastError?.message ||
+          'Failed to send a request to the Edge Function';
+        logger.error('Edge Function error', edgeError || lastError, {
+          errorType: edgeError?.name || lastError?.name,
+          errorMessage,
+          attempts: maxRetries + 1,
+        });
 
-      if (!submitResponse.ok) {
-        const errorText = await submitResponse.text();
+        // Provide more helpful error message
+        let userFriendlyMessage = 'Failed to connect to image enhancement service. ';
+        if (errorMessage.includes('network') || errorMessage.includes('Failed to send')) {
+          userFriendlyMessage += 'Please check your internet connection and try again.';
+        } else if (errorMessage.includes('timeout')) {
+          userFriendlyMessage += 'The request timed out. Please try again.';
+        } else {
+          userFriendlyMessage += errorMessage;
+        }
+
+        throw new Error(userFriendlyMessage);
+      }
+
+      if (!edgeResponse) {
         logger.error(
-          'Failed to submit enhancement request',
-          new Error(`Status: ${submitResponse.status}, ${errorText}`)
+          'No response from Edge Function',
+          new Error('No response from Edge Function'),
+          {
+            hasError: !!edgeError,
+            hasLastError: !!lastError,
+          }
         );
-        throw new Error(`Failed to submit enhancement request: ${submitResponse.status}`);
+        throw new Error('No response from Edge Function. Please try again.');
       }
 
-      const submitData = await submitResponse.json();
-      const requestId = submitData.request_id;
-      const responseUrl = submitData.response_url;
+      // Edge Function returns: { requestId, statusUrl, responseUrl }
+      const { requestId, statusUrl, responseUrl } = edgeResponse;
 
-      if (!requestId) {
-        throw new Error('No request ID returned from enhancement submission');
+      if (!requestId || !statusUrl || !responseUrl) {
+        throw new Error('Invalid response from Edge Function');
       }
 
-      logger.debug('Enhancement request submitted', { requestId, hasResponseUrl: !!responseUrl });
+      logger.debug('Enhancement request submitted via Edge Function', {
+        requestId,
+        statusUrl,
+        responseUrl,
+      });
 
       params.onProgress?.(10, 'Enhancement queued...');
 
       // Poll for result
-      const maxAttempts = 60; // 5 minutes max (5s intervals)
+      const maxAttempts = 60; // 5 minutes max
       let attempts = 0;
 
       while (attempts < maxAttempts) {
@@ -465,16 +528,10 @@ class FalAIService {
         await new Promise(resolve => setTimeout(resolve, pollInterval));
         attempts++;
 
-        // Use responseUrl if available, otherwise construct status endpoint with /status suffix
-        // Fal AI queue API format: /{model_id}/requests/{request_id}/status
-        const statusUrl = responseUrl
-          ? `${responseUrl}/status`
-          : `${this.baseUrl}/clarityai/crystal-upscaler/requests/${requestId}/status`;
-
         const statusResponse = await fetch(statusUrl, {
           method: 'GET',
           headers: {
-            Authorization: `Key ${this.apiKey}`,
+            Authorization: `Bearer ${sessionToken}`,
           },
         });
 
@@ -503,18 +560,15 @@ class FalAIService {
         } else if (statusData.status === 'COMPLETED') {
           params.onProgress?.(95, 'Finalizing...');
 
-          // When status is COMPLETED, the response might be in statusData itself
-          // or we need to fetch from the result endpoint
+          // Get result from responseUrl
           let resultData = statusData;
 
           // If statusData doesn't have the image, fetch from result endpoint
           if (!resultData.image && !resultData.url && !resultData.response) {
-            const resultEndpoint =
-              responseUrl || `${this.baseUrl}/clarityai/crystal-upscaler/requests/${requestId}`;
-            const resultResponse = await fetch(resultEndpoint, {
+            const resultResponse = await fetch(responseUrl, {
               method: 'GET',
               headers: {
-                Authorization: `Key ${this.apiKey}`,
+                Authorization: `Bearer ${sessionToken}`,
               },
             });
 
@@ -542,22 +596,25 @@ class FalAIService {
           params.onProgress?.(100, 'Complete!');
 
           // Crystal Upscaler response format - try multiple possible paths
-          // Format can be: { images: [{ url: "..." }] } or { image: { url: "..." } } or { url: "..." }
           const enhancedImageUrl =
-            (resultData.images && resultData.images[0]?.url) || // Array format: { images: [{ url }] }
-            resultData.response?.images?.[0]?.url || // Nested array format
-            resultData.response?.image?.url || // Object format: { response: { image: { url } } }
+            (resultData.images && resultData.images[0]?.url) ||
+            resultData.response?.images?.[0]?.url ||
+            resultData.response?.image?.url ||
             resultData.response?.url ||
-            resultData.image?.url || // Direct image object
-            resultData.url || // Direct URL
+            resultData.image?.url ||
+            resultData.url ||
             resultData.response?.image_url ||
             resultData.image_url;
 
           if (!enhancedImageUrl) {
-            logger.error('No enhanced image URL found in response', new Error('No enhanced image URL'), {
-              resultDataKeys: Object.keys(resultData),
-              resultDataString: JSON.stringify(resultData).substring(0, 500),
-            });
+            logger.error(
+              'No enhanced image URL found in response',
+              new Error('No enhanced image URL'),
+              {
+                resultDataKeys: Object.keys(resultData),
+                resultDataString: JSON.stringify(resultData).substring(0, 500),
+              }
+            );
             throw new Error('No enhanced image URL returned from Crystal Upscaler');
           }
 

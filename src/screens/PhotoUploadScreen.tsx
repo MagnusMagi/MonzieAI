@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Alert } from 'react-native';
+import { Image } from 'expo-image';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -45,6 +46,30 @@ export default function PhotoUploadScreen() {
     }
   };
 
+  const requestCameraPermission = async () => {
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Please grant camera access to take photos.', [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Open Settings',
+            onPress: () => ImagePicker.requestCameraPermissionsAsync(),
+          },
+        ]);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      logger.error(
+        'Camera permission request failed',
+        error instanceof Error ? error : new Error('Unknown error')
+      );
+      Alert.alert('Error', 'Failed to request camera permission. Please try again.');
+      return false;
+    }
+  };
+
   const pickImage = async () => {
     try {
       const hasPermission = await requestPermission();
@@ -66,6 +91,27 @@ export default function PhotoUploadScreen() {
         error instanceof Error ? error : new Error('Unknown error')
       );
       Alert.alert('Error', 'Failed to pick image. Please try again.');
+    }
+  };
+
+  const takePhoto = async () => {
+    try {
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) return;
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: 'images',
+        allowsEditing: true,
+        aspect: [9, 16],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        setSelectedImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      logger.error('Camera failed', error instanceof Error ? error : new Error('Unknown error'));
+      Alert.alert('Error', 'Failed to take photo. Please try again.');
     }
   };
 
@@ -110,17 +156,29 @@ export default function PhotoUploadScreen() {
 
         {selectedImage ? (
           <View style={styles.imagePreviewContainer}>
-            <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+            <Image
+              source={{ uri: selectedImage }}
+              style={styles.imagePreview}
+              contentFit="cover"
+              transition={200}
+              cachePolicy="memory-disk"
+            />
             <TouchableOpacity style={styles.removeButton} onPress={() => setSelectedImage(null)}>
               <Ionicons name="close-circle" size={32} color={colors.error} />
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage} activeOpacity={0.7}>
-            <Ionicons name="cloud-upload-outline" size={48} color={colors.text.secondary} />
-            <Text style={styles.uploadButtonText}>Tap to Upload</Text>
-            <Text style={styles.uploadButtonSubtext}>JPG, PNG up to 10MB</Text>
-          </TouchableOpacity>
+          <View style={styles.uploadSection}>
+            <TouchableOpacity style={styles.uploadButton} onPress={pickImage} activeOpacity={0.7}>
+              <Ionicons name="cloud-upload-outline" size={48} color={colors.text.secondary} />
+              <Text style={styles.uploadButtonText}>Tap to Upload</Text>
+              <Text style={styles.uploadButtonSubtext}>JPG, PNG up to 10MB</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cameraButton} onPress={takePhoto} activeOpacity={0.7}>
+              <Ionicons name="camera-outline" size={20} color={colors.text.primary} />
+              <Text style={styles.cameraButtonText}>Take Photo with Camera</Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         <TouchableOpacity
@@ -196,8 +254,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: spacing.lg,
   },
+  uploadSection: {
+    width: '100%',
+    maxWidth: 280,
+    alignItems: 'center',
+    marginBottom: spacing['2xl'],
+  },
   uploadButton: {
-    width: 280,
+    width: '100%',
     height: 280,
     borderRadius: 20,
     backgroundColor: colors.surface,
@@ -206,7 +270,7 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing['2xl'],
+    marginBottom: spacing.md,
   },
   uploadButtonText: {
     fontSize: typography.fontSize.lg,
@@ -219,6 +283,24 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
     marginTop: spacing.xs,
+  },
+  cameraButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    gap: spacing.sm,
+    width: '100%',
+  },
+  cameraButtonText: {
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.text.primary,
   },
   imagePreviewContainer: {
     width: 280,
@@ -252,6 +334,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     gap: spacing.sm,
     width: '100%',
+    maxWidth: 280,
     ...Platform.select({
       ios: {
         shadowColor: colors.primary,

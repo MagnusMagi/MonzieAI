@@ -141,12 +141,16 @@ export class ImageRepository implements IImageRepository {
         .range(offset, offset + limit - 1);
 
       if (error) {
-        logger.error('Supabase error fetching user images', error instanceof Error ? error : new Error('Unknown error'), {
-          userId,
-          errorCode: (error as any)?.code,
-          errorMessage: (error as any)?.message,
-          errorDetails: (error as any)?.details,
-        });
+        logger.error(
+          'Supabase error fetching user images',
+          error instanceof Error ? error : new Error('Unknown error'),
+          {
+            userId,
+            errorCode: (error as any)?.code,
+            errorMessage: (error as any)?.message,
+            errorDetails: (error as any)?.details,
+          }
+        );
         throw error;
       }
 

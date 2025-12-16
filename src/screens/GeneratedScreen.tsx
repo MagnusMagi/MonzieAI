@@ -19,6 +19,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library';
 import { colors } from '../theme/colors';
@@ -35,6 +36,7 @@ import { getUserFriendlyErrorMessage } from '../utils/errorMessages';
 import { useFadeIn } from '../hooks/useFadeIn';
 
 const { width, height } = Dimensions.get('window');
+const fullScreenImageHeight = height * 0.9;
 
 type GeneratedScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Generated'>;
 
@@ -46,7 +48,7 @@ export default function GeneratedScreen() {
   const { imageUrl, generatedImages = [], imageId, sceneId } = route.params;
   const { user } = useAuth();
   const fadeAnim = useFadeIn(400);
-  
+
   // Use DI Container for repository instances
   const imageRepository = React.useMemo(() => container.imageRepository, []);
   const sceneRepository = React.useMemo(() => container.sceneRepository, []);
@@ -56,6 +58,7 @@ export default function GeneratedScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fullScreenVisible, setFullScreenVisible] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -63,6 +66,8 @@ export default function GeneratedScreen() {
   const [fullScreenImageLoading, setFullScreenImageLoading] = useState(false);
   const [imageKey, setImageKey] = useState(0);
   const imageLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const downloadInProgressRef = useRef(false);
+  const shareInProgressRef = useRef(false);
 
   // Real-time subscription for image updates (likes, views, etc.)
   const { image: realtimeImage, isSubscribed } = useRealtimeImage(imageId || null);
@@ -70,7 +75,7 @@ export default function GeneratedScreen() {
   // Initialize ViewModel with image
   useEffect(() => {
     initialize(imageUrl, generatedImages[0]?.id);
-    
+
     // Validate image URL
     if (!imageUrl || imageUrl.trim() === '' || !imageUrl.startsWith('http')) {
       setImageLoading(false);
@@ -78,11 +83,11 @@ export default function GeneratedScreen() {
       logger.warn('Invalid image URL', { imageUrl });
       return;
     }
-    
+
     setImageLoading(true);
     setImageError(false);
     setImageKey(0); // Reset key for new image
-    
+
     // Timeout fallback - if image doesn't load in 5 seconds, hide loading
     if (imageLoadTimeoutRef.current) {
       clearTimeout(imageLoadTimeoutRef.current);
@@ -92,7 +97,7 @@ export default function GeneratedScreen() {
       setImageError(true);
       logger.warn('Image load timeout', { imageUrl });
     }, 5000);
-    
+
     return () => {
       if (imageLoadTimeoutRef.current) {
         clearTimeout(imageLoadTimeoutRef.current);
@@ -250,7 +255,15 @@ export default function GeneratedScreen() {
 
   // Download image
   const handleDownload = async () => {
+    // Prevent double-tap/double-call - check both state and ref
+    if (downloading || downloadInProgressRef.current || sharing || shareInProgressRef.current) {
+      logger.warn('Download already in progress, ignoring duplicate call');
+      return;
+    }
+
     try {
+      // Set both guard mechanisms immediately
+      downloadInProgressRef.current = true;
       setDownloading(true);
 
       // Request media library permission
@@ -259,6 +272,7 @@ export default function GeneratedScreen() {
         Alert.alert('Permission Required', 'Please grant photo library access to save images.', [
           { text: 'OK' },
         ]);
+        downloadInProgressRef.current = false;
         setDownloading(false);
         return;
       }
@@ -271,9 +285,16 @@ export default function GeneratedScreen() {
         throw new Error('Failed to download image: No URI returned');
       }
 
-      // Save to media library
+      // Double-check guard before saving (prevent race conditions)
+      if (!downloadInProgressRef.current) {
+        logger.warn('Download was cancelled, skipping save');
+        return;
+      }
+
+      // Save to media library (only once)
       await MediaLibrary.createAssetAsync(downloadResult.uri);
 
+      logger.info('Image saved to gallery successfully', { imageId, imageUrl: currentImage.url });
       Alert.alert('Success', 'Image saved to gallery!');
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error('Unknown error');
@@ -289,13 +310,25 @@ export default function GeneratedScreen() {
       });
       Alert.alert('Error', userMessage);
     } finally {
+      // Always reset both guards
+      downloadInProgressRef.current = false;
       setDownloading(false);
     }
   };
 
   // Share image
   const handleShare = async () => {
+    // Prevent double-tap/double-call - check both state and ref, and also check if download is in progress
+    if (sharing || shareInProgressRef.current || downloading || downloadInProgressRef.current) {
+      logger.warn('Share already in progress or download in progress, ignoring duplicate call');
+      return;
+    }
+
     try {
+      // Set both guard mechanisms immediately
+      shareInProgressRef.current = true;
+      setSharing(true);
+
       const result = await Share.share({
         message: `Check out this AI-generated image! ${currentImage.url}`,
         url: currentImage.url,
@@ -303,7 +336,9 @@ export default function GeneratedScreen() {
       });
 
       if (result.action === Share.sharedAction) {
-        logger.info('Image shared successfully');
+        logger.info('Image shared successfully', { imageId, imageUrl: currentImage.url });
+        // Note: On iOS, if user selects "Save Image" from share sheet, it's handled by iOS
+        // We don't need to save it again - iOS handles it automatically
       }
     } catch (error: unknown) {
       const errorObj = error instanceof Error ? error : new Error('Unknown error');
@@ -317,6 +352,10 @@ export default function GeneratedScreen() {
         operation: 'SHARE',
       });
       Alert.alert('Error', userMessage);
+    } finally {
+      // Always reset both guards
+      shareInProgressRef.current = false;
+      setSharing(false);
     }
   };
 
@@ -341,129 +380,118 @@ export default function GeneratedScreen() {
     }
   }, [fullScreenVisible, currentImage.url]);
 
-  return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
-        {/* Header */}
-        <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => {
-            // Navigate to Home and reset navigation stack
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Home' }],
-            });
-          }} 
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Generated Image</Text>
-        <View style={styles.headerRight} />
-      </View>
+  // Get scene name for display
+  const sceneNameDisplay = realtimeImage?.sceneName || 'AI Generated Image';
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Image Container */}
-        <View style={styles.imageContainerWrapper}>
+  // Get image info for display
+  const imageViews = realtimeImage?.views || 0;
+
+  return (
+    <View style={styles.container}>
+      {/* Full Screen Image */}
+      {!imageError && (
+        <Image
+          key={`${currentImage.url}-${currentIndex}-${imageKey}`}
+          source={{ uri: currentImage.url }}
+          style={styles.fullImage}
+          resizeMode="cover"
+          onLoadStart={() => {
+            setImageLoading(true);
+            setImageError(false);
+            if (imageLoadTimeoutRef.current) {
+              clearTimeout(imageLoadTimeoutRef.current);
+            }
+            imageLoadTimeoutRef.current = setTimeout(() => {
+              setImageLoading(false);
+              setImageError(true);
+              logger.warn('Image load timeout', { imageUrl: currentImage.url });
+            }, 5000);
+          }}
+          onLoad={() => {
+            setImageLoading(false);
+            setImageError(false);
+            if (imageLoadTimeoutRef.current) {
+              clearTimeout(imageLoadTimeoutRef.current);
+              imageLoadTimeoutRef.current = null;
+            }
+          }}
+          onLoadEnd={() => {
+            setImageLoading(false);
+            setImageError(false);
+            if (imageLoadTimeoutRef.current) {
+              clearTimeout(imageLoadTimeoutRef.current);
+              imageLoadTimeoutRef.current = null;
+            }
+          }}
+          onError={error => {
+            setImageLoading(false);
+            setImageError(true);
+            if (imageLoadTimeoutRef.current) {
+              clearTimeout(imageLoadTimeoutRef.current);
+              imageLoadTimeoutRef.current = null;
+            }
+            logger.error(
+              'Image failed to load',
+              error.nativeEvent?.error || new Error('Image load error'),
+              {
+                imageUrl: currentImage.url,
+              }
+            );
+          }}
+        />
+      )}
+
+      {/* Loading Overlay */}
+      {imageLoading && !imageError && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={colors.text.inverse} />
+          <Text style={styles.loadingText}>Loading image...</Text>
+        </View>
+      )}
+
+      {/* Error Overlay */}
+      {imageError && (
+        <View style={styles.errorOverlay}>
+          <Ionicons name="image-outline" size={48} color={colors.text.inverse} />
+          <Text style={styles.errorText}>Failed to load image</Text>
           <TouchableOpacity
-            style={styles.imageContainer}
-            onPress={() => setFullScreenVisible(true)}
-            activeOpacity={0.9}
-            disabled={imageLoading}
+            style={styles.retryButton}
+            onPress={() => {
+              setImageError(false);
+              setImageLoading(true);
+              setImageKey(prev => prev + 1);
+              if (imageLoadTimeoutRef.current) {
+                clearTimeout(imageLoadTimeoutRef.current);
+              }
+              imageLoadTimeoutRef.current = setTimeout(() => {
+                setImageLoading(false);
+                setImageError(true);
+                logger.warn('Image load timeout on retry', { imageUrl: currentImage.url });
+              }, 5000);
+            }}
           >
-            {imageLoading && !imageError && (
-              <View style={styles.imageLoader}>
-                <ActivityIndicator size="large" color={colors.primary} />
-                <Text style={styles.loadingText}>Loading image...</Text>
-              </View>
-            )}
-            {imageError && (
-              <View style={styles.imageErrorContainer}>
-                <Ionicons name="image-outline" size={48} color={colors.text.tertiary} />
-                <Text style={styles.imageErrorText}>Failed to load image</Text>
-                <TouchableOpacity
-                  style={styles.retryButton}
-                  onPress={() => {
-                    setImageError(false);
-                    setImageLoading(true);
-                    setImageKey(prev => prev + 1); // Force image reload
-                    // Clear timeout
-                    if (imageLoadTimeoutRef.current) {
-                      clearTimeout(imageLoadTimeoutRef.current);
-                    }
-                    // Set new timeout
-                    imageLoadTimeoutRef.current = setTimeout(() => {
-                      setImageLoading(false);
-                      setImageError(true);
-                      logger.warn('Image load timeout on retry', { imageUrl: currentImage.url });
-                    }, 5000);
-                  }}
-                >
-                  <Text style={styles.retryButtonText}>Retry</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            {!imageError && (
-              <Image
-                key={`${currentImage.url}-${currentIndex}-${imageKey}`}
-                source={{ uri: currentImage.url }}
-                style={[styles.image, imageLoading && styles.imageHidden]}
-                resizeMode="contain"
-                onLoadStart={() => {
-                  setImageLoading(true);
-                  setImageError(false);
-                  // Clear existing timeout
-                  if (imageLoadTimeoutRef.current) {
-                    clearTimeout(imageLoadTimeoutRef.current);
-                  }
-                  // Set new timeout - shorter for better UX
-                  imageLoadTimeoutRef.current = setTimeout(() => {
-                    setImageLoading(false);
-                    setImageError(true);
-                    logger.warn('Image load timeout', { imageUrl: currentImage.url });
-                  }, 5000);
-                }}
-                onLoad={() => {
-                  // onLoad fires even when image is loaded from cache
-                  setImageLoading(false);
-                  setImageError(false);
-                  if (imageLoadTimeoutRef.current) {
-                    clearTimeout(imageLoadTimeoutRef.current);
-                    imageLoadTimeoutRef.current = null;
-                  }
-                }}
-                onLoadEnd={() => {
-                  setImageLoading(false);
-                  setImageError(false);
-                  if (imageLoadTimeoutRef.current) {
-                    clearTimeout(imageLoadTimeoutRef.current);
-                    imageLoadTimeoutRef.current = null;
-                  }
-                }}
-                onError={(error) => {
-                  setImageLoading(false);
-                  setImageError(true);
-                  if (imageLoadTimeoutRef.current) {
-                    clearTimeout(imageLoadTimeoutRef.current);
-                    imageLoadTimeoutRef.current = null;
-                  }
-                  logger.error('Image failed to load', error.nativeEvent?.error || new Error('Image load error'), {
-                    imageUrl: currentImage.url,
-                  });
-                }}
-              />
-            )}
-            {!imageLoading && !imageError && (
-              <View style={styles.imageOverlay}>
-                <Ionicons name="expand" size={24} color={colors.text.inverse} />
-                <Text style={styles.tapToExpand}>Tap to expand</Text>
-              </View>
-            )}
+            <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
-          {/* Favorite Button */}
+        </View>
+      )}
+
+      {/* Transparent Header */}
+      <SafeAreaView style={styles.headerContainer} edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+              });
+            }}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.text.inverse} />
+          </TouchableOpacity>
           {imageId && (
             <TouchableOpacity
-              style={styles.favoriteButton}
+              style={styles.favoriteButtonHeader}
               onPress={handleToggleFavorite}
               disabled={favoriteLoading}
               activeOpacity={0.7}
@@ -480,94 +508,141 @@ export default function GeneratedScreen() {
             </TouchableOpacity>
           )}
         </View>
+      </SafeAreaView>
 
-        {/* Navigation Controls */}
-        {generatedImages.length > 1 && (
-          <View style={styles.navigationControls}>
-            <TouchableOpacity
-              style={[styles.navButton, currentIndex === 0 && styles.navButtonDisabled]}
-              onPress={handlePrevious}
-              disabled={currentIndex === 0}
-            >
-              <Ionicons
-                name="chevron-back"
-                size={24}
-                color={currentIndex === 0 ? colors.text.tertiary : colors.text.primary}
-              />
-              <Text
-                style={[styles.navButtonText, currentIndex === 0 && styles.navButtonTextDisabled]}
-              >
-                Previous
-              </Text>
-            </TouchableOpacity>
-
-            <Text style={styles.imageCounter}>
-              {currentIndex + 1} / {generatedImages.length}
+      {/* Transparent Content Overlay at Bottom */}
+      <LinearGradient
+        colors={['transparent', 'rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.95)']}
+        style={styles.contentOverlay}
+        locations={[0, 0.3, 1]}
+      >
+        <SafeAreaView style={styles.contentSafeArea} edges={['bottom']}>
+          {/* Scene Name and Views */}
+          <View style={styles.titleRow}>
+            <Text style={styles.title} numberOfLines={2}>
+              {sceneNameDisplay}
             </Text>
+            <View style={styles.viewsContainer}>
+              <Ionicons name="eye" size={18} color={colors.text.inverse} />
+              <Text style={styles.viewsText}>{imageViews}</Text>
+            </View>
+          </View>
 
-            <TouchableOpacity
-              style={[
-                styles.navButton,
-                currentIndex === generatedImages.length - 1 && styles.navButtonDisabled,
-              ]}
-              onPress={handleNext}
-              disabled={currentIndex === generatedImages.length - 1}
-            >
-              <Text
-                style={[
-                  styles.navButtonText,
-                  currentIndex === generatedImages.length - 1 && styles.navButtonTextDisabled,
-                ]}
+          {/* Navigation Controls */}
+          {generatedImages.length > 1 && (
+            <View style={styles.navigationControls}>
+              <TouchableOpacity
+                style={[styles.navButton, currentIndex === 0 && styles.navButtonDisabled]}
+                onPress={handlePrevious}
+                disabled={currentIndex === 0}
+                activeOpacity={0.7}
               >
-                Next
+                <Ionicons
+                  name="chevron-back"
+                  size={20}
+                  color={currentIndex === 0 ? 'rgba(255, 255, 255, 0.5)' : colors.text.inverse}
+                />
+              </TouchableOpacity>
+
+              <Text style={styles.imageCounter}>
+                {currentIndex + 1} / {generatedImages.length}
               </Text>
+
+              <TouchableOpacity
+                style={[
+                  styles.navButton,
+                  currentIndex === generatedImages.length - 1 && styles.navButtonDisabled,
+                ]}
+                onPress={handleNext}
+                disabled={currentIndex === generatedImages.length - 1}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={
+                    currentIndex === generatedImages.length - 1
+                      ? 'rgba(255, 255, 255, 0.5)'
+                      : colors.text.inverse
+                  }
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Action Buttons */}
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleDownload}
+              disabled={
+                downloading ||
+                downloadInProgressRef.current ||
+                sharing ||
+                shareInProgressRef.current
+              }
+              activeOpacity={0.8}
+            >
               <Ionicons
-                name="chevron-forward"
-                size={24}
+                name="download"
+                size={20}
                 color={
-                  currentIndex === generatedImages.length - 1
-                    ? colors.text.tertiary
-                    : colors.text.primary
+                  downloading || downloadInProgressRef.current
+                    ? 'rgba(255, 255, 255, 0.5)'
+                    : colors.text.inverse
                 }
               />
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  (downloading || downloadInProgressRef.current) && styles.actionButtonTextDisabled,
+                ]}
+              >
+                {downloading ? 'Downloading...' : 'Download'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleShare}
+              disabled={
+                sharing ||
+                shareInProgressRef.current ||
+                downloading ||
+                downloadInProgressRef.current
+              }
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name="share-social"
+                size={20}
+                color={
+                  sharing || shareInProgressRef.current
+                    ? 'rgba(255, 255, 255, 0.5)'
+                    : colors.text.inverse
+                }
+              />
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  (sharing || shareInProgressRef.current) && styles.actionButtonTextDisabled,
+                ]}
+              >
+                {sharing ? 'Sharing...' : 'Share'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => setFullScreenVisible(true)}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="expand" size={20} color={colors.text.inverse} />
+              <Text style={styles.actionButtonText}>Full Screen</Text>
             </TouchableOpacity>
           </View>
-        )}
-
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handleDownload}
-            disabled={downloading}
-            activeOpacity={0.7}
-          >
-            <Ionicons
-              name="download"
-              size={24}
-              color={downloading ? colors.text.tertiary : colors.primary}
-            />
-            <Text style={[styles.actionButtonText, downloading && styles.actionButtonTextDisabled]}>
-              {downloading ? 'Downloading...' : 'Download'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton} onPress={handleShare} activeOpacity={0.7}>
-            <Ionicons name="share-social" size={24} color={colors.primary} />
-            <Text style={styles.actionButtonText}>Share</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Gallery Button */}
-        <TouchableOpacity
-          style={styles.galleryButton}
-          onPress={() => navigation.navigate('Gallery')}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="images" size={20} color={colors.text.inverse} />
-          <Text style={styles.galleryButtonText}>Galeriye Git</Text>
-        </TouchableOpacity>
-      </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
 
       {/* Full Screen Modal */}
       <Modal
@@ -597,17 +672,21 @@ export default function GeneratedScreen() {
             )}
             <Image
               source={{ uri: currentImage.url }}
-              style={[styles.fullScreenImage, fullScreenImageLoading && styles.imageHidden]}
+              style={styles.fullScreenImage}
               resizeMode="contain"
               onLoadStart={() => setFullScreenImageLoading(true)}
               onLoadEnd={() => {
                 setFullScreenImageLoading(false);
               }}
-              onError={(error) => {
+              onError={error => {
                 setFullScreenImageLoading(false);
-                logger.error('Full screen image failed to load', error.nativeEvent?.error || new Error('Image load error'), {
-                  imageUrl: currentImage.url,
-                });
+                logger.error(
+                  'Full screen image failed to load',
+                  error.nativeEvent?.error || new Error('Image load error'),
+                  {
+                    imageUrl: currentImage.url,
+                  }
+                );
               }}
             />
           </ScrollView>
@@ -649,8 +728,7 @@ export default function GeneratedScreen() {
           )}
         </View>
       </Modal>
-      </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -659,118 +737,47 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: Platform.OS === 'ios' ? spacing.xs : spacing.sm,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  backButton: {
-    padding: spacing.xs,
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.text.primary,
-  },
-  headerRight: {
-    width: 40,
-  },
-  scrollContent: {
-    padding: spacing.lg,
-    paddingBottom: spacing['3xl'],
-  },
-  imageContainerWrapper: {
-    position: 'relative',
-    marginBottom: spacing.xl,
-  },
-  imageContainer: {
-    width: '100%',
-    height: width * 1.2,
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    overflow: 'hidden',
-    position: 'relative',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
-  favoriteButton: {
+  fullImage: {
+    width: width,
+    height: height,
     position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    top: 0,
+    left: 0,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  imageHidden: {
-    opacity: 0,
-  },
-  imageLoader: {
+  loadingOverlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1,
+    zIndex: 5,
   },
   loadingText: {
     marginTop: spacing.md,
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+    color: colors.text.inverse,
   },
-  imageErrorContainer: {
+  errorOverlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
-    zIndex: 1,
+    zIndex: 5,
+    padding: spacing.xl,
   },
-  imageErrorText: {
+  errorText: {
     marginTop: spacing.md,
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+    color: colors.text.inverse,
     marginBottom: spacing.md,
     textAlign: 'center',
   },
@@ -779,10 +786,75 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: 8,
+    borderRadius: 12,
   },
   retryButtonText: {
     fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.text.inverse,
+  },
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
+  header: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: Platform.OS === 'ios' ? spacing.xs : spacing.sm,
+    paddingBottom: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  backButton: {
+    padding: spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 20,
+  },
+  favoriteButtonHeader: {
+    padding: spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 20,
+  },
+  contentOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingTop: spacing['3xl'],
+  },
+  contentSafeArea: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.md,
+    gap: spacing.md,
+  },
+  title: {
+    flex: 1,
+    fontSize: typography.fontSize['2xl'],
+    fontFamily: typography.fontFamily.bold,
+    color: colors.text.inverse,
+  },
+  viewsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  viewsText: {
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.semiBold,
     color: colors.text.inverse,
   },
@@ -802,130 +874,62 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.regular,
     color: colors.text.inverse,
   },
-  imageOverlay: {
-    position: 'absolute',
-    bottom: spacing.md,
-    right: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  tapToExpand: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.inverse,
-  },
   navigationControls: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xl,
-    paddingHorizontal: spacing.md,
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+    gap: spacing.lg,
   },
   navButton: {
-    flexDirection: 'row',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
-    gap: spacing.xs,
-    padding: spacing.sm,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   navButtonDisabled: {
     opacity: 0.5,
   },
-  navButtonText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.primary,
-  },
-  navButtonTextDisabled: {
-    color: colors.text.tertiary,
-  },
   imageCounter: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.semiBold,
-    color: colors.text.secondary,
+    color: colors.text.inverse,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   actionButtons: {
     flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   actionButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.surface,
+    gap: spacing.xs,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 16,
+    paddingHorizontal: spacing.md,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   actionButtonText: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.semiBold,
-    color: colors.text.primary,
+    color: colors.text.inverse,
   },
   actionButtonTextDisabled: {
-    color: colors.text.tertiary,
-  },
-  galleryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.secondary || colors.primary,
-    paddingVertical: spacing.md + 2,
-    paddingHorizontal: spacing.xl,
-    borderRadius: 16,
-    marginBottom: spacing.md,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.secondary || colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
-  galleryButtonText: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.text.inverse,
-  },
-  generateMoreButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md + 2,
-    paddingHorizontal: spacing.xl,
-    borderRadius: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
-  generateMoreText: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.text.inverse,
+    color: 'rgba(255, 255, 255, 0.5)',
   },
   fullScreenContainer: {
     flex: 1,
@@ -933,7 +937,7 @@ const styles = StyleSheet.create({
   },
   fullScreenCloseButton: {
     position: 'absolute',
-    top: spacing.xl + 20,
+    top: 52, // spacing.xl (32) + 20
     right: spacing.lg,
     zIndex: 10,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -949,11 +953,11 @@ const styles = StyleSheet.create({
   },
   fullScreenImage: {
     width: width,
-    height: height * 0.9,
+    height: fullScreenImageHeight,
   },
   fullScreenNav: {
     position: 'absolute',
-    bottom: spacing.xl + 20,
+    bottom: 52, // spacing.xl (32) + 20
     left: 0,
     right: 0,
     flexDirection: 'row',

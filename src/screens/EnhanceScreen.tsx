@@ -122,7 +122,7 @@ export default function EnhanceScreen() {
         try {
           // Import storage service dynamically to avoid circular dependencies
           const { storageService } = await import('../services/storageService');
-          
+
           // Upload to Supabase Storage first
           const uploadResult = await storageService.uploadImageFromUrl(
             result.image.url,

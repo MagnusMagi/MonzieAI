@@ -21,7 +21,7 @@ class SentryService {
 
     // Get DSN from environment or app.json
     const dsn = Constants.expoConfig?.extra?.sentryDsn;
-    
+
     if (!dsn) {
       if (__DEV__) {
         logger.debug('Sentry DSN not configured. Error tracking will be disabled.');
@@ -125,7 +125,10 @@ class SentryService {
     } catch (err) {
       // Silently fail - don't break the app if Sentry fails
       if (__DEV__) {
-        logger.debug('Failed to capture exception in Sentry', err instanceof Error ? err : new Error(String(err)));
+        logger.debug(
+          'Failed to capture exception in Sentry',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     }
   }
@@ -145,7 +148,10 @@ class SentryService {
     } catch (err) {
       // Silently fail
       if (__DEV__) {
-        logger.debug('Failed to capture message in Sentry', err instanceof Error ? err : new Error(String(err)));
+        logger.debug(
+          'Failed to capture message in Sentry',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     }
   }
@@ -153,7 +159,11 @@ class SentryService {
   /**
    * Add breadcrumb for debugging
    */
-  addBreadcrumb(message: string, category?: string, level: 'info' | 'warning' | 'error' = 'info'): void {
+  addBreadcrumb(
+    message: string,
+    category?: string,
+    level: 'info' | 'warning' | 'error' = 'info'
+  ): void {
     if (!this.isInitialized) return;
 
     try {
@@ -168,7 +178,10 @@ class SentryService {
     } catch (err) {
       // Silently fail
       if (__DEV__) {
-        logger.debug('Failed to add breadcrumb in Sentry', err instanceof Error ? err : new Error(String(err)));
+        logger.debug(
+          'Failed to add breadcrumb in Sentry',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     }
   }
@@ -185,7 +198,10 @@ class SentryService {
       // Sentry.setContext(key, context as Record<string, any>);
     } catch (err) {
       if (__DEV__) {
-        logger.debug('Failed to set context in Sentry', err instanceof Error ? err : new Error(String(err)));
+        logger.debug(
+          'Failed to set context in Sentry',
+          err instanceof Error ? err : new Error(String(err))
+        );
       }
     }
   }
@@ -199,4 +215,3 @@ class SentryService {
 }
 
 export const sentryService = new SentryService();
-

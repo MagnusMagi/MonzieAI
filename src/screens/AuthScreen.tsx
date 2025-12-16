@@ -11,6 +11,7 @@ import {
   Alert,
   ActivityIndicator,
   Animated,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -79,9 +80,13 @@ export default function AuthScreen() {
 
       if (isLogin) {
         await signIn(email.trim(), password);
+        // Small delay to ensure loading state is cleared
+        await new Promise(resolve => setTimeout(resolve, 100));
         navigation.replace('Home');
       } else {
         await signUp(email.trim(), password, name.trim());
+        // Small delay to ensure loading state is cleared
+        await new Promise(resolve => setTimeout(resolve, 100));
         // Navigate to Paywall after successful registration
         navigation.replace('Paywall');
       }
@@ -121,7 +126,7 @@ export default function AuthScreen() {
 
       if (data.user) {
         logger.info('Google sign in successful', { userId: data.user.id });
-        
+
         // Check if this is a new user (just created) by checking if user profile was just created
         // If user was just created, show paywall, otherwise go to home
         const { data: userProfile } = await supabase
@@ -129,11 +134,11 @@ export default function AuthScreen() {
           .select('created_at')
           .eq('id', data.user.id)
           .single();
-        
+
         // If user profile was created within the last 5 seconds, it's a new user
-        const isNewUser = userProfile?.created_at && 
-          new Date(userProfile.created_at).getTime() > Date.now() - 5000;
-        
+        const isNewUser =
+          userProfile?.created_at && new Date(userProfile.created_at).getTime() > Date.now() - 5000;
+
         if (isNewUser) {
           navigation.replace('Paywall');
         } else {
@@ -151,7 +156,10 @@ export default function AuthScreen() {
         logger.info('Google sign in already in progress');
         // Operation already in progress
       } else if (googleError.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        logger.error('Google Play Services not available', googleError instanceof Error ? googleError : new Error('Unknown error'));
+        logger.error(
+          'Google Play Services not available',
+          googleError instanceof Error ? googleError : new Error('Unknown error')
+        );
         Alert.alert('Error', 'Google Play Services is not available. Please update it.');
       } else {
         logger.error(
@@ -198,7 +206,7 @@ export default function AuthScreen() {
 
       if (data.user) {
         logger.info('Apple sign in successful', { userId: data.user.id });
-        
+
         // Check if this is a new user (just created) by checking if user profile was just created
         // If user was just created, show paywall, otherwise go to home
         const { data: userProfile } = await supabase
@@ -206,11 +214,11 @@ export default function AuthScreen() {
           .select('created_at')
           .eq('id', data.user.id)
           .single();
-        
+
         // If user profile was created within the last 5 seconds, it's a new user
-        const isNewUser = userProfile?.created_at && 
-          new Date(userProfile.created_at).getTime() > Date.now() - 5000;
-        
+        const isNewUser =
+          userProfile?.created_at && new Date(userProfile.created_at).getTime() > Date.now() - 5000;
+
         if (isNewUser) {
           navigation.replace('Paywall');
         } else {
@@ -243,140 +251,153 @@ export default function AuthScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Ionicons name="image" size={64} color={colors.primary} />
-          <Text style={styles.title}>{isLogin ? 'Welcome Back' : 'Create Account'}</Text>
-          <Text style={styles.subtitle}>
-            {isLogin ? 'Sign in to continue to MonzieAI' : 'Start creating amazing AI images'}
-          </Text>
-        </View>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
+            <Image
+              source={require('../../assets/icon.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.title}>{isLogin ? 'Welcome' : 'Create Account'}</Text>
+            <Text style={styles.subtitle}>
+              {isLogin ? 'Sign in to continue to MonzieAI' : 'Start creating amazing AI images'}
+            </Text>
+          </View>
 
-        <View style={styles.form}>
-          {!isLogin && (
+          <View style={styles.form}>
+            {!isLogin && (
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="person-outline"
+                  size={20}
+                  color={colors.text.secondary}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Full Name"
+                  placeholderTextColor={colors.text.tertiary}
+                  value={name}
+                  onChangeText={setName}
+                  autoCapitalize="words"
+                />
+              </View>
+            )}
+
             <View style={styles.inputContainer}>
               <Ionicons
-                name="person-outline"
+                name="mail-outline"
                 size={20}
                 color={colors.text.secondary}
                 style={styles.inputIcon}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Full Name"
+                placeholder="Email"
                 placeholderTextColor={colors.text.tertiary}
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="words"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
               />
             </View>
-          )}
 
-          <View style={styles.inputContainer}>
-            <Ionicons
-              name="mail-outline"
-              size={20}
-              color={colors.text.secondary}
-              style={styles.inputIcon}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor={colors.text.tertiary}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-          </View>
+            <View style={styles.inputContainer}>
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color={colors.text.secondary}
+                style={styles.inputIcon}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor={colors.text.tertiary}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                autoComplete="password"
+              />
+            </View>
 
-          <View style={styles.inputContainer}>
-            <Ionicons
-              name="lock-closed-outline"
-              size={20}
-              color={colors.text.secondary}
-              style={styles.inputIcon}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor={colors.text.tertiary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="password"
-            />
-          </View>
+            {isLogin && (
+              <TouchableOpacity
+                style={styles.forgotButton}
+                onPress={() => navigation.navigate('ForgotPassword')}
+              >
+                <Text style={styles.forgotText}>Forgot Password?</Text>
+              </TouchableOpacity>
+            )}
 
-          {isLogin && (
             <TouchableOpacity
-              style={styles.forgotButton}
-              onPress={() => navigation.navigate('ForgotPassword')}
+              style={[styles.authButton, loading && styles.authButtonDisabled]}
+              onPress={handleAuth}
+              disabled={loading}
             >
-              <Text style={styles.forgotText}>Forgot Password?</Text>
+              {loading ? (
+                <ActivityIndicator color={colors.text.inverse} />
+              ) : (
+                <Text style={styles.authButtonText}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
+              )}
             </TouchableOpacity>
-          )}
 
-          <TouchableOpacity
-            style={[styles.authButton, loading && styles.authButtonDisabled]}
-            onPress={handleAuth}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color={colors.text.inverse} />
-            ) : (
-              <Text style={styles.authButtonText}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
-            )}
-          </TouchableOpacity>
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OR</Text>
+              <View style={styles.dividerLine} />
+            </View>
 
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          <TouchableOpacity
-            style={[styles.socialButton, socialLoading === 'google' && styles.socialButtonDisabled]}
-            onPress={handleGoogleSignIn}
-            disabled={!!socialLoading}
-          >
-            {socialLoading === 'google' ? (
-              <ActivityIndicator color={colors.text.primary} />
-            ) : (
-              <>
-                <Ionicons name="logo-google" size={20} color={colors.text.primary} />
-                <Text style={styles.socialButtonText}>Continue with Google</Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.socialButton, socialLoading === 'apple' && styles.socialButtonDisabled]}
-            onPress={handleAppleSignIn}
-            disabled={!!socialLoading}
-          >
-            {socialLoading === 'apple' ? (
-              <ActivityIndicator color={colors.text.primary} />
-            ) : (
-              <>
-                <Ionicons name="logo-apple" size={20} color={colors.text.primary} />
-                <Text style={styles.socialButtonText}>Continue with Apple</Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          <View style={styles.switchContainer}>
-            <Text style={styles.switchText}>
-              {isLogin ? "Don't have an account? " : 'Already have an account? '}
-            </Text>
-            <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
-              <Text style={styles.switchLink}>{isLogin ? 'Sign Up' : 'Sign In'}</Text>
+            <TouchableOpacity
+              style={[
+                styles.socialButton,
+                socialLoading === 'google' && styles.socialButtonDisabled,
+              ]}
+              onPress={handleGoogleSignIn}
+              disabled={!!socialLoading}
+            >
+              {socialLoading === 'google' ? (
+                <ActivityIndicator color={colors.text.primary} />
+              ) : (
+                <>
+                  <Ionicons name="logo-google" size={20} color={colors.text.primary} />
+                  <Text style={styles.socialButtonText}>Continue with Google</Text>
+                </>
+              )}
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.socialButton,
+                socialLoading === 'apple' && styles.socialButtonDisabled,
+              ]}
+              onPress={handleAppleSignIn}
+              disabled={!!socialLoading}
+            >
+              {socialLoading === 'apple' ? (
+                <ActivityIndicator color={colors.text.primary} />
+              ) : (
+                <>
+                  <Ionicons name="logo-apple" size={20} color={colors.text.primary} />
+                  <Text style={styles.socialButtonText}>Continue with Apple</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.switchContainer}>
+              <Text style={styles.switchText}>
+                {isLogin ? "Don't have an account? " : 'Already have an account? '}
+              </Text>
+              <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+                <Text style={styles.switchLink}>{isLogin ? 'Sign Up' : 'Sign In'}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </Animated.View>
     </KeyboardAvoidingView>
   );
@@ -396,6 +417,10 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: spacing['2xl'],
+  },
+  logo: {
+    width: 100,
+    height: 100,
   },
   title: {
     fontSize: typography.fontSize['4xl'],

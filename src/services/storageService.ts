@@ -32,7 +32,15 @@ class StorageService {
    */
   async uploadImage(params: UploadImageParams): Promise<UploadImageResult> {
     try {
-      const { imageUri, bucket, fileName, userId, metadata, optimize = true, optimizationOptions } = params;
+      const {
+        imageUri,
+        bucket,
+        fileName,
+        userId,
+        metadata,
+        optimize = true,
+        optimizationOptions,
+      } = params;
 
       // Generate filename if not provided
       const finalFileName =
@@ -47,13 +55,13 @@ class StorageService {
       });
 
       let base64: string;
-      let optimizedUri = imageUri;
+      const optimizedUri = imageUri;
 
       // Image optimization pipeline
       if (optimize) {
         try {
           logger.debug('Optimizing image before upload', { imageUri: imageUri.substring(0, 50) });
-          
+
           // Use optimization utility with custom options or defaults
           const opts = optimizationOptions || {
             maxWidth: bucket === 'enhanced-images' ? 2048 : 1024, // Larger for enhanced images
@@ -64,10 +72,10 @@ class StorageService {
 
           // Optimize image and get base64 data URI
           const dataUri = await optimizeImageForBase64(imageUri, opts);
-          
+
           // Extract base64 from data URI
           base64 = dataUri.split(',')[1];
-          
+
           logger.info('Image optimized successfully', {
             originalUri: imageUri.substring(0, 50),
             optimizedSize: base64.length,
@@ -267,4 +275,3 @@ class StorageService {
 }
 
 export const storageService = new StorageService();
-

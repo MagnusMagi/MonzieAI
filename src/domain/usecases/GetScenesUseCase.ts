@@ -19,7 +19,7 @@ export class GetScenesUseCase {
     // Business logic: Only return active scenes
     const result = await this.sceneRepository.getScenes({
       ...params,
-      limit: params.limit || 50,
+      limit: params.limit || 200, // Increased to load all 150+ scenes
       offset: params.offset || 0,
     });
 

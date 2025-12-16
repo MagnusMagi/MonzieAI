@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import { Image } from 'expo-image';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+// import { BlurView } from 'expo-blur'; // Disabled - using CSS-based glassmorphism instead
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { Ionicons } from '@expo/vector-icons';
+
+const { width, height } = Dimensions.get('window');
 
 type GenderSelectionScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -18,7 +23,7 @@ type GenderSelectionScreenRouteProp = RouteProp<RootStackParamList, 'GenderSelec
 export default function GenderSelectionScreen() {
   const navigation = useNavigation<GenderSelectionScreenNavigationProp>();
   const route = useRoute<GenderSelectionScreenRouteProp>();
-  const { sceneId, sceneName, scenePrompt, sceneCategory } = route.params || {};
+  const { sceneId, sceneName, scenePrompt, sceneCategory, sceneImage } = route.params || {};
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
 
   const handleContinue = () => {
@@ -35,113 +40,133 @@ export default function GenderSelectionScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Select Gender</Text>
-        <View style={styles.headerRight} />
-      </View>
+    <View style={styles.container}>
+      {/* Full Screen Background - Image or Gradient */}
+      {sceneImage ? (
+        <Image
+          source={{ uri: sceneImage }}
+          style={styles.fullImage}
+          contentFit="cover"
+          transition={200}
+          cachePolicy="memory-disk"
+        />
+      ) : (
+        <LinearGradient
+          colors={[colors.primary, colors.primary + 'DD', colors.primary + 'BB']}
+          style={styles.fullImage}
+        />
+      )}
 
-      <View style={styles.content}>
-        <View style={styles.headerSection}>
-          <Text style={styles.title}>Choose Gender</Text>
-          <Text style={styles.subtitle}>Select the gender for your AI image generation</Text>
+      {/* Transparent Header */}
+      <SafeAreaView style={styles.headerContainer} edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={colors.text.inverse} />
+          </TouchableOpacity>
+          <View style={styles.headerRight} />
         </View>
+      </SafeAreaView>
 
-        <View style={styles.genderOptions}>
-          <TouchableOpacity
-            style={[styles.genderCard, selectedGender === 'male' && styles.genderCardSelected]}
-            onPress={() => setSelectedGender('male')}
-            activeOpacity={0.7}
-          >
-            <View
-              style={[
-                styles.genderIconWrapper,
-                selectedGender === 'male' && styles.genderIconWrapperSelected,
-              ]}
+      {/* Transparent Content Overlay at Bottom */}
+      <LinearGradient
+        colors={['transparent', 'rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.95)']}
+        style={styles.contentOverlay}
+        locations={[0, 0.3, 1]}
+      >
+        <SafeAreaView style={styles.contentSafeArea} edges={['bottom']}>
+          {/* Title Section */}
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>Choose Gender</Text>
+            <Text style={styles.subtitle}>Select the gender for your AI image generation</Text>
+          </View>
+
+          {/* Gender Options */}
+          <View style={styles.genderOptions}>
+            <TouchableOpacity
+              onPress={() => setSelectedGender('male')}
+              activeOpacity={0.8}
+              style={[styles.genderCard, selectedGender === 'male' && styles.genderCardSelected]}
             >
-              <Ionicons
-                name="male"
-                size={36}
-                color={selectedGender === 'male' ? colors.text.inverse : colors.text.primary}
-              />
-            </View>
-            <View style={styles.genderInfo}>
-              <Text
+              <View
                 style={[
-                  styles.genderLabel,
-                  selectedGender === 'male' && styles.genderLabelSelected,
+                  styles.genderIconWrapper,
+                  selectedGender === 'male' && styles.genderIconWrapperSelected,
                 ]}
               >
-                Male
-              </Text>
-              {selectedGender === 'male' && (
-                <View style={styles.checkmarkContainer}>
-                  <Ionicons name="checkmark-circle" size={20} color={colors.text.inverse} />
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
+                <Ionicons name="male" size={36} color={colors.text.inverse} />
+              </View>
+              <View style={styles.genderInfo}>
+                <Text
+                  style={[
+                    styles.genderLabel,
+                    selectedGender === 'male' && styles.genderLabelSelected,
+                  ]}
+                >
+                  Male
+                </Text>
+                {selectedGender === 'male' && (
+                  <View style={styles.checkmarkContainer}>
+                    <Ionicons name="checkmark-circle" size={20} color={colors.text.inverse} />
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.genderCard, selectedGender === 'female' && styles.genderCardSelected]}
-            onPress={() => setSelectedGender('female')}
-            activeOpacity={0.7}
-          >
-            <View
-              style={[
-                styles.genderIconWrapper,
-                selectedGender === 'female' && styles.genderIconWrapperSelected,
-              ]}
+            <TouchableOpacity
+              onPress={() => setSelectedGender('female')}
+              activeOpacity={0.8}
+              style={[styles.genderCard, selectedGender === 'female' && styles.genderCardSelected]}
             >
-              <Ionicons
-                name="female"
-                size={36}
-                color={selectedGender === 'female' ? colors.text.inverse : colors.text.primary}
-              />
-            </View>
-            <View style={styles.genderInfo}>
-              <Text
+              <View
                 style={[
-                  styles.genderLabel,
-                  selectedGender === 'female' && styles.genderLabelSelected,
+                  styles.genderIconWrapper,
+                  selectedGender === 'female' && styles.genderIconWrapperSelected,
                 ]}
               >
-                Female
-              </Text>
-              {selectedGender === 'female' && (
-                <View style={styles.checkmarkContainer}>
-                  <Ionicons name="checkmark-circle" size={20} color={colors.text.inverse} />
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
-        </View>
+                <Ionicons name="female" size={36} color={colors.text.inverse} />
+              </View>
+              <View style={styles.genderInfo}>
+                <Text
+                  style={[
+                    styles.genderLabel,
+                    selectedGender === 'female' && styles.genderLabelSelected,
+                  ]}
+                >
+                  Female
+                </Text>
+                {selectedGender === 'female' && (
+                  <View style={styles.checkmarkContainer}>
+                    <Ionicons name="checkmark-circle" size={20} color={colors.text.inverse} />
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
 
-        <TouchableOpacity
-          style={[styles.continueButton, !selectedGender && styles.continueButtonDisabled]}
-          onPress={handleContinue}
-          disabled={!selectedGender}
-          activeOpacity={0.8}
-        >
-          <Text
-            style={[
-              styles.continueButtonText,
-              !selectedGender && styles.continueButtonTextDisabled,
-            ]}
+          {/* Continue Button */}
+          <TouchableOpacity
+            style={[styles.continueButton, !selectedGender && styles.continueButtonDisabled]}
+            onPress={handleContinue}
+            disabled={!selectedGender}
+            activeOpacity={0.8}
           >
-            Continue
-          </Text>
-          <Ionicons
-            name="arrow-forward"
-            size={20}
-            color={selectedGender ? colors.text.inverse : colors.text.tertiary}
-          />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+            <Text
+              style={[
+                styles.continueButtonText,
+                !selectedGender && styles.continueButtonTextDisabled,
+              ]}
+            >
+              Continue
+            </Text>
+            <Ionicons
+              name="arrow-forward"
+              size={20}
+              color={selectedGender ? colors.text.primary : colors.text.tertiary}
+            />
+          </TouchableOpacity>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 }
 
@@ -150,91 +175,101 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  fullImage: {
+    width: width,
+    height: height,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
   header: {
+    paddingHorizontal: spacing.lg,
     paddingTop: Platform.OS === 'ios' ? spacing.xs : spacing.sm,
     paddingBottom: spacing.md,
-    paddingHorizontal: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.background,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
   backButton: {
     padding: spacing.xs,
-  },
-  headerTitle: {
-    fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.text.primary,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 20,
   },
   headerRight: {
     width: 40,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
+  contentOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingTop: spacing['3xl'],
   },
-  headerSection: {
-    alignItems: 'center',
-    marginBottom: spacing['2xl'],
-    paddingTop: spacing.lg,
+  contentSafeArea: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
+  },
+  titleSection: {
+    marginBottom: spacing.xl,
   },
   title: {
-    fontSize: typography.fontSize['3xl'],
+    fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
-    color: colors.text.primary,
+    color: colors.text.inverse,
     marginBottom: spacing.sm,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+    color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
-    paddingHorizontal: spacing.md,
     lineHeight: 22,
   },
   genderOptions: {
-    flex: 1,
-    justifyContent: 'center',
     gap: spacing.md,
-    paddingBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   genderCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 20,
     padding: spacing.lg,
-    borderWidth: 2,
-    borderColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    overflow: 'hidden',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 2,
+        elevation: 4,
       },
     }),
   },
   genderCardSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primary,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     ...Platform.select({
       ios: {
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
+        shadowColor: '#fff',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.4,
+        shadowRadius: 20,
       },
       android: {
-        elevation: 4,
+        elevation: 8,
       },
     }),
   },
@@ -242,16 +277,17 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.background,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
     marginRight: spacing.lg,
+    overflow: 'hidden',
   },
   genderIconWrapperSelected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+    borderColor: 'rgba(255, 255, 255, 0.7)',
   },
   genderInfo: {
     flex: 1,
@@ -262,7 +298,7 @@ const styles = StyleSheet.create({
   genderLabel: {
     fontSize: typography.fontSize.xl,
     fontFamily: typography.fontFamily.bold,
-    color: colors.text.primary,
+    color: colors.text.inverse,
   },
   genderLabelSelected: {
     fontSize: typography.fontSize.xl,
@@ -276,37 +312,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.text.inverse,
     paddingVertical: spacing.md + 2,
     paddingHorizontal: spacing.xl,
     borderRadius: 16,
     gap: spacing.sm,
-    width: '100%',
+    marginTop: spacing.md,
     ...Platform.select({
       ios: {
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
       },
       android: {
-        elevation: 4,
+        elevation: 2,
       },
     }),
   },
   continueButtonDisabled: {
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   continueButtonText: {
     fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.bold,
-    color: colors.text.inverse,
+    color: colors.text.primary,
   },
   continueButtonTextDisabled: {
     fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.medium,
-    color: colors.text.tertiary,
+    color: 'rgba(255, 255, 255, 0.5)',
   },
 });

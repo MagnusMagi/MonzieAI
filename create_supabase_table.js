@@ -6,14 +6,15 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = 'https://groguatbjerebweinuef.supabase.co';
-const SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdyb2d1YXRiamVyZWJ3ZWludWVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTEwMDY2NSwiZXhwIjoyMDgwNjc2NjY1fQ.AzReOmy0sjsagWar6zv1EKRW3Z41E6Gpd_X_uxz8Y6s';
+const SERVICE_ROLE_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdyb2d1YXRiamVyZWJ3ZWludWVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTEwMDY2NSwiZXhwIjoyMDgwNjc2NjY1fQ.AzReOmy0sjsagWar6zv1EKRW3Z41E6Gpd_X_uxz8Y6s';
 
 // Create Supabase client with service role key
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 });
 
 async function createScenesTable() {
@@ -74,23 +75,20 @@ async function createScenesTable() {
     // Supabase REST API doesn't support DDL, so we need to use RPC
     // But first, let's check if we can use the REST API to execute SQL
     // Actually, Supabase doesn't expose a direct SQL execution endpoint via REST API
-    
+
     // Alternative: Use Supabase's REST API to call a stored procedure
     // But we need to create the stored procedure first, which requires SQL execution
-    
+
     // The only way is to use the Supabase Dashboard SQL Editor or direct PostgreSQL connection
-    
+
     console.log('❌ Supabase REST API does not support DDL operations (CREATE TABLE).');
     console.log('📝 Please run the SQL script in Supabase Dashboard SQL Editor:\n');
     console.log(sqlScript);
     console.log('\n✅ After running the SQL, the table will be created.');
-    
+
     // However, we can verify if the table exists
-    const { data, error } = await supabase
-      .from('scenes')
-      .select('id')
-      .limit(1);
-    
+    const { data, error } = await supabase.from('scenes').select('id').limit(1);
+
     if (error) {
       if (error.code === 'PGRST205') {
         console.log('\n⚠️  Table does not exist yet. Please create it using the SQL above.');
@@ -100,7 +98,6 @@ async function createScenesTable() {
     } else {
       console.log('\n✅ Table already exists!');
     }
-    
   } catch (error) {
     console.error('❌ Error:', error.message);
   }
@@ -108,5 +105,3 @@ async function createScenesTable() {
 
 // Run the script
 createScenesTable();
-
-

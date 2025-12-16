@@ -9,11 +9,12 @@ import { useAuth } from '../../contexts/AuthContext';
 export function useFavoritesViewModel() {
   const { user } = useAuth();
   const [viewModel] = useState(
-    () => new FavoritesViewModel(
-      container.getImagesUseCase,
-      container.imageRepository,
-      container.favoriteRepository
-    )
+    () =>
+      new FavoritesViewModel(
+        container.getImagesUseCase,
+        container.imageRepository,
+        container.favoriteRepository
+      )
   );
   const [state, setState] = useState(() => viewModel.getState());
 

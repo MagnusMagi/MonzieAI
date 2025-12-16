@@ -51,7 +51,7 @@ class ErrorLoggingService {
   logWarning(message: string, context?: Record<string, unknown>): void {
     if (!this.isEnabled) return;
     logger.warn(message, context);
-    
+
     // Send to Sentry as warning
     sentryService.captureMessage(message, 'warning');
   }

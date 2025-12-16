@@ -19,9 +19,9 @@ export class HomeViewModel {
   ) {}
 
   /**
-   * Load scenes
+   * Load scenes - Load all scenes (200 limit to cover all 150+ scenes)
    */
-  async loadScenes(category?: string, limit: number = 50, offset: number = 0): Promise<void> {
+  async loadScenes(category?: string, limit: number = 200, offset: number = 0): Promise<void> {
     try {
       this.loading = true;
       this.error = null;
@@ -101,5 +101,12 @@ export class HomeViewModel {
    */
   async refresh(): Promise<void> {
     await this.loadScenes();
+  }
+
+  /**
+   * Update scenes directly (for real-time updates)
+   */
+  updateScenes(scenes: Scene[]): void {
+    this.scenes = scenes;
   }
 }

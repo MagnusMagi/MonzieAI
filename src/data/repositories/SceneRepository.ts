@@ -25,7 +25,7 @@ export class SceneRepository implements ISceneRepository {
         .select('*', { count: 'exact' })
         .eq('is_active', true)
         .order('name', { ascending: true })
-        .range(params.offset || 0, (params.offset || 0) + (params.limit || 50) - 1);
+        .range(params.offset || 0, (params.offset || 0) + (params.limit || 200) - 1);
 
       if (params.category) {
         query = query.eq('category', params.category);

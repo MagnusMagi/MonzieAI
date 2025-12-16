@@ -18,6 +18,10 @@ import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { Ionicons } from '@expo/vector-icons';
 import { useSceneSelectionViewModel } from '../presentation/hooks/useSceneSelectionViewModel';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../config/supabase';
+import { logger } from '../utils/logger';
+import { useState, useEffect } from 'react';
 
 type SceneSelectionScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -30,6 +34,17 @@ export default function SceneSelectionScreen() {
   const navigation = useNavigation<SceneSelectionScreenNavigationProp>();
   const route = useRoute<SceneSelectionScreenRouteProp>();
   const { gender, imageUri } = route.params;
+  const { user } = useAuth();
+  const [recommendedScenes, setRecommendedScenes] = useState<
+    Array<{
+      scene_id: string;
+      scene_name: string;
+      category: string;
+      match_reason: string;
+      match_score: number;
+    }>
+  >([]);
+  const [_loadingRecommendations, setLoadingRecommendations] = useState(true);
 
   const {
     filteredScenes,
@@ -41,6 +56,43 @@ export default function SceneSelectionScreen() {
     selectCategory,
     selectScene,
   } = useSceneSelectionViewModel();
+
+  // Load user recommendations
+  useEffect(() => {
+    if (user?.id) {
+      loadRecommendations();
+    }
+  }, [user]);
+
+  const loadRecommendations = async () => {
+    if (!user?.id) {
+      setLoadingRecommendations(false);
+      return;
+    }
+
+    try {
+      const { data, error: rpcError } = await supabase.rpc('get_user_recommendations', {
+        user_id: user.id,
+      });
+
+      if (rpcError) {
+        logger.error(
+          'Failed to load recommendations',
+          rpcError instanceof Error ? rpcError : new Error('Unknown error')
+        );
+        return;
+      }
+
+      setRecommendedScenes(data || []);
+    } catch (error) {
+      logger.error(
+        'Failed to load recommendations',
+        error instanceof Error ? error : new Error('Unknown error')
+      );
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
 
   const handleContinue = () => {
     if (selectedScene) {
@@ -92,6 +144,66 @@ export default function SceneSelectionScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Recommended for You Section */}
+        {recommendedScenes.length > 0 && (
+          <View style={styles.recommendedSection}>
+            <View style={styles.recommendedHeader}>
+              <Ionicons name="star" size={20} color={colors.accent} />
+              <Text style={styles.recommendedTitle}>Recommended for You</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.recommendedScrollContent}
+            >
+              {recommendedScenes.map((rec, index) => {
+                // Find the actual scene from filteredScenes
+                const scene = filteredScenes.find(s => s.id === rec.scene_id);
+                if (!scene) return null;
+
+                return (
+                  <TouchableOpacity
+                    key={`rec-${rec.scene_id}-${index}`}
+                    style={[
+                      styles.recommendedCard,
+                      selectedScene?.id === scene.id && styles.recommendedCardSelected,
+                    ]}
+                    onPress={() => selectScene(scene)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.recommendedPreviewContainer}>
+                      {scene.previewUrl ? (
+                        <Image
+                          source={{ uri: scene.previewUrl }}
+                          style={styles.recommendedPreview}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View style={styles.recommendedPreviewPlaceholder}>
+                          <Ionicons name="image-outline" size={24} color={colors.text.secondary} />
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.recommendedInfo}>
+                      <Text style={styles.recommendedName} numberOfLines={1}>
+                        {scene.name}
+                      </Text>
+                      <Text style={styles.recommendedReason} numberOfLines={1}>
+                        {rec.match_reason}
+                      </Text>
+                    </View>
+                    {selectedScene?.id === scene.id && (
+                      <View style={styles.recommendedSelectedBadge}>
+                        <Ionicons name="checkmark-circle" size={20} color={colors.text.inverse} />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
+
         {/* Category Filter */}
         <ScrollView
           horizontal
@@ -258,6 +370,74 @@ const styles = StyleSheet.create({
   },
   categoryChipTextSelected: {
     color: colors.text.inverse,
+  },
+  recommendedSection: {
+    marginBottom: spacing.xl,
+  },
+  recommendedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  recommendedTitle: {
+    fontSize: typography.fontSize.lg,
+    fontFamily: typography.fontFamily.bold,
+    color: colors.text.primary,
+  },
+  recommendedScrollContent: {
+    gap: spacing.md,
+    paddingRight: spacing.lg,
+  },
+  recommendedCard: {
+    width: 140,
+    borderRadius: 12,
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    borderColor: colors.border,
+    overflow: 'hidden',
+    marginRight: spacing.md,
+  },
+  recommendedCardSelected: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
+  },
+  recommendedPreviewContainer: {
+    width: '100%',
+    height: 140,
+    backgroundColor: colors.surface,
+  },
+  recommendedPreview: {
+    width: '100%',
+    height: '100%',
+  },
+  recommendedPreviewPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recommendedInfo: {
+    padding: spacing.sm,
+  },
+  recommendedName: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.text.primary,
+    marginBottom: spacing.xs / 2,
+  },
+  recommendedReason: {
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.regular,
+    color: colors.text.secondary,
+  },
+  recommendedSelectedBadge: {
+    position: 'absolute',
+    top: spacing.xs,
+    right: spacing.xs,
+    backgroundColor: colors.primary,
+    borderRadius: 12,
   },
   scenesGrid: {
     flexDirection: 'row',

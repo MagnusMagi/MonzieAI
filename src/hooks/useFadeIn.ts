@@ -21,4 +21,3 @@ export function useFadeIn(duration: number = 300, delay: number = 0) {
 
   return opacity;
 }
-

@@ -28,6 +28,7 @@ export interface GenerateImageResponse {
   imageUrl: string;
   seed?: number;
   hasNsfw?: boolean;
+  imageId?: string; // ID of saved image if auto save is enabled
   error?: string;
 }
 
@@ -125,18 +126,9 @@ class ImageGenerationService {
         prompt = `A professional ${params.gender} portrait`;
       }
 
-      // Add image reference instructions for image-to-image generation
-      // This tells the AI to use the uploaded image as a face reference
-      if (imageUrlForFal) {
-        // CRITICAL: Strong face preservation instructions at the beginning
-        // Flux model needs explicit instructions to preserve face identity
-        const facePreservationPrompt = `[CRITICAL: Use the reference image as the EXACT face template. Maintain identical facial features: same face shape, same eyes (color, shape, size), same nose, same mouth, same eyebrows, same hairline, same skin tone, same facial structure. The person in the reference image MUST be the person in the generated image. Do not change the face identity. Only adapt the scene/background/clothing while keeping the face 100% identical.] `;
-        prompt = facePreservationPrompt + prompt;
-      }
-
-      // Add quality and style enhancements
-      prompt +=
-        ', high quality, professional photography, 8k resolution, ultra realistic, detailed, sharp focus';
+      // Face preservation and quality enhancement prompts removed
+      // The Fal AI model handles these naturally, and adding explicit instructions was causing quality issues
+      // Only the scene prompt with gender replacement is used now
 
       // Ensure gender is explicitly mentioned in the prompt
       if (!prompt.toLowerCase().includes(params.gender.toLowerCase())) {
@@ -174,6 +166,7 @@ class ImageGenerationService {
 
       // Save to Supabase Storage and Database if auto save is enabled
       let finalImageUrl = generatedImageUrl;
+      let imageId: string | undefined;
       if (autoSaveEnabled && params.userId) {
         try {
           // Upload to Supabase Storage first
@@ -212,6 +205,8 @@ class ImageGenerationService {
           });
           if (savedImage) {
             logger.info('Generated image saved to Supabase Database', { imageId: savedImage.id });
+            // Store imageId for return
+            imageId = savedImage.id;
           }
         } catch (dbError) {
           logger.warn('Failed to save image to Supabase (non-critical)', {
@@ -228,6 +223,7 @@ class ImageGenerationService {
         imageUrl: finalImageUrl, // Use storage URL if uploaded, otherwise original URL
         seed: result.seed,
         hasNsfw: false, // Fal AI nano-banana doesn't return NSFW flag
+        imageId, // Include image ID if saved
       };
     } catch (error: unknown) {
       logger.error(
@@ -241,7 +237,8 @@ class ImageGenerationService {
       return {
         success: false,
         imageUrl: '',
-        error: (error instanceof Error ? error.message : String(error)) || 'Image generation failed',
+        error:
+          (error instanceof Error ? error.message : String(error)) || 'Image generation failed',
       };
     }
   }

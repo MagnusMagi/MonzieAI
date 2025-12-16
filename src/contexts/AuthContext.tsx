@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '../config/supabase';
 import { errorLoggingService } from '../services/errorLoggingService';
 import { logger } from '../utils/logger';
+import { revenueCatService } from '../services/revenueCatService';
 
 export interface User {
   id: string;
@@ -31,6 +32,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isManualSignOut, setIsManualSignOut] = useState(false);
 
   // Initialize auth state
   useEffect(() => {
@@ -42,6 +44,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           error instanceof Error ? error : new Error('Unknown error')
         );
         errorLoggingService.logError(error, null, { service: 'SUPABASE', operation: 'getSession' });
+        setLoading(false);
       } else if (session?.user) {
         loadUserProfile(session.user.id);
       } else {
@@ -53,12 +56,44 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      logger.debug('Auth state changed', { event, hasSession: !!session });
+
       if (event === 'SIGNED_IN' && session?.user) {
         await loadUserProfile(session.user.id);
+      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+        // Session refreshed, user is still logged in
+        logger.debug('Token refreshed, maintaining session', { userId: session.user.id });
+        if (!user) {
+          // If user state is lost, reload profile
+          await loadUserProfile(session.user.id);
+        }
       } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        errorLoggingService.clearUserContext();
-        logger.info('User signed out');
+        // Only clear user state if it was a manual sign out
+        // Don't clear on app restart if session is missing (it will be restored)
+        if (isManualSignOut) {
+          setUser(null);
+          errorLoggingService.clearUserContext();
+          logger.info('User signed out manually');
+          setIsManualSignOut(false);
+        } else {
+          // Session might be missing on app restart, try to restore
+          logger.debug('SIGNED_OUT event received, but not manual sign out. Checking session...');
+          const {
+            data: { session: currentSession },
+          } = await supabase.auth.getSession();
+          if (currentSession?.user) {
+            // Session exists, restore user
+            logger.debug('Session restored after SIGNED_OUT event', {
+              userId: currentSession.user.id,
+            });
+            await loadUserProfile(currentSession.user.id);
+          } else {
+            // No session, user is truly signed out
+            logger.debug('No session found, user is signed out');
+            setUser(null);
+            errorLoggingService.clearUserContext();
+          }
+        }
         setLoading(false);
       }
     });
@@ -66,16 +101,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       subscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadUserProfile = async (userId: string) => {
     try {
-      // Get current session to access user metadata
+      // Get current session to access user metadata with timeout
+      const sessionPromise = supabase.auth.getSession();
+      const sessionTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Session request timed out')), 10000);
+      });
+
       const {
         data: { session },
-      } = await supabase.auth.getSession();
+      } = (await Promise.race([sessionPromise, sessionTimeout])) as any;
 
-      const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
+      // Query user profile with timeout
+      const profilePromise = supabase.from('users').select('*').eq('id', userId).single();
+      const profileTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Profile request timed out')), 10000);
+      });
+
+      const { data, error } = (await Promise.race([profilePromise, profileTimeout])) as any;
 
       // If user doesn't exist, create profile
       if (error && error.code === 'PGRST116') {
@@ -219,10 +266,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
+
+      // Add timeout to prevent hanging
+      const signInPromise = supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(
+          () =>
+            reject(
+              new Error('Sign in request timed out. Please check your connection and try again.')
+            ),
+          15000
+        );
+      });
+
+      const { data, error } = (await Promise.race([signInPromise, timeoutPromise])) as any;
 
       if (error) {
         errorLoggingService.logError(error, null, { service: 'SUPABASE', operation: 'signIn' });
@@ -230,18 +291,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       if (data.user) {
-        await loadUserProfile(data.user.id);
+        // Load user profile with timeout
+        try {
+          await Promise.race([
+            loadUserProfile(data.user.id),
+            new Promise((_, reject) => {
+              setTimeout(() => reject(new Error('Loading user profile timed out.')), 10000);
+            }),
+          ]);
+        } catch (profileError) {
+          logger.error(
+            'Failed to load user profile after sign in',
+            profileError instanceof Error ? profileError : new Error('Unknown error'),
+            { userId: data.user.id }
+          );
+          // Don't throw - user is signed in, profile can be loaded later
+        }
       }
     } catch (error) {
       setLoading(false);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+
+      // Add timeout to prevent hanging
+      const signUpPromise = supabase.auth.signUp({
         email,
         password,
         options: {
@@ -251,6 +331,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         },
       });
 
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(
+          () =>
+            reject(
+              new Error('Sign up request timed out. Please check your connection and try again.')
+            ),
+          15000
+        );
+      });
+
+      const { data, error } = (await Promise.race([signUpPromise, timeoutPromise])) as any;
+
       if (error) {
         errorLoggingService.logError(error, null, { service: 'SUPABASE', operation: 'signUp' });
         throw error;
@@ -259,28 +351,58 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (data.user) {
         // loadUserProfile will create the profile if it doesn't exist
         // This avoids duplicate key errors
-        await loadUserProfile(data.user.id);
+        try {
+          await Promise.race([
+            loadUserProfile(data.user.id),
+            new Promise((_, reject) => {
+              setTimeout(() => reject(new Error('Loading user profile timed out.')), 10000);
+            }),
+          ]);
+        } catch (profileError) {
+          logger.error(
+            'Failed to load user profile after sign up',
+            profileError instanceof Error ? profileError : new Error('Unknown error'),
+            { userId: data.user.id }
+          );
+          // Don't throw - user is signed up, profile can be loaded later
+        }
       }
     } catch (error) {
       setLoading(false);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
       setLoading(true);
+      setIsManualSignOut(true); // Mark as manual sign out
+
+      // Logout from RevenueCat
+      try {
+        await revenueCatService.logout();
+      } catch (revenueCatError) {
+        logger.warn(
+          'Failed to logout from RevenueCat',
+          revenueCatError instanceof Error ? revenueCatError : new Error('Unknown error')
+        );
+      }
+
       const { error } = await supabase.auth.signOut();
 
       if (error) {
         errorLoggingService.logError(error, null, { service: 'SUPABASE', operation: 'signOut' });
+        setIsManualSignOut(false); // Reset on error
         throw error;
       }
 
       setUser(null);
       errorLoggingService.clearUserContext();
-      logger.info('User signed out');
+      logger.info('User signed out manually');
     } catch (error) {
+      setIsManualSignOut(false); // Reset on error
       throw error;
     } finally {
       setLoading(false);

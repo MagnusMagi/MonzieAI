@@ -315,9 +315,8 @@ export default function MyProfileScreen() {
                   const errorObj = error?.nativeEvent?.error || new Error('Image load failed');
                   logger.error('Avatar image load failed', errorObj, {
                     avatar_url: user.avatar_url,
-                      avatarKey,
-                    }
-                  );
+                    avatarKey,
+                  });
                   // Don't use JSON.stringify on error objects - they may have circular references
                   if (error) {
                     logger.debug('Error details', {

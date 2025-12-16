@@ -28,4 +28,3 @@ export interface IFavoriteRepository {
    */
   getUserFavoriteImageIds(userId: string): Promise<string[]>;
 }
-

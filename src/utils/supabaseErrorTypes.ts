@@ -54,4 +54,3 @@ export function getErrorMessage(error: unknown): string {
 export function hasErrorCode(error: unknown, code: string): boolean {
   return getErrorCode(error) === code;
 }
-

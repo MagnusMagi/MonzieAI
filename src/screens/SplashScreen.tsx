@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { logger } from '../utils/logger';
+import { precacheSubcategoryImages } from '../utils/imagePrecache';
+import { revenueCatService } from '../services/revenueCatService';
 
 type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 
@@ -22,6 +23,22 @@ export default function SplashScreen() {
   useEffect(() => {
     const checkOnboardingAndNavigate = async () => {
       try {
+        // Initialize RevenueCat
+        try {
+          await revenueCatService.initialize(user?.id);
+          if (user?.id) {
+            await revenueCatService.identify(user.id);
+          }
+        } catch (error) {
+          logger.warn(
+            'Failed to initialize RevenueCat, continuing without it',
+            error instanceof Error ? error : new Error('Unknown error')
+          );
+        }
+
+        // Start pre-caching images in parallel (non-blocking)
+        const precachePromise = precacheSubcategoryImages();
+
         // Wait a bit for app initialization
         await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -71,7 +88,7 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      <Ionicons name="image" size={64} color={colors.primary} />
+      <Image source={require('../../assets/icon.png')} style={styles.icon} resizeMode="contain" />
       <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
     </View>
   );
@@ -83,6 +100,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  icon: {
+    width: 120,
+    height: 120,
   },
   loader: {
     marginTop: spacing.xl,

@@ -94,4 +94,3 @@ export const analyticsService = new AnalyticsService();
 
 // Initialize on import
 analyticsService.initialize();
-

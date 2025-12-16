@@ -43,6 +43,7 @@ export class GenerateImageUseCase {
         success: boolean;
         imageUrl: string;
         seed?: number;
+        imageId?: string;
         error?: string;
       }>;
     }
@@ -86,22 +87,17 @@ export class GenerateImageUseCase {
         };
       }
 
-      // Save to repository
-      const savedImage = await this.imageRepository.createImage({
-        title: params.sceneName || `Generated ${params.gender} portrait`,
-        imageUrl: result.imageUrl,
-        category: params.sceneCategory || scene?.category || 'Generated',
-        description: `AI-generated image using scene: ${params.sceneName || 'Custom'}`,
-        userId: params.userId,
-        sceneId: params.sceneId,
-        sceneName: params.sceneName,
-        prompt: finalPrompt,
-        seed: result.seed,
-      });
+      // If image was already saved by imageGenerationService (auto save enabled),
+      // retrieve it from repository. Otherwise, image is not saved to database.
+      let savedImage: Image | null = null;
+      if (result.imageId) {
+        // Image was already saved, retrieve it
+        savedImage = await this.imageRepository.getImageById(result.imageId);
+      }
 
       return {
         success: true,
-        image: savedImage,
+        image: savedImage, // Will be null if auto save is disabled
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

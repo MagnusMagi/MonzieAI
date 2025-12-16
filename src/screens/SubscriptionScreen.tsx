@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Platform,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -20,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SubscriptionRepository, Subscription } from '../data/repositories/SubscriptionRepository';
 import { useAuth } from '../contexts/AuthContext';
 import { logger } from '../utils/logger';
+import { revenueCatService } from '../services/revenueCatService';
 
 type SubscriptionScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -42,6 +42,63 @@ export default function SubscriptionScreen() {
 
     try {
       setLoading(true);
+
+      // Try to get subscription from RevenueCat first
+      try {
+        const isPremium = await revenueCatService.isPremium();
+        const activeEntitlement = await revenueCatService.getActiveEntitlement();
+
+        if (isPremium && activeEntitlement) {
+          // Sync RevenueCat subscription to Supabase
+          const expiresAt = activeEntitlement.expirationDate
+            ? new Date(activeEntitlement.expirationDate)
+            : new Date();
+          const planType =
+            activeEntitlement.productIdentifier.toLowerCase().includes('year') ||
+            activeEntitlement.productIdentifier.toLowerCase().includes('annual')
+              ? 'yearly'
+              : 'monthly';
+
+          // Get customer info to get product price
+          const customerInfo = await revenueCatService.getCustomerInfo();
+          let price = 0;
+          if (customerInfo) {
+            // Try to get price from active subscriptions
+            // This is a simplified approach - in production, you might want to fetch product details
+            price = planType === 'monthly' ? 9.99 : 79.99; // Fallback prices
+          }
+
+          // Check if Supabase subscription exists
+          let supabaseSub = await subscriptionRepository.getUserSubscription(user.id);
+
+          if (!supabaseSub) {
+            // Create Supabase subscription from RevenueCat data
+            supabaseSub = await subscriptionRepository.createSubscription({
+              userId: user.id,
+              planType: planType as 'monthly' | 'yearly',
+              price,
+              currency: 'USD',
+              expiresAt,
+            });
+          } else {
+            // Update existing subscription
+            supabaseSub = await subscriptionRepository.updateSubscription(supabaseSub.id, {
+              planType: planType as 'monthly' | 'yearly',
+              status: 'active',
+              expiresAt,
+            });
+          }
+
+          setSubscription(supabaseSub);
+          return;
+        }
+      } catch (revenueCatError) {
+        logger.debug('RevenueCat check failed, falling back to Supabase', {
+          error: revenueCatError instanceof Error ? revenueCatError.message : 'Unknown error',
+        });
+      }
+
+      // Fallback to Supabase subscription
       const sub = await subscriptionRepository.getUserSubscription(user.id);
       setSubscription(sub);
     } catch (error) {
