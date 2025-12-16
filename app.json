@@ -10,11 +10,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.someplanets.monzieaiv2",
-      "buildNumber": "10",
+      "buildNumber": "14",
+      "icon": "./assets/icon.png",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "The app needs access to your photos to select images for AI generation and to save generated images.",
         "NSPhotoLibraryAddUsageDescription": "The app needs access to save generated images to your photo library.",
         "NSCameraUsageDescription": "The app needs access to your camera to take photos for AI generation.",
+        "NSUserTrackingUsageDescription": "We use tracking to provide personalized content and improve your experience with AI-generated images.",
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
@@ -85,7 +87,10 @@
       "falApiKey": "81fbe3b1-9c8f-40f6-a2f1-21f613bb7452:d908e8ab5ba1b178a55d162e326335e6",
       "googleWebClientId": "409036489179-loe8ukspgngajrn2ouk8q508epo9tae6.apps.googleusercontent.com",
       "googleIosClientId": "409036489179-loe8ukspgngajrn2ouk8q508epo9tae6.apps.googleusercontent.com",
-      "sentryDsn": ""
+      "sentryDsn": "",
+      "revenueCatApiKey": "test_mThpDHMSBLoSdnuciYnPBgXXbpV",
+      "revenueCatApiKeyIOS": "test_mThpDHMSBLoSdnuciYnPBgXXbpV",
+      "revenueCatApiKeyAndroid": ""
     },
     "owner": "magnusmagi"
   }
