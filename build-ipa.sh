@@ -20,10 +20,18 @@ EXPORT_PATH="${IOS_DIR}/build/ipa"
 EXPORT_OPTIONS_PLIST="${PROJECT_DIR}/ExportOptions.plist"
 
 echo "🚀 Starting IPA build for TestFlight..."
-echo "📦 Bundle ID: ${BUNDLE_ID}"
-echo "🔢 Build Number: ${BUILD_NUMBER}"
 echo "📱 Version: ${VERSION}"
 echo ""
+echo "📦 Bundle ID: ${BUNDLE_ID}"
+
+# Check for GoogleService-Info.plist
+if [ ! -f "${PROJECT_DIR}/GoogleService-Info.plist" ]; then
+    echo "❌ Error: GoogleService-Info.plist not found in project root!"
+    echo "Please download it from Firebase Console and place it in ${PROJECT_DIR}"
+    exit 1
+fi
+
+echo "🔢 Build Number: ${BUILD_NUMBER}"
 
 # Clean previous builds
 echo "🧹 Cleaning previous builds..."
@@ -70,6 +78,7 @@ xcodebuild clean archive \
     -configuration Release \
     -archivePath "${ARCHIVE_PATH}" \
     -sdk iphoneos \
+    -destination 'generic/platform=iOS' \
     CODE_SIGN_IDENTITY="Apple Distribution" \
     CODE_SIGN_STYLE="Automatic" \
     DEVELOPMENT_TEAM="${TEAM_ID}" \

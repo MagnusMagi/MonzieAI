@@ -30,7 +30,8 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "appleTeamId": "56FF2L729K"
+      "appleTeamId": "56FF2L729K",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -77,9 +78,6 @@
       "expo-notifications"
     ],
     "extra": {
-      "eas": {
-        "projectId": "d60253e3-4797-4d9f-8a4a-a36fbdb87a94"
-      },
       "supabaseUrl": "https://groguatbjerebweinuef.supabase.co",
       "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdyb2d1YXRiamVyZWJ3ZWludWVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMDA2NjUsImV4cCI6MjA4MDY3NjY2NX0.igvLFUIQbftA6lc_uabs74HB9xx8cpWie-_UEk3rKzw",
       "neonDatabaseUrl": "postgresql://neondb_owner:npg_8tFXvxSq0Pil@ep-jolly-boat-a438tm8v-pooler.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require",
@@ -88,10 +86,13 @@
       "googleWebClientId": "409036489179-loe8ukspgngajrn2ouk8q508epo9tae6.apps.googleusercontent.com",
       "googleIosClientId": "409036489179-loe8ukspgngajrn2ouk8q508epo9tae6.apps.googleusercontent.com",
       "sentryDsn": "",
-      "revenueCatApiKey": "test_mThpDHMSBLoSdnuciYnPBgXXbpV",
-      "revenueCatApiKeyIOS": "test_mThpDHMSBLoSdnuciYnPBgXXbpV",
-      "revenueCatApiKeyAndroid": ""
+      "revenueCatApiKey": "appl_trbAScawsKlTSJjxkSAlOyIwMfn",
+      "revenueCatApiKeyIOS": "appl_trbAScawsKlTSJjxkSAlOyIwMfn",
+      "revenueCatApiKeyAndroid": "",
+      "eas": {
+        "projectId": "48881a23-7bea-4810-836d-f6e57a63145f"
+      }
     },
-    "owner": "magnusmagi"
+    "owner": "magnus.magi"
   }
 }
