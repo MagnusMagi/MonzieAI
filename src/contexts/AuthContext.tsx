@@ -3,6 +3,7 @@ import { supabase } from '../config/supabase';
 import { errorLoggingService } from '../services/errorLoggingService';
 import { logger } from '../utils/logger';
 import { revenueCatService } from '../services/revenueCatService';
+import type { AuthResponse, Session, PostgrestError } from '@supabase/supabase-js';
 
 export interface User {
   id: string;
@@ -112,9 +113,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setTimeout(() => reject(new Error('Session request timed out')), 10000);
       });
 
+      const sessionResult = await Promise.race([sessionPromise, sessionTimeout]);
       const {
         data: { session },
-      } = (await Promise.race([sessionPromise, sessionTimeout])) as any;
+      } = sessionResult as { data: { session: Session | null } };
 
       // Query user profile with timeout
       const profilePromise = supabase.from('users').select('*').eq('id', userId).single();
@@ -122,7 +124,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setTimeout(() => reject(new Error('Profile request timed out')), 10000);
       });
 
-      const { data, error } = (await Promise.race([profilePromise, profileTimeout])) as any;
+      const profileResult = await Promise.race([profilePromise, profileTimeout]);
+      const { data, error } = profileResult as { data: User | null; error: PostgrestError | null };
 
       // If user doesn't exist, create profile
       if (error && error.code === 'PGRST116') {
@@ -187,7 +190,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             createError instanceof Error ? createError : new Error('Unknown error'),
             {
               userId,
-              errorCode: (createError as any)?.code,
+              errorCode: (createError as PostgrestError)?.code,
             }
           );
           errorLoggingService.logError(createError, null, {
@@ -283,7 +286,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         );
       });
 
-      const { data, error } = (await Promise.race([signInPromise, timeoutPromise])) as any;
+      const signInResult = await Promise.race([signInPromise, timeoutPromise]);
+      const { data, error } = signInResult as AuthResponse;
 
       if (error) {
         errorLoggingService.logError(error, null, { service: 'SUPABASE', operation: 'signIn' });
@@ -341,7 +345,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         );
       });
 
-      const { data, error } = (await Promise.race([signUpPromise, timeoutPromise])) as any;
+      const signUpResult = await Promise.race([signUpPromise, timeoutPromise]);
+      const { data, error } = signUpResult as AuthResponse;
 
       if (error) {
         errorLoggingService.logError(error, null, { service: 'SUPABASE', operation: 'signUp' });
@@ -507,8 +512,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           {
             userId: user.id,
             updates,
-            errorCode: (error as any)?.code,
-            errorMessage: (error as any)?.message,
+            errorCode: (error as PostgrestError)?.code,
+            errorMessage: (error as PostgrestError)?.message,
           }
         );
         errorLoggingService.logError(error, null, { service: 'SUPABASE', operation: 'updateUser' });
@@ -564,8 +569,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         logger.warn('User profile update returned no data', { userId: user.id });
       }
-    } catch (error) {
-      throw error;
     } finally {
       setLoading(false);
     }

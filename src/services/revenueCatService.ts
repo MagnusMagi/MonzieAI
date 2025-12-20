@@ -124,7 +124,7 @@ class RevenueCatService {
       if (!Purchases) {
         logger.warn(
           'RevenueCat native module not available. The app will continue without RevenueCat features. ' +
-            'To fix: 1) Run "npx expo prebuild --clean", 2) Run "cd ios && pod install", 3) Rebuild the app.'
+          'To fix: 1) Run "npx expo prebuild --clean", 2) Run "cd ios && pod install", 3) Rebuild the app.'
         );
         return;
       }
@@ -133,8 +133,8 @@ class RevenueCatService {
       if (!apiKey) {
         logger.warn(
           `RevenueCat API key not configured for ${Platform.OS}. ` +
-            'Please add revenueCatApiKeyIOS (for iOS, starts with "appl_") or ' +
-            'revenueCatApiKeyAndroid (for Android, starts with "goog_") to app.json'
+          'Please add revenueCatApiKeyIOS (for iOS, starts with "appl_") or ' +
+          'revenueCatApiKeyAndroid (for Android, starts with "goog_") to app.json'
         );
         return;
       }
@@ -154,13 +154,13 @@ class RevenueCatService {
         if (Platform.OS === 'ios' && !apiKey.startsWith('appl_')) {
           logger.warn(
             `iOS API key format may be incorrect. Expected "appl_" for production, got: ${apiKey.substring(0, 10)}... ` +
-              'For Test Store, use test key (test_...). For production, get iOS API key from RevenueCat Dashboard → Project Settings → API Keys'
+            'For Test Store, use test key (test_...). For production, get iOS API key from RevenueCat Dashboard → Project Settings → API Keys'
           );
         }
         if (Platform.OS === 'android' && !apiKey.startsWith('goog_')) {
           logger.warn(
             `Android API key format may be incorrect. Expected "goog_" for production, got: ${apiKey.substring(0, 10)}... ` +
-              'For Test Store, use test key (test_...). For production, get Android API key from RevenueCat Dashboard → Project Settings → API Keys'
+            'For Test Store, use test key (test_...). For production, get Android API key from RevenueCat Dashboard → Project Settings → API Keys'
           );
         }
       }
@@ -518,7 +518,7 @@ class RevenueCatService {
       description: product.description,
       price: product.price,
       currencyCode: product.currencyCode,
-      subscriptionPeriod: product.subscriptionPeriod,
+      subscriptionPeriod: product.subscriptionPeriod || undefined,
     };
   }
 
@@ -578,7 +578,7 @@ class RevenueCatService {
       latestExpirationDate: customerInfo.latestExpirationDate,
       firstSeen: customerInfo.firstSeen,
       originalAppUserId: customerInfo.originalAppUserId,
-      managementURL: customerInfo.managementURL,
+      managementURL: customerInfo.managementURL || undefined,
     };
   }
 }

@@ -29,6 +29,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { getAuthErrorMessage } from '../utils/errorMessages';
 import { useFadeIn } from '../hooks/useFadeIn';
 
+// Import icon as ES6 module
+import iconImage from '../../assets/icon.png';
+
 type AuthScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Auth'>;
 
 interface GoogleSignInError extends Error {
@@ -256,11 +259,7 @@ export default function AuthScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Image
-              source={require('../../assets/icon.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+            <Image source={iconImage} style={styles.logo} resizeMode="contain" />
             <Text style={styles.title}>{isLogin ? 'Welcome' : 'Create Account'}</Text>
             <Text style={styles.subtitle}>
               {isLogin ? 'Sign in to continue to MonzieAI' : 'Start creating amazing AI images'}

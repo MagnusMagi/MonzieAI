@@ -187,16 +187,15 @@ class FalAIService {
             await new Promise(resolve => setTimeout(resolve, delay));
           }
         } catch (invokeError) {
-          lastError = invokeError;
-          logger.error(
-            'Edge Function invoke exception',
-            invokeError instanceof Error ? invokeError : new Error('Unknown error'),
-            { attempt: attempt + 1, maxRetries }
-          );
+          lastError = invokeError instanceof Error ? invokeError : new Error(String(invokeError));
+          logger.error('Edge Function invoke exception', lastError, {
+            attempt: attempt + 1,
+            maxRetries,
+          });
 
           // If it's the last attempt, throw
           if (attempt === maxRetries) {
-            throw invokeError;
+            throw lastError;
           }
 
           // Wait before retry
@@ -450,16 +449,15 @@ class FalAIService {
             await new Promise(resolve => setTimeout(resolve, delay));
           }
         } catch (invokeError) {
-          lastError = invokeError;
-          logger.error(
-            'Edge Function invoke exception',
-            invokeError instanceof Error ? invokeError : new Error('Unknown error'),
-            { attempt: attempt + 1, maxRetries }
-          );
+          lastError = invokeError instanceof Error ? invokeError : new Error(String(invokeError));
+          logger.error('Edge Function invoke exception', lastError, {
+            attempt: attempt + 1,
+            maxRetries,
+          });
 
           // If it's the last attempt, throw
           if (attempt === maxRetries) {
-            throw invokeError;
+            throw lastError;
           }
 
           // Wait before retry

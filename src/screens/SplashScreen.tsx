@@ -11,6 +11,9 @@ import { logger } from '../utils/logger';
 import { precacheSubcategoryImages } from '../utils/imagePrecache';
 import { revenueCatService } from '../services/revenueCatService';
 
+// Import icon as ES6 module
+import iconImage from '../../assets/icon.png';
+
 type SplashScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 
 const ONBOARDING_COMPLETED_KEY = '@monzieai:onboarding_completed';
@@ -18,7 +21,7 @@ const ONBOARDING_COMPLETED_KEY = '@monzieai:onboarding_completed';
 export default function SplashScreen() {
   const navigation = useNavigation<SplashScreenNavigationProp>();
   const { user, loading: authLoading } = useAuth();
-  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  const [_checkingOnboarding, setCheckingOnboarding] = useState(true);
 
   useEffect(() => {
     const checkOnboardingAndNavigate = async () => {
@@ -37,7 +40,7 @@ export default function SplashScreen() {
         }
 
         // Start pre-caching images in parallel (non-blocking)
-        const precachePromise = precacheSubcategoryImages();
+        const _precachePromise = precacheSubcategoryImages();
 
         // Wait a bit for app initialization
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -88,7 +91,7 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/icon.png')} style={styles.icon} resizeMode="contain" />
+      <Image source={iconImage} style={styles.icon} resizeMode="contain" />
       <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
     </View>
   );

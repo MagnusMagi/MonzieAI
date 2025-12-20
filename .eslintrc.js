@@ -1,11 +1,14 @@
 module.exports = {
   root: true,
-  extends: [
-    'expo',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-  ],
+  extends: ['expo', 'plugin:@typescript-eslint/recommended', 'prettier'],
   parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2021,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
@@ -19,9 +22,23 @@ module.exports = {
         varsIgnorePattern: '^_',
       },
     ],
-    'react-hooks/exhaustive-deps': 'warn',
+    '@typescript-eslint/no-require-imports': [
+      'error',
+      {
+        allow: ['\\.ttf$', '\\.otf$', '\\.png$', '\\.jpg$', '\\.jpeg$'],
+      },
+    ],
     'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
-  ignorePatterns: ['node_modules/', '.expo/', 'dist/', 'build/', 'coverage/'],
+  ignorePatterns: [
+    'node_modules/',
+    '.expo/',
+    'dist/',
+    'build/',
+    'coverage/',
+    '*.config.js',
+    '.eslintrc.js',
+    'scripts/',
+    '*.js',
+  ],
 };
-

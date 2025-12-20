@@ -32,6 +32,7 @@ const queryClient = new QueryClient({
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const [fontsLoaded, fontError] = useFonts({
     'SpaceGrotesk-Regular': require('./assets/fonts/SpaceGrotesk-Regular.ttf'),
     'SpaceGrotesk-Medium': require('./assets/fonts/SpaceGrotesk-Medium.ttf'),
@@ -149,7 +150,7 @@ export default function App() {
         if (responseListener.current) {
           responseListener.current.remove();
         }
-      } catch (error) {
+      } catch (_error) {
         // Silently fail on cleanup
       }
     };

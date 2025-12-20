@@ -4,6 +4,7 @@ import { storageService } from './storageService';
 import * as FileSystem from 'expo-file-system/legacy';
 import { optimizeImageForBase64 } from '../utils/imageOptimization';
 import { logger } from '../utils/logger';
+import { usageService } from './usageService'; // Import UsageService
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
@@ -114,6 +115,19 @@ class ImageGenerationService {
         logger.debug('Image converted to base64');
       }
 
+      // Check usage limits if user is authenticated
+      if (params.userId) {
+        const { allowed, reason } = await usageService.canGenerateImage(params.userId);
+        if (!allowed) {
+          logger.warn('Image generation blocked due to usage limit', { userId: params.userId, reason });
+          return {
+            success: false,
+            imageUrl: '',
+            error: reason || 'Usage limit reached. Please upgrade your plan.',
+          };
+        }
+      }
+
       // Build prompt using scene information
       // For image-to-image, we need to reference the uploaded face
       let prompt = '';
@@ -218,13 +232,22 @@ class ImageGenerationService {
         logger.info('Auto save is disabled, skipping storage and database save');
       }
 
-      return {
+      const response: GenerateImageResponse = {
         success: true,
-        imageUrl: finalImageUrl, // Use storage URL if uploaded, otherwise original URL
+        imageUrl: finalImageUrl,
         seed: result.seed,
-        hasNsfw: false, // Fal AI nano-banana doesn't return NSFW flag
-        imageId, // Include image ID if saved
+        hasNsfw: false,
+        imageId,
       };
+
+      // Increment usage count after successful generation
+      if (params.userId) {
+        usageService.incrementUsage(params.userId).catch(err => {
+          logger.error('Failed to increment usage count', err);
+        });
+      }
+
+      return response;
     } catch (error: unknown) {
       logger.error(
         'Image generation failed',

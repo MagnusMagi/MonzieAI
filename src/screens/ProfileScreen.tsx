@@ -25,6 +25,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { SubscriptionRepository, Subscription } from '../data/repositories/SubscriptionRepository';
 import { logger } from '../utils/logger';
 import { supabase } from '../config/supabase';
+import { usageService } from '../services/usageService';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Profile'>;
 
@@ -52,6 +53,7 @@ export default function ProfileScreen() {
   const [_loadingSubscription, setLoadingSubscription] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [previewAvatarUrl, setPreviewAvatarUrl] = useState<string | null>(null);
+  const [credits, setCredits] = useState<{ count: number; limit: number } | null>(null);
 
   // Get user display name
   const displayName = user?.name || user?.email?.split('@')[0] || 'User';
@@ -60,7 +62,17 @@ export default function ProfileScreen() {
   // Load subscription status
   useEffect(() => {
     loadSubscription();
+    loadCredits();
   }, [user]);
+
+  const loadCredits = async () => {
+    if (user?.id) {
+      const usage = await usageService.getUserUsage(user.id);
+      if (usage) {
+        setCredits({ count: usage.count, limit: usage.limit });
+      }
+    }
+  };
 
   const loadSubscription = async () => {
     if (!user?.id) {
@@ -301,7 +313,24 @@ export default function ProfileScreen() {
               </View>
             )}
           </View>
+
+          {credits && (
+            <View style={styles.creditsContainer}>
+              <Text style={styles.creditsText}>
+                Credits: {Math.max(0, credits.limit - credits.count)} / {credits.limit} remaining
+              </Text>
+              <View style={styles.progressBarBackground}>
+                <View
+                  style={[
+                    styles.progressBarFill,
+                    { width: `${Math.min(100, (credits.count / credits.limit) * 100)}%` }
+                  ]}
+                />
+              </View>
+            </View>
+          )}
         </View>
+
 
         {/* Quick Access Section */}
         <View style={styles.section}>
@@ -397,7 +426,7 @@ export default function ProfileScreen() {
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
@@ -535,6 +564,28 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.semiBold,
     color: colors.text.inverse,
+  },
+  creditsContainer: {
+    marginTop: spacing.sm,
+    width: '100%',
+  },
+  creditsText: {
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.text.secondary,
+    marginBottom: 4,
+  },
+  progressBarBackground: {
+    height: 4,
+    backgroundColor: colors.border,
+    borderRadius: 2,
+    width: 120,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: 2,
   },
   section: {
     marginTop: spacing.lg,
