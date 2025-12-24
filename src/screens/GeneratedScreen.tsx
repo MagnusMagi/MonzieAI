@@ -479,12 +479,7 @@ export default function GeneratedScreen() {
       <SafeAreaView style={styles.headerContainer} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home' }],
-              });
-            }}
+            onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color={colors.text.inverse} />

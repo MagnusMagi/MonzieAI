@@ -50,13 +50,14 @@ export default function AuthScreen() {
   const [socialLoading, setSocialLoading] = useState<'google' | 'apple' | null>(null);
 
   useEffect(() => {
-    // Configure Google Sign-In
-    // TODO: Replace with your Google iOS Client ID from Google Cloud Console
-    GoogleSignin.configure({
-      webClientId: Constants.expoConfig?.extra?.googleWebClientId, // Web client ID from Google Cloud Console
-      iosClientId: Constants.expoConfig?.extra?.googleIosClientId, // iOS client ID from Google Cloud Console (optional)
-      offlineAccess: true,
-    });
+    // TEMPORARILY DISABLED: Google Sign-In configuration (native module may cause crash)
+    // TODO: Re-enable after confirming native module is properly linked
+    // GoogleSignin.configure({
+    //   webClientId: Constants.expoConfig?.extra?.googleWebClientId, // Web client ID from Google Cloud Console
+    //   iosClientId: Constants.expoConfig?.extra?.googleIosClientId, // iOS client ID from Google Cloud Console (optional)
+    //   offlineAccess: true,
+    // });
+    logger.debug('Google Sign-In configuration temporarily disabled to prevent native crash');
   }, []);
 
   const handleAuth = async () => {
@@ -103,6 +104,17 @@ export default function AuthScreen() {
   };
 
   const handleGoogleSignIn = async () => {
+    // TEMPORARILY DISABLED: Google Sign-In native module (may cause startup crash)
+    // This is a safe stub that prevents native code execution
+    logger.warn('Google Sign-In temporarily disabled - native module not initialized');
+    Alert.alert(
+      'Google Sign-In Unavailable',
+      'Google Sign-In is temporarily disabled. Please use email/password authentication or try again after the next app update.',
+      [{ text: 'OK' }]
+    );
+    return;
+
+    /* ORIGINAL CODE - COMMENTED OUT FOR SAFETY
     try {
       setSocialLoading('google');
 
@@ -175,6 +187,7 @@ export default function AuthScreen() {
     } finally {
       setSocialLoading(null);
     }
+    */
   };
 
   const handleAppleSignIn = async () => {
