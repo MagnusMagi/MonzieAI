@@ -208,14 +208,18 @@ class RevenueCatService {
 
   /**
    * isPremium - consults the stubbed getCustomerInfo() and uses hasPremiumAccess
+   *
+   * TEMPORARY: Returns true for all users to enable TestFlight testing
+   * without RevenueCat native SDK. Remove this override when re-enabling native SDK.
    */
   async isPremium(): Promise<boolean> {
     if (!this.initialized) {
       logger.warn?.('isPremium called but RevenueCat stub is not initialized');
       return false;
     }
-    const customerInfo = await this.getCustomerInfo();
-    return this.hasPremiumAccess(customerInfo);
+    // TEMPORARY: Grant premium access to all users for TestFlight testing
+    logger.info?.('RevenueCat stub: Granting premium access (TestFlight mode)');
+    return true;
   }
 
   /**
