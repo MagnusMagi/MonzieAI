@@ -11,7 +11,7 @@ import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { AppStateProvider } from './src/contexts/AppStateContext';
 import { notificationService } from './src/services/notificationService';
-import { sentryService } from './src/services/sentryService';
+// import { sentryService } from './src/services/sentryService'; // Temporarily disabled
 import { logger } from './src/utils/logger';
 
 // Initialize Sentry at app startup
@@ -37,13 +37,14 @@ const queryClient = new QueryClient({
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  /* eslint-disable @typescript-eslint/no-require-imports */
   const [fontsLoaded, fontError] = useFonts({
     'SpaceGrotesk-Regular': require('./assets/fonts/SpaceGrotesk-Regular.ttf'),
     'SpaceGrotesk-Medium': require('./assets/fonts/SpaceGrotesk-Medium.ttf'),
     'SpaceGrotesk-SemiBold': require('./assets/fonts/SpaceGrotesk-SemiBold.ttf'),
     'SpaceGrotesk-Bold': require('./assets/fonts/SpaceGrotesk-Bold.ttf'),
   });
+  /* eslint-enable @typescript-eslint/no-require-imports */
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
@@ -72,7 +73,7 @@ export default function App() {
 
   useEffect(() => {
     // Initialize notifications on app start
-    const initializeNotifications = async () => {
+    const _initializeNotifications = async () => {
       try {
         // Check if Notifications module is available
         if (!Notifications || typeof Notifications.getExpoPushTokenAsync !== 'function') {
@@ -140,10 +141,10 @@ export default function App() {
           }
         );
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Failed to set up notification listeners',
-        error instanceof Error ? error : new Error('Unknown error')
+        _error instanceof Error ? _error : new Error('Unknown error')
       );
     }
 

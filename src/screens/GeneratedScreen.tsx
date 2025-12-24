@@ -478,10 +478,7 @@ export default function GeneratedScreen() {
       {/* Transparent Header */}
       <SafeAreaView style={styles.headerContainer} edges={['top']}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={colors.text.inverse} />
           </TouchableOpacity>
           {imageId && (

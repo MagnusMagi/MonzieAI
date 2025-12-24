@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -22,7 +22,7 @@ import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { Ionicons } from '@expo/vector-icons';
 import { Image as ImageEntity } from '../domain/entities/Image';
-import { logger } from '../utils/logger';
+// import { logger } from '../utils/logger'; // Temporarily unused
 import { useRealtimeImages } from '../hooks/useRealtimeImage';
 import { useAuth } from '../contexts/AuthContext';
 import { container } from '../infrastructure/di/Container';
@@ -50,7 +50,7 @@ export default function GalleryScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [offset, setOffset] = useState(0);
+  const [_offset, setOffset] = useState(0);
 
   // Realtime subscription
   const { images: realtimeImages, isSubscribed } = useRealtimeImages({
@@ -118,8 +118,7 @@ export default function GalleryScreen() {
     if (user?.id) {
       loadImages(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [user?.id, loadImages]);
 
   // Sync realtime images - only add new images or update existing ones
   // Don't replace the entire list to avoid duplicates
