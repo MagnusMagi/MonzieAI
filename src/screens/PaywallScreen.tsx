@@ -45,10 +45,12 @@ import { packageService, SubscriptionPackage } from '../services/packageService'
 // RevenueCat UI is not available in this build (native UI module removed).
 // Provide a harmless stub so callers can call `getRevenueCatUI()` without runtime import.
 // The function returns null and logs a debug message.
-let RevenueCatUIModule: null = null;
+const RevenueCatUIModule: null = null;
 const revenueCatUIAvailable = false;
 async function getRevenueCatUI(): Promise<null> {
-  logger.debug?.('RevenueCat UI dynamic import skipped: native UI module not available in this build.');
+  logger.debug?.(
+    'RevenueCat UI dynamic import skipped: native UI module not available in this build.'
+  );
   return null;
 }
 
@@ -347,7 +349,12 @@ export default function PaywallScreen() {
             period = 'per month';
             credits = 180;
           }
-        } else if (identifier.includes('year') || identifier.includes('annual') || productId.includes('year') || productId.includes('annual')) {
+        } else if (
+          identifier.includes('year') ||
+          identifier.includes('annual') ||
+          productId.includes('year') ||
+          productId.includes('annual')
+        ) {
           packageKey = 'yearly';
           title = 'Yearly';
           period = 'per year';

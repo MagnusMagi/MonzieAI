@@ -44,7 +44,10 @@ class PackageService {
         displayOrder: pkg.display_order,
       }));
     } catch (error) {
-      logger.error('Error in getPackages', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error in getPackages',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -82,7 +85,10 @@ class PackageService {
         displayOrder: data.display_order,
       };
     } catch (error) {
-      logger.error('Error in getPackageByKey', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Error in getPackageByKey',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -97,4 +103,3 @@ class PackageService {
 }
 
 export const packageService = new PackageService();
-

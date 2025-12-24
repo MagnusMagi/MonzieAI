@@ -300,8 +300,7 @@ export class OnboardingViewModel {
 
       return true;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to complete onboarding';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to complete onboarding';
 
       logger.error('OnboardingViewModel: Failed to complete onboarding', error as Error);
 

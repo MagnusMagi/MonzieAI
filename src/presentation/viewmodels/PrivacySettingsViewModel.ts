@@ -124,10 +124,7 @@ export class PrivacySettingsViewModel {
   /**
    * Update a specific privacy setting
    */
-  async updateSetting(
-    key: keyof PrivacySettings,
-    value: boolean
-  ): Promise<boolean> {
+  async updateSetting(key: keyof PrivacySettings, value: boolean): Promise<boolean> {
     try {
       this.setState({ saving: true, error: null });
 

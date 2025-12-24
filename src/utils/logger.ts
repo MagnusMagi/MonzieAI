@@ -125,6 +125,7 @@ class Logger {
     if (this.config.enableRemoteLogging && entry.level >= LogLevel.ERROR && entry.error) {
       try {
         // Import sentryService dynamically to avoid circular dependencies
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { sentryService } = require('../services/sentryService');
         if (sentryService.initialized) {
           sentryService.captureException(entry.error, entry.context);

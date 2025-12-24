@@ -96,7 +96,9 @@ class RevenueCatService {
    */
   async identify(userId: string): Promise<void> {
     if (!this.initialized) {
-      logger.warn?.('RevenueCat identify called before initialize; initializing stub automatically');
+      logger.warn?.(
+        'RevenueCat identify called before initialize; initializing stub automatically'
+      );
       await this.initialize(userId);
       return;
     }
@@ -110,7 +112,10 @@ class RevenueCatService {
    *
    * Returns shape: { current: RevenueCatOffering | null, all: Record<string, RevenueCatOffering> }
    */
-  async getOfferings(): Promise<{ current: RevenueCatOffering | null; all: Record<string, RevenueCatOffering> }> {
+  async getOfferings(): Promise<{
+    current: RevenueCatOffering | null;
+    all: Record<string, RevenueCatOffering>;
+  }> {
     if (!this.initialized) {
       logger.warn?.('getOfferings called but RevenueCat stub is not initialized');
       return { current: null, all: {} };
@@ -144,9 +149,7 @@ class RevenueCatService {
     if (!this.initialized) {
       throw new Error('RevenueCat is not initialized (stub).');
     }
-    throw new Error(
-      'RevenueCat purchases are disabled in this build (native SDK not available).'
-    );
+    throw new Error('RevenueCat purchases are disabled in this build (native SDK not available).');
   }
 
   /**
@@ -239,7 +242,7 @@ class RevenueCatService {
    */
   get isInitialized(): boolean {
     return this.initialized;
-   }
- }
+  }
+}
 
- export const revenueCatService = new RevenueCatService();
+export const revenueCatService = new RevenueCatService();

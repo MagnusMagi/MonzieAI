@@ -3,7 +3,10 @@ import { Alert } from 'react-native';
 import { revenueCatService } from '../../services/revenueCatService';
 import { logger } from '../../utils/logger';
 import { errorLoggingService } from '../../services/errorLoggingService';
-import type { RevenueCatPackage, RevenueCatOfferingsResponse } from '../../services/revenueCatService';
+import type {
+  RevenueCatPackage,
+  RevenueCatOfferingsResponse,
+} from '../../services/revenueCatService';
 
 /**
  * PaywallViewModel
@@ -308,7 +311,11 @@ export class PaywallViewModel {
       return 'per month';
     } else if (identifier.includes('weekly')) {
       return 'per week';
-    } else if (identifier.includes('lifetime') || identifier.includes('one_time') || identifier.includes('one-time')) {
+    } else if (
+      identifier.includes('lifetime') ||
+      identifier.includes('one_time') ||
+      identifier.includes('one-time')
+    ) {
       return 'one-time payment';
     }
 

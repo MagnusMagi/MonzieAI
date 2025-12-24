@@ -30,9 +30,11 @@ import { useAuth } from '../contexts/AuthContext';
 // PurchasesOffering type and Purchases runtime are not available in this build.
 
 // RevenueCat UI is not available in this build (native UI module removed).
-let RevenueCatUIModule: null = null;
+const RevenueCatUIModule: null = null;
 async function getRevenueCatUI() {
-  logger.debug?.('RevenueCat UI dynamic import skipped: native UI module not available in this build.');
+  logger.debug?.(
+    'RevenueCat UI dynamic import skipped: native UI module not available in this build.'
+  );
   return null;
 }
 
@@ -54,7 +56,9 @@ export default function RevenueCatTestScreen() {
   const [loading, setLoading] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [currentOffering, setCurrentOffering] = useState<RevenueCatOffering | null>(null);
-  const [purchasesOffering, setPurchasesOffering] = useState<RevenueCatOfferingsResponse | null>(null);
+  const [purchasesOffering, setPurchasesOffering] = useState<RevenueCatOfferingsResponse | null>(
+    null
+  );
   const [customerInfo, setCustomerInfo] = useState<RevenueCatCustomerInfo | null>(null);
   const [isPremium, setIsPremium] = useState<boolean>(false);
   const [showPaywall, setShowPaywall] = useState(false);

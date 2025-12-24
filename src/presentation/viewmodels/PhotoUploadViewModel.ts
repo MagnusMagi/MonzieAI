@@ -267,10 +267,7 @@ export class PhotoUploadViewModel {
   /**
    * Validate photo against validation rules
    */
-  private async validatePhoto(
-    uri: string,
-    asset: ImagePicker.ImagePickerAsset
-  ): Promise<boolean> {
+  private async validatePhoto(uri: string, asset: ImagePicker.ImagePickerAsset): Promise<boolean> {
     try {
       logger.debug('PhotoUploadViewModel: Validating photo', {
         uri: uri.substring(0, 50) + '...',

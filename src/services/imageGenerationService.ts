@@ -119,7 +119,10 @@ class ImageGenerationService {
       if (params.userId) {
         const { allowed, reason } = await usageService.canGenerateImage(params.userId);
         if (!allowed) {
-          logger.warn('Image generation blocked due to usage limit', { userId: params.userId, reason });
+          logger.warn('Image generation blocked due to usage limit', {
+            userId: params.userId,
+            reason,
+          });
           return {
             success: false,
             imageUrl: '',
