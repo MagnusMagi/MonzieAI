@@ -35,7 +35,6 @@ import {
   revenueCatService,
   RevenueCatOffering,
   RevenueCatPackage,
-  RevenueCatOffering,
   RevenueCatOfferingsResponse,
 } from '../services/revenueCatService';
 import { packageService, SubscriptionPackage } from '../services/packageService';
