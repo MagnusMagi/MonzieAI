@@ -367,19 +367,17 @@ export default function AuthScreen() {
             <TouchableOpacity
               style={[
                 styles.socialButton,
-                socialLoading === 'google' && styles.socialButtonDisabled,
+                styles.socialButtonDisabled, // Always disabled (Google Sign-In temporarily unavailable)
               ]}
               onPress={handleGoogleSignIn}
-              disabled={!!socialLoading}
+              disabled={true} // Always disabled
             >
-              {socialLoading === 'google' ? (
-                <ActivityIndicator color={colors.text.primary} />
-              ) : (
-                <>
-                  <Ionicons name="logo-google" size={20} color={colors.text.primary} />
-                  <Text style={styles.socialButtonText}>Continue with Google</Text>
-                </>
-              )}
+              <>
+                <Ionicons name="logo-google" size={20} color={colors.text.tertiary} />
+                <Text style={[styles.socialButtonText, styles.socialButtonTextDisabled]}>
+                  Continue with Google (Unavailable)
+                </Text>
+              </>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -532,6 +530,9 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.medium,
     color: colors.text.primary,
+  },
+  socialButtonTextDisabled: {
+    color: colors.text.tertiary,
   },
   switchContainer: {
     flexDirection: 'row',
