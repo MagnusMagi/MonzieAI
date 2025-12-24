@@ -105,14 +105,22 @@ class RevenueCatService {
   }
 
   /**
-   * Safe: returns empty offerings list.
+   * Safe: return an Offerings-like object similar to Purchases.getOfferings()
+   * so callers that access `offerings.current` continue to work.
+   *
+   * Returns shape: { current: RevenueCatOffering | null, all: Record<string, RevenueCatOffering> }
    */
-  async getOfferings(): Promise<RevenueCatOffering[]> {
+  async getOfferings(): Promise<{ current: RevenueCatOffering | null; all: Record<string, RevenueCatOffering> }> {
     if (!this.initialized) {
       logger.warn?.('getOfferings called but RevenueCat stub is not initialized');
-      return [];
+      return { current: null, all: {} };
     }
-    return [];
+
+    // Provide a safe default: no current offering and empty map.
+    return {
+      current: null,
+      all: {},
+    };
   }
 
   /**
@@ -178,14 +186,33 @@ class RevenueCatService {
   }
 
   /**
-   * isPremium - always false in stub
+   * hasPremiumAccess helper - inspects a RevenueCatCustomerInfo-like object
+   * and returns true if any active entitlement is active.
+   *
+   * This is a synchronous helper so callers (including tests) can use it
+   * without awaiting.
+   */
+  hasPremiumAccess(customerInfo?: RevenueCatCustomerInfo | null): boolean {
+    if (!customerInfo) return false;
+    try {
+      const activeEntitlements = customerInfo.entitlements?.active || {};
+      return Object.values(activeEntitlements).some(ent => !!ent?.isActive);
+    } catch (err) {
+      // If shape is unexpected, be conservative and return false
+      return false;
+    }
+  }
+
+  /**
+   * isPremium - consults the stubbed getCustomerInfo() and uses hasPremiumAccess
    */
   async isPremium(): Promise<boolean> {
     if (!this.initialized) {
       logger.warn?.('isPremium called but RevenueCat stub is not initialized');
       return false;
     }
-    return false;
+    const customerInfo = await this.getCustomerInfo();
+    return this.hasPremiumAccess(customerInfo);
   }
 
   /**
