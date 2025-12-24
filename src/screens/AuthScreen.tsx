@@ -17,9 +17,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { supabase } from '../config/supabase';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+// import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'; // Temporarily disabled
 import * as AppleAuthentication from 'expo-apple-authentication';
-import Constants from 'expo-constants';
+// import Constants from 'expo-constants'; // Temporarily disabled
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
@@ -34,9 +34,9 @@ import iconImage from '../../assets/icon.png';
 
 type AuthScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Auth'>;
 
-interface GoogleSignInError extends Error {
-  code?: string;
-}
+// interface GoogleSignInError extends Error {
+//   code?: string;
+// }
 
 export default function AuthScreen() {
   const navigation = useNavigation<AuthScreenNavigationProp>();
