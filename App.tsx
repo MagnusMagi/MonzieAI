@@ -106,7 +106,7 @@ export default function App() {
       }
     };
 
-    initializeNotifications();
+    // initializeNotifications(); // Temporarily disabled to avoid native initialization crashes during debugging
 
     // Set up notification listeners only if module is available
     try {
