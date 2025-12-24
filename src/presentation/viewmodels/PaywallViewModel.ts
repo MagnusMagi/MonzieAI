@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { revenueCatService } from '../../services/revenueCatService';
 import { logger } from '../../utils/logger';
 import { errorLoggingService } from '../../services/errorLoggingService';
-import type { PurchasesPackage, PurchasesOfferings } from 'react-native-purchases';
+import type { RevenueCatPackage, RevenueCatOfferingsResponse } from '../../services/revenueCatService';
 
 /**
  * PaywallViewModel
@@ -12,8 +12,8 @@ import type { PurchasesPackage, PurchasesOfferings } from 'react-native-purchase
  */
 
 interface PaywallState {
-  offerings: PurchasesOfferings | null;
-  selectedPackage: PurchasesPackage | null;
+  offerings: RevenueCatOfferingsResponse | null;
+  selectedPackage: RevenueCatPackage | null;
   loading: boolean;
   error: string | null;
   purchaseInProgress: boolean;
@@ -258,16 +258,49 @@ export class PaywallViewModel {
 
   /**
    * Get formatted price for a package
+   *
+   * This function is tolerant to both the original PurchasesPackage shape
+   * (which may have `product.priceString`) and the JS stub shape where
+   * `product.price` (number) and `product.currencyCode` may be present.
    */
-  getPackagePrice(pkg: PurchasesPackage): string {
-    return pkg.product.priceString;
+  getPackagePrice(pkg: RevenueCatPackage): string {
+    // Prefer `priceString` if available (native SDK)
+    const priceString = (pkg as any)?.product?.priceString;
+    if (typeof priceString === 'string' && priceString.length > 0) {
+      return priceString;
+    }
+
+    // Fallback to numeric price + currencyCode (stub shape)
+    const price = (pkg as any)?.product?.price;
+    const currency = (pkg as any)?.product?.currencyCode || '';
+    if (typeof price === 'number' && !Number.isNaN(price)) {
+      try {
+        // e.g. "USD 19.99" or "$19.99" depending on currencyCode contents
+        return (currency ? `${currency} ` : '') + price.toFixed(2);
+      } catch {
+        return String(price);
+      }
+    }
+
+    // If nothing available, return an empty string (caller should handle)
+    return '';
   }
 
   /**
    * Get package duration description
+   *
+   * Tolerant to both native and stub shapes. If the stub provides a
+   * `product.subscriptionPeriod`, prefer that. Otherwise infer from the
+   * package identifier.
    */
-  getPackageDuration(pkg: PurchasesPackage): string {
-    const identifier = pkg.identifier.toLowerCase();
+  getPackageDuration(pkg: RevenueCatPackage): string {
+    // Try explicit subscriptionPeriod on product (stub may provide this)
+    const subscriptionPeriod = (pkg as any)?.product?.subscriptionPeriod;
+    if (typeof subscriptionPeriod === 'string' && subscriptionPeriod.length > 0) {
+      return subscriptionPeriod;
+    }
+
+    const identifier = ((pkg && (pkg as any).identifier) || '').toLowerCase();
 
     if (identifier.includes('annual') || identifier.includes('yearly')) {
       return 'per year';
@@ -275,7 +308,7 @@ export class PaywallViewModel {
       return 'per month';
     } else if (identifier.includes('weekly')) {
       return 'per week';
-    } else if (identifier.includes('lifetime')) {
+    } else if (identifier.includes('lifetime') || identifier.includes('one_time') || identifier.includes('one-time')) {
       return 'one-time payment';
     }
 

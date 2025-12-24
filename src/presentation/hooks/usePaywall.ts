@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { paywallViewModel, PaywallViewModel } from '../viewmodels/PaywallViewModel';
-import type { PurchasesPackage } from 'react-native-purchases';
+import type { RevenueCatPackage } from '../../services/revenueCatService';
 
 /**
  * usePaywall Hook
@@ -20,14 +20,14 @@ interface UsePaywallResult {
   // Actions
   loadOfferings: () => Promise<void>;
   checkPremiumStatus: () => Promise<boolean>;
-  selectPackage: (pkg: PurchasesPackage) => void;
+  selectPackage: (pkg: RevenueCatPackage) => void;
   purchasePackage: () => Promise<boolean>;
   restorePurchases: () => Promise<boolean>;
   clearError: () => void;
 
   // Helpers
-  getPackagePrice: (pkg: PurchasesPackage) => string;
-  getPackageDuration: (pkg: PurchasesPackage) => string;
+  getPackagePrice: (pkg: RevenueCatPackage) => string;
+  getPackageDuration: (pkg: RevenueCatPackage) => string;
 }
 
 export function usePaywall(): UsePaywallResult {

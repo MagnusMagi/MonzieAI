@@ -35,36 +35,28 @@ import {
   revenueCatService,
   RevenueCatOffering,
   RevenueCatPackage,
+  RevenueCatOffering,
+  RevenueCatOfferingsResponse,
 } from '../services/revenueCatService';
-import Purchases, { PurchasesOffering } from 'react-native-purchases';
 import { packageService, SubscriptionPackage } from '../services/packageService';
+// Note: Native `react-native-purchases` runtime import removed.
+// We use the JS stub `revenueCatService` instead of the native Purchases module.
 
-// Lazy load RevenueCat UI to avoid import-time errors
-let RevenueCatUIModule: typeof import('react-native-purchases-ui') | null = null;
-let revenueCatUIImportAttempted = false;
-let revenueCatUIImportError: Error | null = null;
-
-async function getRevenueCatUI() {
-  if (revenueCatUIImportAttempted) {
-    return RevenueCatUIModule;
-  }
-
-  revenueCatUIImportAttempted = true;
-
-  try {
-    RevenueCatUIModule = await import('react-native-purchases-ui');
-    logger.debug('RevenueCat UI module loaded successfully');
-  } catch (error) {
-    revenueCatUIImportError = error instanceof Error ? error : new Error('Unknown error');
-    logger.warn(
-      'Failed to import RevenueCat UI module. The app will continue without RevenueCat UI features.',
-      revenueCatUIImportError
-    );
-    RevenueCatUIModule = null;
-  }
-
-  return RevenueCatUIModule;
+// RevenueCat UI is not available in this build (native UI module removed).
+// Provide a harmless stub so callers can call `getRevenueCatUI()` without runtime import.
+// The function returns null and logs a debug message.
+let RevenueCatUIModule: null = null;
+const revenueCatUIAvailable = false;
+async function getRevenueCatUI(): Promise<null> {
+  logger.debug?.('RevenueCat UI dynamic import skipped: native UI module not available in this build.');
+  return null;
 }
+
+/* RevenueCat UI dynamic import removed.
+   Native RevenueCat UI module is not available in this build.
+   The runtime dynamic import and related variables have been removed
+   intentionally to avoid native initialization errors during development.
+*/
 
 // const { width } = Dimensions.get('window'); // Unused for now
 
@@ -322,17 +314,17 @@ export default function PaywallScreen() {
     // Priority 2: Use RevenueCat packages
     if (revenueCatPackages.length > 0) {
       const mappedPlans = [];
-      
+
       // Map all RevenueCat packages
       revenueCatPackages.forEach(rcPkg => {
         const identifier = rcPkg.identifier.toLowerCase();
         const productId = rcPkg.product.identifier.toLowerCase();
-        
+
         let packageKey = '';
         let title = '';
         let period = '';
         let credits = 0;
-        
+
         if (identifier.includes('week') || productId.includes('week')) {
           packageKey = 'weekly';
           title = 'Weekly';
@@ -361,7 +353,7 @@ export default function PaywallScreen() {
           period = 'per year';
           credits = 2500;
         }
-        
+
         if (packageKey) {
           mappedPlans.push({
             id: packageKey,
@@ -646,8 +638,8 @@ export default function PaywallScreen() {
           </View>
 
           {/* Plans */}
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.plansContainer}
             style={{ marginHorizontal: -spacing.lg }}
@@ -688,7 +680,7 @@ export default function PaywallScreen() {
                       </View>
                     )}
                   </View>
-                  
+
                   {/* Credits Display */}
                   {plan.credits && (
                     <View style={styles.creditsContainer}>

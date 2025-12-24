@@ -22,34 +22,18 @@ import {
   RevenueCatOffering,
   RevenueCatPackage,
   RevenueCatCustomerInfo,
+  RevenueCatOfferingsResponse,
 } from '../services/revenueCatService';
 import { logger } from '../utils/logger';
 import { useAuth } from '../contexts/AuthContext';
-import Purchases, { PurchasesOffering } from 'react-native-purchases';
+// Native Purchases runtime import removed; using JS stub for RevenueCat
+// PurchasesOffering type and Purchases runtime are not available in this build.
 
-// Lazy load RevenueCat UI to avoid import-time errors
-let RevenueCatUIModule: typeof import('react-native-purchases-ui') | null = null;
-let revenueCatUIImportAttempted = false;
-
+// RevenueCat UI is not available in this build (native UI module removed).
+let RevenueCatUIModule: null = null;
 async function getRevenueCatUI() {
-  if (revenueCatUIImportAttempted) {
-    return RevenueCatUIModule;
-  }
-
-  revenueCatUIImportAttempted = true;
-
-  try {
-    RevenueCatUIModule = await import('react-native-purchases-ui');
-    logger.debug('RevenueCat UI module loaded successfully');
-  } catch (error) {
-    logger.warn(
-      'Failed to import RevenueCat UI module. The app will continue without RevenueCat UI features.',
-      error instanceof Error ? error : new Error('Unknown error')
-    );
-    RevenueCatUIModule = null;
-  }
-
-  return RevenueCatUIModule;
+  logger.debug?.('RevenueCat UI dynamic import skipped: native UI module not available in this build.');
+  return null;
 }
 
 type RevenueCatTestScreenNavigationProp = NativeStackNavigationProp<
@@ -70,7 +54,7 @@ export default function RevenueCatTestScreen() {
   const [loading, setLoading] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [currentOffering, setCurrentOffering] = useState<RevenueCatOffering | null>(null);
-  const [purchasesOffering, setPurchasesOffering] = useState<PurchasesOffering | null>(null);
+  const [purchasesOffering, setPurchasesOffering] = useState<RevenueCatOfferingsResponse | null>(null);
   const [customerInfo, setCustomerInfo] = useState<RevenueCatCustomerInfo | null>(null);
   const [isPremium, setIsPremium] = useState<boolean>(false);
   const [showPaywall, setShowPaywall] = useState(false);
