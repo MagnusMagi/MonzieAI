@@ -2,6 +2,7 @@
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 import { revenueCatService } from './revenueCatService';
+import { packageService } from './packageService';
 
 export const PLAN_LIMITS: Record<string, number> = {
     'weekly': 40,
@@ -27,8 +28,22 @@ class UsageService {
     /**
      * Get the limit for a given plan identifier
      */
-    getLimitForPlan(planIdentifier: string): number {
-        // Try exact match first
+    async getLimitForPlan(planIdentifier: string): Promise<number> {
+        // First try to get from Supabase packageService
+        try {
+            // Map plan identifier to package key
+            const packageKey = this.mapPlanToPackageKey(planIdentifier);
+            if (packageKey) {
+                const credits = await packageService.getCreditsForPackage(packageKey);
+                if (credits !== null) {
+                    return credits;
+                }
+            }
+        } catch (error) {
+            logger.warn('Failed to fetch limit from packageService, using fallback', error);
+        }
+
+        // Fallback to hardcoded limits
         if (PLAN_LIMITS[planIdentifier]) {
             return PLAN_LIMITS[planIdentifier];
         }
@@ -50,14 +65,35 @@ class UsageService {
     }
 
     /**
+     * Map plan identifier to package key
+     */
+    private mapPlanToPackageKey(planIdentifier: string): string | null {
+        const lowerId = planIdentifier.toLowerCase();
+        
+        // Try exact match first
+        if (lowerId.includes('weekly') || lowerId.includes('week')) return 'weekly';
+        if (lowerId.includes('yearly') || lowerId.includes('year') || lowerId.includes('annual')) return 'yearly';
+        if (lowerId.includes('6') && lowerId.includes('month')) return '6_month';
+        if (lowerId.includes('3') && lowerId.includes('month')) return '3_month';
+        if (lowerId.includes('month')) return 'monthly';
+        
+        // Try mapping from PACKAGE_TO_PLAN_MAP
+        for (const [key, val] of Object.entries(PACKAGE_TO_PLAN_MAP)) {
+            if (planIdentifier.includes(key)) return val;
+        }
+        
+        return null;
+    }
+
+    /**
      * Get current usage for the user
      */
-    async getUserUsage(userId: string): Promise<{ count: number; limit: number; periodEnd: string | null } | null> {
+    async getUserUsage(userId: string): Promise<{ count: number; limit: number; periodEnd: string | null; dailyCount: number; dailyLimit: number } | null> {
         try {
             // Get active entitlement from RevenueCat to determine limit
             const entitlement = await revenueCatService.getActiveEntitlement();
             const planId = entitlement?.productIdentifier || 'free';
-            const limit = this.getLimitForPlan(planId);
+            const limit = await this.getLimitForPlan(planId);
 
             // Fetch usage from Supabase
             const { data, error } = await supabase
@@ -69,27 +105,64 @@ class UsageService {
             if (error) {
                 if (error.code === 'PGRST116') {
                     // No row found, user hasn't generated anything yet
-                    return { count: 0, limit, periodEnd: entitlement?.expirationDate || null };
+                    return { 
+                        count: 0, 
+                        limit, 
+                        periodEnd: entitlement?.expirationDate || null,
+                        dailyCount: 0,
+                        dailyLimit: limit
+                    };
                 }
                 logger.error('Failed to fetch user usage', error);
                 return null;
             }
 
             // Check if period has expired (reset logic)
-            // Note: We trust RevenueCat for the actual subscription status.
-            // If the row exists but belongs to an old period, we should technically reset it.
-            // However, we'll implement a simple period check: if current time > period_end, count is treated as 0.
-
             const now = new Date();
             const periodEnd = data.period_end ? new Date(data.period_end) : null;
 
             if (periodEnd && now > periodEnd) {
-                // Period expired, effectively 0 usage for new period (until we update row)
-                // But we should probably update the row to reset it
-                return { count: 0, limit, periodEnd: entitlement?.expirationDate || null };
+                // Period expired, effectively 0 usage for new period
+                return { 
+                    count: 0, 
+                    limit, 
+                    periodEnd: entitlement?.expirationDate || null,
+                    dailyCount: 0,
+                    dailyLimit: limit
+                };
             }
 
-            return { count: data.count, limit, periodEnd: data.period_end };
+            // Check if daily count needs to be reset
+            let dailyCount = data.daily_count || 0;
+            const lastResetDate = data.last_reset_date ? new Date(data.last_reset_date) : null;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (lastResetDate) {
+                const resetDate = new Date(lastResetDate);
+                resetDate.setHours(0, 0, 0, 0);
+                
+                // If last reset was not today, reset daily count
+                if (resetDate.getTime() !== today.getTime()) {
+                    dailyCount = 0;
+                    // Update the database to reflect the reset
+                    await supabase
+                        .from('user_usage')
+                        .update({ 
+                            daily_count: 0,
+                            last_reset_date: today.toISOString().split('T')[0]
+                        })
+                        .eq('user_id', userId);
+                }
+            }
+
+            return { 
+                count: data.count || 0, 
+                limit, 
+                periodEnd: data.period_end,
+                dailyCount,
+                dailyLimit: limit
+            };
 
         } catch (error) {
             logger.error('Error in getUserUsage', error instanceof Error ? error : new Error(String(error)));
@@ -103,12 +176,6 @@ class UsageService {
     async canGenerateImage(userId: string): Promise<{ allowed: boolean; reason?: string }> {
         const usage = await this.getUserUsage(userId);
         if (!usage) {
-            // If fails to fetch, fail safe? Or block?
-            // Let's allow if we can't check, but log error (Fail Open for better UX? Or Fail Closed for business?)
-            // User requested LIMITS, so Fail Closed is safer for business, but bad for UX if DB is down.
-            // Let's Fail Open with warning for now, or maybe just return true since we are still building.
-            // But actually, let's look at the requirements: "sınırlandırma ... olmak zorunda" (must be restricted).
-            // So Fail Closed.
             return { allowed: false, reason: 'Unable to verify usage limits.' };
         }
 
@@ -116,6 +183,12 @@ class UsageService {
             return { allowed: false, reason: 'Free tier has no generation credits. Please upgrade.' };
         }
 
+        // Check daily limit first (more restrictive)
+        if (usage.dailyLimit > 0 && usage.dailyCount >= usage.dailyLimit) {
+            return { allowed: false, reason: `You have reached your daily limit of ${usage.dailyLimit} photos. Please try again tomorrow.` };
+        }
+
+        // Check period limit
         if (usage.count >= usage.limit) {
             return { allowed: false, reason: `You have reached your limit of ${usage.limit} photos for this period.` };
         }
@@ -154,6 +227,23 @@ class UsageService {
                 const now = new Date();
                 const periodEnd = currentUsage.period_end ? new Date(currentUsage.period_end) : null;
                 let newCount = currentUsage.count + 1;
+                
+                // Handle daily count reset and increment
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const lastResetDate = currentUsage.last_reset_date ? new Date(currentUsage.last_reset_date) : null;
+                let newDailyCount = (currentUsage.daily_count || 0) + 1;
+                let newLastResetDate = today.toISOString().split('T')[0];
+                
+                if (lastResetDate) {
+                    const resetDate = new Date(lastResetDate);
+                    resetDate.setHours(0, 0, 0, 0);
+                    
+                    // If last reset was not today, reset daily count
+                    if (resetDate.getTime() !== today.getTime()) {
+                        newDailyCount = 1; // First generation of the day
+                    }
+                }
                 let newPeriodEnd = currentUsage.period_end; // Keep existing period end unless expired
 
                 // If period expired or different plan, we might want to reset. 
@@ -173,12 +263,16 @@ class UsageService {
                         count: newCount,
                         period_end: newPeriodEnd,
                         plan_id: planId,
+                        daily_count: newDailyCount,
+                        last_reset_date: newLastResetDate,
                         updated_at: new Date().toISOString()
                     })
                     .eq('user_id', userId);
 
             } else {
                 // First time
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
                 await supabase
                     .from('user_usage')
                     .insert({
@@ -186,7 +280,9 @@ class UsageService {
                         count: 1,
                         period_start: new Date().toISOString(),
                         period_end: expirationDate,
-                        plan_id: planId
+                        plan_id: planId,
+                        daily_count: 1,
+                        last_reset_date: today.toISOString().split('T')[0]
                     });
             }
 

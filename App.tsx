@@ -15,7 +15,12 @@ import { sentryService } from './src/services/sentryService';
 import { logger } from './src/utils/logger';
 
 // Initialize Sentry at app startup
-sentryService.initialize();
+// Temporarily disabled to avoid native startup crashes while debugging.
+// Re-enable when native issues are resolved by uncommenting the line below.
+// sentryService.initialize();
+if (typeof logger?.debug === 'function') {
+  logger.debug('Sentry initialization temporarily disabled');
+}
 
 // Create React Query client
 const queryClient = new QueryClient({

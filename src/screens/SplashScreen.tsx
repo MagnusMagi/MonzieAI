@@ -26,18 +26,22 @@ export default function SplashScreen() {
   useEffect(() => {
     const checkOnboardingAndNavigate = async () => {
       try {
-        // Initialize RevenueCat
-        try {
-          await revenueCatService.initialize(user?.id);
-          if (user?.id) {
-            await revenueCatService.identify(user.id);
-          }
-        } catch (error) {
-          logger.warn(
-            'Failed to initialize RevenueCat, continuing without it',
-            error instanceof Error ? error : new Error('Unknown error')
-          );
-        }
+        // TEMPORARILY DISABLED: RevenueCat initialization (causing native crash)
+        // TODO: Re-enable after fixing native module issue
+        // try {
+        //   await revenueCatService.initialize(user?.id);
+        //   if (user?.id) {
+        //     await revenueCatService.identify(user.id);
+        //   }
+        // } catch (error) {
+        //   logger.warn(
+        //     'Failed to initialize RevenueCat, continuing without it',
+        //     error instanceof Error ? error : new Error('Unknown error')
+        //   );
+        // }
+        logger.debug('RevenueCat initialization temporarily disabled');
+        // Confirmation log to make it explicit in runtime logs that RevenueCat is intentionally disabled here
+        logger.info?.('RevenueCat init commented out in SplashScreen; native SDK disabled for now');
 
         // Start pre-caching images in parallel (non-blocking)
         const _precachePromise = precacheSubcategoryImages();

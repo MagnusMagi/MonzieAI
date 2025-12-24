@@ -74,8 +74,9 @@ export default function RevenueCatTestScreen() {
   const [customerInfo, setCustomerInfo] = useState<RevenueCatCustomerInfo | null>(null);
   const [isPremium, setIsPremium] = useState<boolean>(false);
   const [showPaywall, setShowPaywall] = useState(false);
-  const [RevenueCatUIComponent, setRevenueCatUIComponent] =
-    useState<React.ComponentType<any> | null>(null);
+  const [RevenueCatUIComponent, setRevenueCatUIComponent] = useState<React.ComponentType<
+    Record<string, unknown>
+  > | null>(null);
 
   const addTestResult = (result: TestResult) => {
     setTestResults(prev => [...prev, result]);
@@ -343,10 +344,10 @@ export default function RevenueCatTestScreen() {
           setPurchasesOffering(offerings.current);
         }
       } catch (error) {
-        logger.warn('Failed to load native PurchasesOffering', error);
+        logger.warn('Failed to load native PurchasesOffering', error as Error);
       }
     } catch (error) {
-      logger.error('Failed to load status', error);
+      logger.error('Failed to load status', error as Error);
     }
   };
 
@@ -369,7 +370,7 @@ export default function RevenueCatTestScreen() {
       }
 
       const paywallResult = await RevenueCatUI.default.presentPaywall({
-        offering: purchasesOffering,
+        offering: purchasesOffering ?? undefined,
       });
 
       let resultMessage = '';
@@ -505,7 +506,7 @@ export default function RevenueCatTestScreen() {
           options={{
             offering: purchasesOffering,
           }}
-          onPurchaseCompleted={({ customerInfo }) => {
+          onPurchaseCompleted={({ customerInfo }: { customerInfo: RevenueCatCustomerInfo }) => {
             logger.info('Purchase completed via RevenueCat UI', {
               customerId: customerInfo.originalAppUserId,
             });
@@ -513,7 +514,7 @@ export default function RevenueCatTestScreen() {
             loadStatus();
             setShowPaywall(false);
           }}
-          onRestoreCompleted={({ customerInfo }) => {
+          onRestoreCompleted={({ customerInfo }: { customerInfo: RevenueCatCustomerInfo }) => {
             logger.info('Restore completed via RevenueCat UI', {
               customerId: customerInfo.originalAppUserId,
             });
@@ -755,14 +756,14 @@ export default function RevenueCatTestScreen() {
                 >
                   {result.message}
                 </Text>
-                {result.data && (
+                {result.data ? (
                   <View style={styles.resultData}>
                     <Text style={styles.resultDataTitle}>Data:</Text>
                     <Text style={styles.resultDataText}>
                       {JSON.stringify(result.data, null, 2)}
                     </Text>
                   </View>
-                )}
+                ) : null}
               </View>
             ))}
           </View>

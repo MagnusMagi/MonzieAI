@@ -37,6 +37,7 @@ import {
   RevenueCatPackage,
 } from '../services/revenueCatService';
 import Purchases, { PurchasesOffering } from 'react-native-purchases';
+import { packageService, SubscriptionPackage } from '../services/packageService';
 
 // Lazy load RevenueCat UI to avoid import-time errors
 let RevenueCatUIModule: typeof import('react-native-purchases-ui') | null = null;
@@ -69,24 +70,52 @@ async function getRevenueCatUI() {
 
 type PaywallScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Paywall'>;
 
-// Default plans (fallback if RevenueCat offerings not available)
+// Default plans (fallback if Supabase/RevenueCat not available)
 const defaultPlans = [
+  {
+    id: 'weekly',
+    title: 'Weekly',
+    price: '$6.99',
+    priceValue: 6.99,
+    credits: 40,
+    period: 'per week',
+    popular: false,
+  },
   {
     id: 'monthly',
     title: 'Monthly',
-    price: '$9.99',
-    priceValue: 9.99,
+    price: '$19.99',
+    priceValue: 19.99,
+    credits: 180,
     period: 'per month',
+    popular: false,
+  },
+  {
+    id: '3_month',
+    title: '3-Month',
+    price: '$44.99',
+    priceValue: 44.99,
+    credits: 500,
+    period: 'per 3 months',
+    popular: true,
+  },
+  {
+    id: '6_month',
+    title: '6-Month',
+    price: '$74.99',
+    priceValue: 74.99,
+    credits: 1000,
+    period: 'per 6 months',
     popular: false,
   },
   {
     id: 'yearly',
     title: 'Yearly',
-    price: '$79.99',
-    priceValue: 79.99,
+    price: '$119.99',
+    priceValue: 119.99,
+    credits: 2500,
     period: 'per year',
-    popular: true,
-    savings: 'Save 33%',
+    popular: false,
   },
 ];
 
@@ -105,18 +134,30 @@ export default function PaywallScreen() {
   const navigation = useNavigation<PaywallScreenNavigationProp>();
   const { user } = useAuth();
   const fadeAnim = useFadeIn(400);
-  const [selectedPlan, setSelectedPlan] = useState('yearly');
+  const [selectedPlan, setSelectedPlan] = useState('3_month'); // Default to 3-month plan
   const [loading, setLoading] = useState(false);
   const [revenueCatOffering, setRevenueCatOffering] = useState<RevenueCatOffering | null>(null);
   const [purchasesOffering, setPurchasesOffering] = useState<PurchasesOffering | null>(null);
   const [revenueCatPackages, setRevenueCatPackages] = useState<RevenueCatPackage[]>([]);
+  const [supabasePackages, setSupabasePackages] = useState<SubscriptionPackage[]>([]);
   const [useRevenueCatUI, setUseRevenueCatUI] = useState(true); // Toggle between RevenueCat UI and custom UI
   const closeButtonOpacity = useRef(new Animated.Value(0)).current;
 
-  // Load RevenueCat offerings on mount
+  // Load RevenueCat offerings and Supabase packages on mount
   useEffect(() => {
     loadRevenueCatOfferings();
+    loadSupabasePackages();
   }, []);
+
+  const loadSupabasePackages = async () => {
+    try {
+      const packages = await packageService.getPackages();
+      setSupabasePackages(packages);
+      logger.debug('Supabase packages loaded', { packageCount: packages.length });
+    } catch (error) {
+      logger.error('Failed to load Supabase packages', error);
+    }
+  };
 
   // Fade in close button after 10 seconds
   useEffect(() => {
@@ -243,58 +284,103 @@ export default function PaywallScreen() {
     }
   };
 
-  // Get plans (from RevenueCat packages or default)
+  // Get plans (from Supabase packages, RevenueCat packages, or default)
   const getPlans = () => {
-    if (revenueCatPackages.length === 0) {
-      return defaultPlans;
-    }
+    // Priority 1: Use Supabase packages (most accurate)
+    if (supabasePackages.length > 0) {
+      return supabasePackages.map(pkg => {
+        // Try to find matching RevenueCat package
+        const revenueCatPkg = revenueCatPackages.find(
+          rcPkg =>
+            rcPkg.identifier.toLowerCase().includes(pkg.packageKey) ||
+            pkg.revenuecatPackageId === rcPkg.identifier ||
+            pkg.revenuecatProductId === rcPkg.product.identifier
+        );
 
-    // Map RevenueCat packages to plans
-    const monthlyPackage = revenueCatPackages.find(
-      p =>
-        p.identifier.toLowerCase().includes('monthly') ||
-        p.identifier.toLowerCase().includes('month') ||
-        p.product.identifier.toLowerCase().includes('monthly') ||
-        p.product.identifier.toLowerCase().includes('month')
-    );
-    const yearlyPackage = revenueCatPackages.find(
-      p =>
-        p.identifier.toLowerCase().includes('yearly') ||
-        p.identifier.toLowerCase().includes('year') ||
-        p.identifier.toLowerCase().includes('annual') ||
-        p.product.identifier.toLowerCase().includes('yearly') ||
-        p.product.identifier.toLowerCase().includes('year') ||
-        p.product.identifier.toLowerCase().includes('annual')
-    );
+        // Determine period text
+        let periodText = '';
+        if (pkg.durationDays === 7) periodText = 'per week';
+        else if (pkg.durationDays === 30) periodText = 'per month';
+        else if (pkg.durationDays === 90) periodText = 'per 3 months';
+        else if (pkg.durationDays === 180) periodText = 'per 6 months';
+        else if (pkg.durationDays === 365) periodText = 'per year';
 
-    const mappedPlans = [];
-    if (monthlyPackage) {
-      mappedPlans.push({
-        id: 'monthly',
-        title: 'Monthly',
-        price: `$${monthlyPackage.product.price.toFixed(2)}`,
-        priceValue: monthlyPackage.product.price,
-        period: 'per month',
-        popular: false,
-        revenueCatPackage: monthlyPackage,
-      });
-    }
-    if (yearlyPackage) {
-      mappedPlans.push({
-        id: 'yearly',
-        title: 'Yearly',
-        price: `$${yearlyPackage.product.price.toFixed(2)}`,
-        priceValue: yearlyPackage.product.price,
-        period: 'per year',
-        popular: true,
-        savings: monthlyPackage
-          ? `Save ${Math.round((1 - yearlyPackage.product.price / (monthlyPackage.product.price * 12)) * 100)}%`
-          : 'Save 33%',
-        revenueCatPackage: yearlyPackage,
+        return {
+          id: pkg.packageKey,
+          title: pkg.displayName,
+          price: `$${pkg.priceUsd.toFixed(2)}`,
+          priceValue: pkg.priceUsd,
+          credits: pkg.credits,
+          period: periodText,
+          popular: pkg.packageKey === '3_month', // Mark 3-month as popular
+          revenueCatPackage: revenueCatPkg,
+          supabasePackage: pkg,
+        };
       });
     }
 
-    return mappedPlans.length > 0 ? mappedPlans : defaultPlans;
+    // Priority 2: Use RevenueCat packages
+    if (revenueCatPackages.length > 0) {
+      const mappedPlans = [];
+      
+      // Map all RevenueCat packages
+      revenueCatPackages.forEach(rcPkg => {
+        const identifier = rcPkg.identifier.toLowerCase();
+        const productId = rcPkg.product.identifier.toLowerCase();
+        
+        let packageKey = '';
+        let title = '';
+        let period = '';
+        let credits = 0;
+        
+        if (identifier.includes('week') || productId.includes('week')) {
+          packageKey = 'weekly';
+          title = 'Weekly';
+          period = 'per week';
+          credits = 40;
+        } else if (identifier.includes('month') || productId.includes('month')) {
+          if (identifier.includes('3') || productId.includes('3')) {
+            packageKey = '3_month';
+            title = '3-Month';
+            period = 'per 3 months';
+            credits = 500;
+          } else if (identifier.includes('6') || productId.includes('6')) {
+            packageKey = '6_month';
+            title = '6-Month';
+            period = 'per 6 months';
+            credits = 1000;
+          } else {
+            packageKey = 'monthly';
+            title = 'Monthly';
+            period = 'per month';
+            credits = 180;
+          }
+        } else if (identifier.includes('year') || identifier.includes('annual') || productId.includes('year') || productId.includes('annual')) {
+          packageKey = 'yearly';
+          title = 'Yearly';
+          period = 'per year';
+          credits = 2500;
+        }
+        
+        if (packageKey) {
+          mappedPlans.push({
+            id: packageKey,
+            title,
+            price: `$${rcPkg.product.price.toFixed(2)}`,
+            priceValue: rcPkg.product.price,
+            credits,
+            period,
+            popular: packageKey === '3_month',
+            revenueCatPackage: rcPkg,
+          });
+        }
+      });
+
+      return mappedPlans.length > 0 ? mappedPlans : defaultPlans;
+    }
+
+    // Priority 3: Use default plans
+    return defaultPlans;
   };
 
   const plans = getPlans();
@@ -560,7 +646,12 @@ export default function PaywallScreen() {
           </View>
 
           {/* Plans */}
-          <View style={styles.plansContainer}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.plansContainer}
+            style={{ marginHorizontal: -spacing.lg }}
+          >
             {plans.map(plan => {
               const isSelected = selectedPlan === plan.id;
               const isPopular = plan.popular;
@@ -597,6 +688,15 @@ export default function PaywallScreen() {
                       </View>
                     )}
                   </View>
+                  
+                  {/* Credits Display */}
+                  {plan.credits && (
+                    <View style={styles.creditsContainer}>
+                      <Text style={styles.creditsText}>
+                        {plan.credits.toLocaleString()} High-End Photo Credits
+                      </Text>
+                    </View>
+                  )}
 
                   <View style={styles.priceContainer}>
                     <Text style={styles.price}>{plan.price}</Text>
@@ -605,7 +705,7 @@ export default function PaywallScreen() {
                 </TouchableOpacity>
               );
             })}
-          </View>
+          </ScrollView>
 
           {/* Features */}
           <View style={styles.featuresContainer}>
@@ -732,17 +832,18 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     flexDirection: 'row',
     gap: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   planCard: {
-    flex: 1,
+    width: 140,
     backgroundColor: colors.surface,
     borderRadius: 16,
     padding: spacing.md,
     borderWidth: 2,
     borderColor: colors.border,
     position: 'relative',
-    minHeight: 100,
-    justifyContent: 'center',
+    minHeight: 180,
+    justifyContent: 'flex-start',
   },
   planCardSelected: {
     borderColor: colors.accent,
@@ -799,6 +900,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: 8,
+  },
+  savingsText: {
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.success,
+  },
+  creditsContainer: {
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
+  },
+  creditsText: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.text.secondary,
+    textAlign: 'center',
+  },
+  periodCreditsText: {
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.regular,
+    color: colors.text.secondary,
+    marginTop: spacing.xs / 2,
+    opacity: 0.7,
   },
   savingsText: {
     fontSize: typography.fontSize.xs,

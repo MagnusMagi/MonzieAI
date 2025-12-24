@@ -8,6 +8,7 @@ export const colors = {
   error: '#EF4444',
   success: '#10B981',
   border: '#E5E7EB',
+  shadow: '#000000',
   text: {
     primary: '#111827',
     secondary: '#6B7280',

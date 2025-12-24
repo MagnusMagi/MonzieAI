@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Linking from 'expo-linking';
-import { colors } from '../theme/colors';
+
 import { supabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 import { Alert } from 'react-native';
@@ -72,6 +72,7 @@ export type RootStackParamList = {
   Changelog: undefined;
   Gallery: undefined;
   Analytics: undefined;
+  RevenueCatTest: undefined;
   GenderSelection: {
     // Optional scene information (if coming from SceneDetail)
     sceneId?: string;

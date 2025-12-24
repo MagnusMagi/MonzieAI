@@ -53,7 +53,12 @@ export default function ProfileScreen() {
   const [_loadingSubscription, setLoadingSubscription] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [previewAvatarUrl, setPreviewAvatarUrl] = useState<string | null>(null);
-  const [credits, setCredits] = useState<{ count: number; limit: number } | null>(null);
+  const [credits, setCredits] = useState<{
+    count: number;
+    limit: number;
+    dailyCount: number;
+    dailyLimit: number;
+  } | null>(null);
 
   // Get user display name
   const displayName = user?.name || user?.email?.split('@')[0] || 'User';
@@ -67,9 +72,22 @@ export default function ProfileScreen() {
 
   const loadCredits = async () => {
     if (user?.id) {
-      const usage = await usageService.getUserUsage(user.id);
-      if (usage) {
-        setCredits({ count: usage.count, limit: usage.limit });
+      try {
+        const usage = await usageService.getUserUsage(user.id);
+        if (usage) {
+          setCredits({
+            count: usage.count,
+            limit: usage.limit,
+            dailyCount: usage.dailyCount || 0,
+            dailyLimit: usage.dailyLimit || 0,
+          });
+        }
+      } catch (error) {
+        logger.error(
+          'Failed to load credits',
+          error instanceof Error ? error : new Error(String(error))
+        );
+        setCredits(null);
       }
     }
   };
@@ -250,7 +268,16 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navigation.navigate('Home');
+            }
+          }}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
@@ -316,21 +343,27 @@ export default function ProfileScreen() {
 
           {credits && (
             <View style={styles.creditsContainer}>
+              <Text style={styles.creditsTitle}>Daily Credits</Text>
               <Text style={styles.creditsText}>
-                Credits: {Math.max(0, credits.limit - credits.count)} / {credits.limit} remaining
+                {Math.max(0, credits.dailyLimit - credits.dailyCount)} / {credits.dailyLimit}{' '}
+                remaining today
               </Text>
               <View style={styles.progressBarBackground}>
                 <View
                   style={[
                     styles.progressBarFill,
-                    { width: `${Math.min(100, (credits.count / credits.limit) * 100)}%` }
+                    { width: `${Math.min(100, (credits.dailyCount / credits.dailyLimit) * 100)}%` },
                   ]}
                 />
               </View>
+              {credits.limit > 0 && (
+                <Text style={styles.periodCreditsText}>
+                  Period: {Math.max(0, credits.limit - credits.count)} / {credits.limit} remaining
+                </Text>
+              )}
             </View>
           )}
         </View>
-
 
         {/* Quick Access Section */}
         <View style={styles.section}>
@@ -426,7 +459,7 @@ export default function ProfileScreen() {
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 
@@ -569,11 +602,24 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     width: '100%',
   },
+  creditsTitle: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.text.primary,
+    marginBottom: spacing.xs / 2,
+  },
   creditsText: {
     fontSize: typography.fontSize.xs,
     fontFamily: typography.fontFamily.medium,
     color: colors.text.secondary,
     marginBottom: 4,
+  },
+  periodCreditsText: {
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.regular,
+    color: colors.text.secondary,
+    marginTop: spacing.xs / 2,
+    opacity: 0.7,
   },
   progressBarBackground: {
     height: 4,

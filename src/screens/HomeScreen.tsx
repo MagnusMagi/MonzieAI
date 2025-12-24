@@ -26,9 +26,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { logger } from '../utils/logger';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { getSubcategoriesForCategory, getScenesForSubcategory } from '../utils/subcategoryMapping';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { usageService } from '../services/usageService';
 
 const { width } = Dimensions.get('window');
 
@@ -49,9 +50,26 @@ export default function HomeScreen() {
     }>
   >([]);
   const [_loadingTrending, setLoadingTrending] = useState(true);
+  const [dailyCredits, setDailyCredits] = useState<{ count: number; limit: number } | null>(null);
 
   // Use ViewModel hook for business logic
   const { scenes, loading, error, loadScenes, refresh } = useHomeViewModel();
+
+  // Load daily credits
+  useEffect(() => {
+    if (user?.id) {
+      loadDailyCredits();
+    }
+  }, [user]);
+
+  const loadDailyCredits = async () => {
+    if (user?.id) {
+      const usage = await usageService.getUserUsage(user.id);
+      if (usage) {
+        setDailyCredits({ count: usage.dailyCount, limit: usage.dailyLimit });
+      }
+    }
+  };
 
   // Debug: Log scenes count
   React.useEffect(() => {
@@ -160,7 +178,17 @@ export default function HomeScreen() {
       <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>{displayName} 👋</Text>
+            <View style={styles.headerTop}>
+              <Text style={styles.greeting}>{displayName} 👋</Text>
+              {dailyCredits && dailyCredits.limit > 0 && (
+                <View style={styles.creditsBadge}>
+                  <Ionicons name="flash" size={14} color={colors.accent} />
+                  <Text style={styles.creditsBadgeText}>
+                    {Math.max(0, dailyCredits.limit - dailyCredits.count)}/{dailyCredits.limit}
+                  </Text>
+                </View>
+              )}
+            </View>
             <Text style={styles.subtitle}>What would you like to create?</Text>
           </View>
           <TouchableOpacity
@@ -446,10 +474,29 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1,
   },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   greeting: {
     fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.text.primary,
+  },
+  creditsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.accent + '15',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs / 2,
+    borderRadius: 12,
+    gap: spacing.xs / 2,
+  },
+  creditsBadgeText: {
+    fontSize: typography.fontSize.xs,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.accent,
   },
   subtitle: {
     fontSize: typography.fontSize.base,
