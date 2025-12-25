@@ -1,14 +1,34 @@
+/**
+ * Homepage Styles - Minimalist & Clean Design
+ */
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
 .heroBanner {
-  padding: 4rem 0;
+  padding: 5rem 2rem;
   text-align: center;
   position: relative;
-  overflow: hidden;
+  background: var(--ifm-background-color);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroBanner h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: var(--ifm-font-color-base);
+}
+
+.heroBanner p {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-600);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
 }
 
 .buttons {
@@ -16,149 +36,230 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.buttons a {
+  min-width: 160px;
 }
 
 @media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 3rem 1.5rem;
+  }
+
+  .heroBanner h1 {
+    font-size: 2.25rem;
+  }
+
+  .heroBanner p {
+    font-size: 1.125rem;
+  }
+
   .buttons {
     flex-direction: column;
-    gap: 0.5rem;
+    width: 100%;
   }
 
   .buttons a {
     width: 100%;
-    margin-left: 0 !important;
+    max-width: 320px;
   }
 }
 
-/* Quick Links Section */
+/* ============================================
+   QUICK LINKS SECTION
+   ============================================ */
 .quickLinks {
-  padding: 4rem 0;
-  background-color: var(--ifm-background-surface-color);
+  padding: 5rem 2rem;
+  background: var(--ifm-background-surface-color);
 }
 
 .sectionTitle {
   text-align: center;
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 3rem;
-  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  color: var(--ifm-font-color-base);
+}
+
+.sectionSubtitle {
+  text-align: center;
+  font-size: 1.125rem;
+  color: var(--ifm-color-emphasis-600);
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
 }
 
 .quickLinkCard {
   background: var(--ifm-card-background-color);
-  border: 1px solid var(--ifm-color-emphasis-300);
+  border: 1px solid var(--ifm-color-emphasis-200);
   border-radius: 12px;
   padding: 2rem;
   height: 100%;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .quickLinkCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2);
-  border-color: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary-light);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
 }
 
 .quickLinkCard h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--ifm-color-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--ifm-font-color-base);
+  letter-spacing: -0.01em;
 }
 
 .quickLinkCard p {
-  color: var(--ifm-color-emphasis-700);
-  margin-bottom: 1.5rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 1.25rem;
   line-height: 1.6;
+  flex-grow: 1;
+  font-size: 0.9375rem;
 }
 
 .quickLinkCard a {
   color: var(--ifm-color-primary);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
-  transition: color 0.2s ease;
+  font-size: 0.9375rem;
+  display: inline-flex;
+  align-items: center;
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quickLinkCard a:hover {
   color: var(--ifm-color-primary-dark);
-  text-decoration: underline;
 }
 
-/* Tech Stack Section */
+.quickLinkCard a::after {
+  content: '→';
+  margin-left: 0.5rem;
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quickLinkCard a:hover::after {
+  transform: translateX(4px);
+}
+
+@media screen and (max-width: 996px) {
+  .quickLinks {
+    padding: 3rem 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+
+  .quickLinkCard {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* ============================================
+   TECH STACK SECTION
+   ============================================ */
 .techStack {
-  padding: 4rem 0;
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  padding: 5rem 2rem;
+  background: var(--ifm-background-color);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
 }
 
 .techBadges {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
   align-items: center;
-  padding: 2rem 0;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .techBadge {
-  background: white;
-  color: var(--ifm-color-primary);
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: 2px solid var(--ifm-color-primary-lightest);
-}
-
-[data-theme='dark'] .techBadge {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--ifm-color-primary-lightest);
-  border-color: var(--ifm-color-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1.25rem;
+  background: var(--ifm-card-background-color);
+  color: var(--ifm-font-color-base);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
 }
 
 .techBadge:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
-  background: var(--ifm-color-primary);
-  color: white;
   border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* CTA Section */
+@media screen and (max-width: 996px) {
+  .techStack {
+    padding: 3rem 1.5rem;
+  }
+
+  .techBadges {
+    gap: 0.5rem;
+  }
+
+  .techBadge {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
 .cta {
-  padding: 4rem 0;
-  background-color: var(--ifm-background-surface-color);
+  padding: 5rem 2rem;
+  background: var(--ifm-background-surface-color);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
 }
 
 .ctaCard {
-  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-light) 100%);
+  background: var(--ifm-color-primary);
   border-radius: 16px;
-  padding: 3rem;
+  padding: 4rem 3rem;
   text-align: center;
-  color: white;
-  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.3);
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .ctaCard h2 {
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin-bottom: 1rem;
   color: white;
 }
 
 .ctaCard p {
-  font-size: 1.2rem;
-  opacity: 0.95;
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 2rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
 }
 
 .ctaButtons {
@@ -166,54 +267,84 @@
   gap: 1rem;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.ctaButtons a {
+  min-width: 180px;
+}
+
+.ctaButtons .button--primary {
+  background: white;
+  color: var(--ifm-color-primary);
+}
+
+.ctaButtons .button--primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ifm-color-primary-dark);
+}
+
+.ctaButtons .button--outline {
+  border-color: white;
+  color: white;
+  background: transparent;
+}
+
+.ctaButtons .button--outline:hover {
+  background: white;
+  color: var(--ifm-color-primary);
 }
 
 @media screen and (max-width: 996px) {
-  .ctaButtons {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .ctaButtons a {
-    width: 100%;
-    margin-left: 0 !important;
+  .cta {
+    padding: 3rem 1.5rem;
   }
 
   .ctaCard {
-    padding: 2rem 1rem;
+    padding: 3rem 2rem;
   }
 
   .ctaCard h2 {
-    font-size: 1.8rem;
+    font-size: 1.875rem;
   }
 
   .ctaCard p {
     font-size: 1rem;
   }
-}
 
-/* Animations */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
+  .ctaButtons {
+    flex-direction: column;
+    width: 100%;
   }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
+
+  .ctaButtons a {
+    width: 100%;
+    max-width: 320px;
   }
 }
 
-.heroBanner::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-  animation: float 20s ease-in-out infinite;
-  pointer-events: none;
+/* ============================================
+   DARK MODE ADJUSTMENTS
+   ============================================ */
+[data-theme='dark'] .heroBanner {
+  border-bottom-color: var(--ifm-color-emphasis-300);
+}
+
+[data-theme='dark'] .quickLinks {
+  background: var(--ifm-background-color);
+}
+
+[data-theme='dark'] .techStack {
+  border-top-color: var(--ifm-color-emphasis-300);
+}
+
+[data-theme='dark'] .cta {
+  background: var(--ifm-background-color);
+  border-top-color: var(--ifm-color-emphasis-300);
+}
+
+[data-theme='dark'] .ctaCard {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
