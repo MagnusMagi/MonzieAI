@@ -14,11 +14,11 @@ const config = {
   url: 'https://magnusmagi.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/monzieai/',
+  baseUrl: '/MonzieAI/',
 
   // GitHub pages deployment config.
-  organizationName: 'magnusmagi', // Usually your GitHub org/user name.
-  projectName: 'monzieai', // Usually your repo name.
+  organizationName: 'MagnusMagi', // Usually your GitHub org/user name.
+  projectName: 'MonzieAI', // Usually your repo name.
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
@@ -75,12 +75,12 @@ const config = {
           {
             to: '/docs/api',
             label: 'API',
-            position: 'left'
+            position: 'left',
           },
           {
             to: '/docs/setup',
             label: 'Setup',
-            position: 'left'
+            position: 'left',
           },
           {
             href: 'https://github.com/magnusmagi/monzieai',
@@ -170,8 +170,14 @@ const config = {
         respectPrefersColorScheme: true,
       },
       metadata: [
-        {name: 'keywords', content: 'monzieai, ai, photo enhancement, react native, expo, documentation'},
-        {name: 'description', content: 'MonzieAI - AI-powered photo enhancement and social platform documentation'},
+        {
+          name: 'keywords',
+          content: 'monzieai, ai, photo enhancement, react native, expo, documentation',
+        },
+        {
+          name: 'description',
+          content: 'MonzieAI - AI-powered photo enhancement and social platform documentation',
+        },
       ],
     }),
 };
