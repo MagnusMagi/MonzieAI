@@ -52,19 +52,22 @@
 
 .heroBanner h1 {
   font-size: 3.5rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.1;
   margin-bottom: var(--spacing-xl);
-  color: #0f172a;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #000000 !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 10;
 }
 
 .titleWord {
   display: inline-block;
   margin-right: 0.5rem;
-  opacity: 1;
-  color: inherit !important;
+  opacity: 1 !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
 }
 
 .heroBanner p {
@@ -861,8 +864,12 @@
 }
 
 [data-theme='dark'] .heroBanner h1 {
-  color: #f8fafc;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  color: #ffffff !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+[data-theme='dark'] .titleWord {
+  color: #ffffff !important;
 }
 
 [data-theme='dark'] .quickLinks {
