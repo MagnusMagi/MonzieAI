@@ -1,6 +1,6 @@
 # MonzieAI - Testing Guide
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Testing Overview](#testing-overview)
 2. [Testing Strategy](#testing-strategy)
@@ -13,7 +13,7 @@
 9. [Test Coverage](#test-coverage)
 10. [Best Practices](#best-practices)
 
-## 🎯 Testing Overview
+## Testing Overview
 
 MonzieAI follows a comprehensive testing approach to ensure code quality, reliability, and maintainability.
 
@@ -52,7 +52,7 @@ MonzieAI follows a comprehensive testing approach to ensure code quality, reliab
 | Functions | 80% | 72% |
 | Lines | 80% | 75% |
 
-## 🏗️ Testing Strategy
+## ️ Testing Strategy
 
 ### What to Test
 
@@ -87,7 +87,7 @@ MonzieAI follows a comprehensive testing approach to ensure code quality, reliab
    └─ Load testing, stress testing, memory profiling
 ```
 
-## 🧪 Unit Testing
+## Unit Testing
 
 ### Setup
 
@@ -347,7 +347,7 @@ describe('SceneService Integration', () => {
 });
 ```
 
-## 🎭 Component Testing
+## Component Testing
 
 ### Testing React Components
 
@@ -516,7 +516,7 @@ describe('useAuth', () => {
 });
 ```
 
-## 🤖 E2E Testing
+## E2E Testing
 
 ### Maestro Setup
 
@@ -616,7 +616,7 @@ maestro record .maestro/new-test.yaml
 maestro test --debug .maestro/auth-flow.yaml
 ```
 
-## 🌐 API Testing
+## API Testing
 
 ### Manual API Testing
 
@@ -685,7 +685,7 @@ describe('Supabase API', () => {
 });
 ```
 
-## ⚡ Performance Testing
+## Performance Testing
 
 ### Load Testing
 
@@ -745,7 +745,7 @@ describe('Memory Tests', () => {
 });
 ```
 
-## 📊 Test Coverage
+## Test Coverage
 
 ### Viewing Coverage
 
@@ -966,7 +966,7 @@ jobs:
           npm run test:coverage -- --coverageThreshold='{"global":{"statements":80}}'
 ```
 
-## 🎯 Testing Checklist
+## Testing Checklist
 
 Before submitting PR, ensure:
 

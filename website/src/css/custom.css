@@ -14,21 +14,28 @@
    COLOR PALETTE - Minimalist Theme
    ============================================ */
 :root {
-  /* Brand Colors - Modern Gradient System */
-  --brand-primary: #6366f1;
-  --brand-primary-dark: #4f46e5;
-  --brand-primary-light: #818cf8;
-  --brand-secondary: #8b5cf6;
-  --brand-accent: #06b6d4;
+  /* Brand Colors - Vibrant Gradient System */
+  --brand-primary: #6d28d9;
+  --brand-primary-dark: #5b21b6;
+  --brand-primary-light: #8b5cf6;
+  --brand-secondary: #db2777;
+  --brand-secondary-dark: #be185d;
+  --brand-accent: #0891b2;
+  --brand-accent-light: #06b6d4;
+
+  /* Gradient Combinations - Darker for better contrast */
+  --gradient-primary: linear-gradient(135deg, #6d28d9 0%, #db2777 100%);
+  --gradient-secondary: linear-gradient(135deg, #0891b2 0%, #2563eb 100%);
+  --gradient-accent: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
 
   /* Primary Colors */
-  --ifm-color-primary: #6366f1;
-  --ifm-color-primary-dark: #4f46e5;
-  --ifm-color-primary-darker: #4338ca;
-  --ifm-color-primary-darkest: #3730a3;
-  --ifm-color-primary-light: #818cf8;
-  --ifm-color-primary-lighter: #a5b4fc;
-  --ifm-color-primary-lightest: #e0e7ff;
+  --ifm-color-primary: #6d28d9;
+  --ifm-color-primary-dark: #5b21b6;
+  --ifm-color-primary-darker: #4c1d95;
+  --ifm-color-primary-darkest: #3b0764;
+  --ifm-color-primary-light: #8b5cf6;
+  --ifm-color-primary-lighter: #a78bfa;
+  --ifm-color-primary-lightest: #e9d5ff;
 
   /* Accent Colors - Vibrant & Modern */
   --ifm-color-success: #10b981;
@@ -42,12 +49,12 @@
 
   /* Background & Surface - Clean Hierarchy */
   --ifm-background-color: #ffffff;
-  --ifm-background-surface-color: #fafbfc;
-  --ifm-background-surface-alt: #f5f7fa;
+  --ifm-background-surface-color: #f8fafc;
+  --ifm-background-surface-alt: #f1f5f9;
   --ifm-card-background-color: #ffffff;
 
   /* Text Colors - Better Contrast */
-  --ifm-font-color-base: #0f172a;
+  --ifm-font-color-base: #1e293b;
   --ifm-font-color-secondary: #475569;
   --ifm-color-emphasis-900: #0f172a;
   --ifm-color-emphasis-800: #1e293b;
@@ -114,8 +121,10 @@
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
   /* Colored Shadows for CTAs */
-  --shadow-primary: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
-  --shadow-primary-lg: 0 20px 40px -10px rgba(99, 102, 241, 0.4);
+  --shadow-primary: 0 10px 25px -5px rgba(109, 40, 217, 0.45);
+  --shadow-primary-lg: 0 20px 40px -10px rgba(109, 40, 217, 0.55);
+  --shadow-secondary: 0 10px 25px -5px rgba(219, 39, 119, 0.45);
+  --shadow-accent: 0 10px 25px -5px rgba(8, 145, 178, 0.45);
 
   /* Code Blocks */
   --ifm-code-font-size: 0.9em;
@@ -135,20 +144,27 @@
    ============================================ */
 [data-theme='dark'] {
   /* Brand Colors */
-  --brand-primary: #818cf8;
-  --brand-primary-dark: #6366f1;
-  --brand-primary-light: #a5b4fc;
-  --brand-secondary: #a78bfa;
+  --brand-primary: #a78bfa;
+  --brand-primary-dark: #8b5cf6;
+  --brand-primary-light: #c4b5fd;
+  --brand-secondary: #f472b6;
+  --brand-secondary-dark: #ec4899;
   --brand-accent: #22d3ee;
+  --brand-accent-light: #67e8f9;
+
+  /* Gradient Combinations - Lighter for dark mode */
+  --gradient-primary: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+  --gradient-secondary: linear-gradient(135deg, #22d3ee 0%, #60a5fa 100%);
+  --gradient-accent: linear-gradient(135deg, #fbbf24 0%, #f87171 100%);
 
   /* Primary Colors */
-  --ifm-color-primary: #818cf8;
-  --ifm-color-primary-dark: #6366f1;
-  --ifm-color-primary-darker: #4f46e5;
-  --ifm-color-primary-darkest: #4338ca;
-  --ifm-color-primary-light: #a5b4fc;
-  --ifm-color-primary-lighter: #c7d2fe;
-  --ifm-color-primary-lightest: #e0e7ff;
+  --ifm-color-primary: #a78bfa;
+  --ifm-color-primary-dark: #8b5cf6;
+  --ifm-color-primary-darker: #7c3aed;
+  --ifm-color-primary-darkest: #6d28d9;
+  --ifm-color-primary-light: #c4b5fd;
+  --ifm-color-primary-lighter: #ddd6fe;
+  --ifm-color-primary-lightest: #ede9fe;
 
   /* Accent Colors */
   --ifm-color-success: #34d399;
@@ -167,7 +183,7 @@
   --ifm-card-background-color: #1e293b;
 
   /* Text Colors */
-  --ifm-font-color-base: #f1f5f9;
+  --ifm-font-color-base: #f8fafc;
   --ifm-font-color-secondary: #cbd5e1;
   --ifm-color-emphasis-900: #f8fafc;
   --ifm-color-emphasis-800: #f1f5f9;
@@ -183,8 +199,10 @@
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.05);
 
   /* Colored Shadows for Dark Mode */
-  --shadow-primary: 0 10px 25px -5px rgba(129, 140, 248, 0.4);
-  --shadow-primary-lg: 0 20px 40px -10px rgba(129, 140, 248, 0.5);
+  --shadow-primary: 0 10px 25px -5px rgba(167, 139, 250, 0.4);
+  --shadow-primary-lg: 0 20px 40px -10px rgba(167, 139, 250, 0.5);
+  --shadow-secondary: 0 10px 25px -5px rgba(244, 114, 182, 0.4);
+  --shadow-accent: 0 10px 25px -5px rgba(34, 211, 238, 0.4);
 
   --ifm-navbar-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
 }

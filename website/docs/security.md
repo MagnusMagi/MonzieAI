@@ -5,11 +5,11 @@ title: Security
 
 # Security Policy
 
-## 🔒 Security Overview
+## Security Overview
 
 MonzieAI takes security seriously. This document outlines our security policies, practices, and how to report security vulnerabilities.
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Supported Versions](#supported-versions)
 2. [Security Practices](#security-practices)
@@ -28,7 +28,7 @@ We provide security updates for the following versions:
 | 1.0.x   | ✅ Yes             | Current     |
 | < 1.0   | ❌ No              | End of Life |
 
-## 🔐 Security Practices
+## Security Practices
 
 ### Development Security
 
@@ -176,7 +176,7 @@ CREATE POLICY "Service role full access"
 - CSRF protection
 ```
 
-## 🔒 Data Protection
+## Data Protection
 
 ### User Data
 
@@ -251,7 +251,7 @@ Deleted Account:
 - Anonymous usage data retained
 ```
 
-## 🔐 Authentication & Authorization
+## Authentication & Authorization
 
 ### Password Security
 
@@ -349,7 +349,7 @@ GitHub Dependabot enabled
 }
 ```
 
-## 🚀 Security Best Practices for Users
+## Security Best Practices for Users
 
 ### Account Security
 
@@ -400,7 +400,7 @@ We conduct regular security audits:
 - Bug bounty program (planned)
 - Compliance certifications
 
-## 📊 Security Metrics
+## Security Metrics
 
 We track security metrics:
 - Vulnerability detection time

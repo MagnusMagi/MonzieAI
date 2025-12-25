@@ -1,6 +1,6 @@
 # MonzieAI - API Dokümantasyonu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Bakış](#genel-bakış)
 2. [Supabase API](#supabase-api)
@@ -11,14 +11,14 @@
 7. [Rate Limiting](#rate-limiting)
 8. [Authentication](#authentication)
 
-## 🎯 Genel Bakış
+## Genel Bakış
 
 MonzieAI üç ana external API kullanır:
 - **Supabase**: Backend, database, authentication, storage
 - **FAL.AI**: AI görsel üretimi
 - **RevenueCat**: Abonelik yönetimi
 
-## 🗄️ Supabase API
+## ️ Supabase API
 
 ### Base Configuration
 
@@ -444,7 +444,7 @@ const subscription = supabase
   .subscribe();
 ```
 
-## 🎨 FAL.AI API
+## FAL.AI API
 
 ### Configuration
 
@@ -551,7 +551,7 @@ type ImageSize =
 }
 ```
 
-## 💎 RevenueCat API
+## RevenueCat API
 
 ### Configuration
 
@@ -707,7 +707,7 @@ await Purchases.logOut();
 // Response: CustomerInfo object (anonymous)
 ```
 
-## 🔧 Internal Services API
+## Internal Services API
 
 ### Image Generation Service
 
@@ -945,7 +945,7 @@ if (!canGenerate) {
 }
 ```
 
-## 🔐 Authentication
+## Authentication
 
 ### JWT Token Structure
 
@@ -985,7 +985,7 @@ const { data, error } = await supabase.auth.refreshSession({
 });
 ```
 
-## 📊 API Response Times (Average)
+## API Response Times (Average)
 
 - **Supabase Database Query**: 50-200ms
 - **Supabase Storage Upload**: 500-2000ms

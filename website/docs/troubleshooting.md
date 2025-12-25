@@ -1,6 +1,6 @@
 # MonzieAI - Sorun Giderme Kılavuzu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Sorunlar](#genel-sorunlar)
 2. [Kurulum Sorunları](#kurulum-sorunları)
@@ -11,7 +11,7 @@
 7. [Performance Sorunları](#performance-sorunları)
 8. [Network Sorunları](#network-sorunları)
 
-## 🔧 Genel Sorunlar
+## Genel Sorunlar
 
 ### "Cannot find module" Hatası
 
@@ -177,7 +177,7 @@ rm -rf ~/.gradle/caches/
 cd ..
 ```
 
-## 🏗️ Build Sorunları
+## ️ Build Sorunları
 
 ### iOS Build Fail: Code Signing
 
@@ -294,7 +294,7 @@ npm run ios
 npm run android
 ```
 
-## 🚀 Runtime Sorunları
+## Runtime Sorunları
 
 ### White Screen / Blank Screen
 
@@ -397,7 +397,7 @@ const navigation = useNavigation();
 console.log(navigation.getState());
 ```
 
-## 🌐 API Sorunları
+## API Sorunları
 
 ### Supabase Connection Failed
 
@@ -511,7 +511,7 @@ const response = await axios.get(url, {
 });
 ```
 
-## 📱 Platform Specific Sorunlar
+## Platform Specific Sorunlar
 
 ### iOS Specific
 
@@ -594,7 +594,7 @@ dependencies {
 -keep class io.github.jan.supabase.** { *; }
 ```
 
-## ⚡ Performance Sorunları
+## Performance Sorunları
 
 ### Slow App Launch
 
@@ -689,7 +689,7 @@ const renderItem = useCallback(({ item }) => (
 ), []);
 ```
 
-## 🌐 Network Sorunları
+## Network Sorunları
 
 ### "Network request failed"
 

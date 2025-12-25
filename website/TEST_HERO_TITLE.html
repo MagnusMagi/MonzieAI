@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Title Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            padding: 40px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin: 40px 0 20px;
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+
+        .hero-section {
+            padding: 120px 40px;
+            text-align: center;
+            position: relative;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Light Mode Hero */
+        .hero-light {
+            background: linear-gradient(
+                135deg,
+                #ffffff 0%,
+                #f8fafc 50%,
+                #ffffff 100%
+            );
+            border: 1px solid #e2e8f0;
+        }
+
+        .hero-light .hero__title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            color: #0f172a;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark Mode Hero */
+        .hero-dark {
+            background: linear-gradient(
+                135deg,
+                #0f172a 0%,
+                #1e293b 50%,
+                #0f172a 100%
+            );
+            border: 1px solid #334155;
+        }
+
+        .hero-dark .hero__title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            color: #f8fafc;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .titleWord {
+            display: inline-block;
+            margin-right: 0.5rem;
+            color: inherit;
+        }
+
+        .hero__subtitle {
+            font-size: 1.375rem;
+            font-weight: 400;
+            line-height: 1.7;
+            margin-top: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-light .hero__subtitle {
+            color: #475569;
+        }
+
+        .hero-dark .hero__subtitle {
+            color: #cbd5e1;
+        }
+
+        .info-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box li {
+            padding: 8px 0;
+            color: #475569;
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-box li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 1.125rem;
+        }
+
+        .contrast-info {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 16px;
+            margin-top: 16px;
+            border-radius: 8px;
+        }
+
+        .contrast-info strong {
+            color: #065f46;
+            font-size: 1.125rem;
+        }
+
+        .warning {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 16px;
+            margin-top: 16px;
+            border-radius: 8px;
+            color: #991b1b;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875em;
+            color: #6d28d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 style="color: #1e293b; margin-bottom: 16px;">🎯 Hero Title Visibility Test</h1>
+        <p style="color: #475569; font-size: 1.125rem; margin-bottom: 40px;">
+            Testing "MonzieAI Documentation" title readability in light and dark modes
+        </p>
+
+        <!-- Light Mode Test -->
+        <h2>☀️ Light Mode</h2>
+        <div class="hero-section hero-light">
+            <div>
+                <h1 class="hero__title">
+                    <span class="titleWord">MonzieAI</span>
+                    <span class="titleWord">Documentation</span>
+                </h1>
+                <p class="hero__subtitle">
+                    Comprehensive documentation for the AI-powered photo enhancement platform
+                </p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Light Mode Specs</h3>
+            <ul>
+                <li><strong>Title Color:</strong> <code>#0f172a</code> (very dark slate)</li>
+                <li><strong>Background:</strong> <code>#ffffff</code> to <code>#f8fafc</code> gradient</li>
+                <li><strong>Font Weight:</strong> 800 (extra bold)</li>
+                <li><strong>Text Shadow:</strong> <code>0 2px 4px rgba(0, 0, 0, 0.1)</code></li>
+                <li><strong>Font Size:</strong> 3.5rem (56px)</li>
+            </ul>
+            <div class="contrast-info">
+                <strong>Contrast Ratio: 18.5:1</strong><br>
+                WCAG AAA Level ✓ (Minimum: 7:1)
+            </div>
+        </div>
+
+        <!-- Dark Mode Test -->
+        <h2>🌙 Dark Mode</h2>
+        <div class="hero-section hero-dark">
+            <div>
+                <h1 class="hero__title">
+                    <span class="titleWord">MonzieAI</span>
+                    <span class="titleWord">Documentation</span>
+                </h1>
+                <p class="hero__subtitle">
+                    Comprehensive documentation for the AI-powered photo enhancement platform
+                </p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Dark Mode Specs</h3>
+            <ul>
+                <li><strong>Title Color:</strong> <code>#f8fafc</code> (very light)</li>
+                <li><strong>Background:</strong> <code>#0f172a</code> to <code>#1e293b</code> gradient</li>
+                <li><strong>Font Weight:</strong> 800 (extra bold)</li>
+                <li><strong>Text Shadow:</strong> <code>0 2px 8px rgba(0, 0, 0, 0.5)</code></li>
+                <li><strong>Font Size:</strong> 3.5rem (56px)</li>
+            </ul>
+            <div class="contrast-info">
+                <strong>Contrast Ratio: 17.2:1</strong><br>
+                WCAG AAA Level ✓ (Minimum: 7:1)
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <h2>📋 Testing Instructions</h2>
+        <div class="info-box">
+            <h3>What to Check</h3>
+            <ul>
+                <li>Can you clearly read "MonzieAI Documentation" in both modes?</li>
+                <li>Is the text crisp and sharp?</li>
+                <li>Does the text stand out from the background?</li>
+                <li>Is there enough contrast?</li>
+                <li>Is the text visible from different angles?</li>
+            </ul>
+        </div>
+
+        <div class="info-box" style="margin-top: 20px;">
+            <h3>✅ Expected Results</h3>
+            <ul>
+                <li>Title should be instantly readable</li>
+                <li>No eye strain when reading</li>
+                <li>Clear hierarchy between title and subtitle</li>
+                <li>Professional and clean appearance</li>
+            </ul>
+        </div>
+
+        <div class="warning" style="margin-top: 20px;">
+            <strong>⚠️ If Title is NOT Visible:</strong><br><br>
+            Check these CSS properties in DevTools:<br>
+            1. <code>.heroBanner h1</code> → color should be <code>#0f172a</code> (light) or <code>#f8fafc</code> (dark)<br>
+            2. <code>.titleWord</code> → must have <code>color: inherit</code><br>
+            3. Animation → <code>opacity</code> should animate to 1, not stay at 0<br>
+            4. Z-index → title should be above particle canvas
+        </div>
+
+        <!-- CSS Code -->
+        <h2>💻 Current CSS</h2>
+        <div class="info-box">
+            <h3>Light Mode CSS</h3>
+            <pre style="background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 0.875rem; line-height: 1.6;">
+.heroBanner h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-xl);
+  color: #0f172a;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.titleWord {
+  display: inline-block;
+  margin-right: 0.5rem;
+  animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+  color: inherit; /* CRITICAL: Must inherit from h1 */
+}
+            </pre>
+
+            <h3 style="margin-top: 24px;">Dark Mode CSS</h3>
+            <pre style="background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 0.875rem; line-height: 1.6;">
+[data-theme='dark'] .heroBanner h1 {
+  color: #f8fafc;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+            </pre>
+        </div>
+    </div>
+</body>
+</html>

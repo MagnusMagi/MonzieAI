@@ -1,6 +1,6 @@
 # MonzieAI - Özellikler Dokümantasyonu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Bakış](#genel-bakış)
 2. [Temel Özellikler](#temel-özellikler)
@@ -9,7 +9,7 @@
 5. [Teknik Özellikler](#teknik-özellikler)
 6. [Gelecek Özellikler](#gelecek-özellikler)
 
-## 🎯 Genel Bakış
+## Genel Bakış
 
 MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler ve stiller oluşturmasını sağlayan mobil bir uygulamadır. Uygulama, kullanıcı dostu arayüzü ve güçlü AI teknolojisi ile profesyonel kalitede görseller üretir.
 
@@ -21,7 +21,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - **Güvenli ve Özel**: Tüm veriler şifrelenmiş ve güvenli
 - **Cross-Platform**: iOS ve Android (yakında)
 
-## ✨ Temel Özellikler
+## Temel Özellikler
 
 ### 1. AI Görsel Oluşturma
 
@@ -180,7 +180,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - Dil seçimi (TR/EN)
 - Tema (Light/Dark - gelecek özellik)
 
-## 🔐 Kullanıcı Özellikleri
+## Kullanıcı Özellikleri
 
 ### 1. Kimlik Doğrulama
 
@@ -264,7 +264,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - Quiet hours
 - Notification sound
 
-## 💎 Premium Özellikler
+## Premium Özellikler
 
 ### Premium Abonelik Paketleri
 
@@ -331,7 +331,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - Trial başladı
 - Trial bitti
 
-## 🔧 Teknik Özellikler
+## Teknik Özellikler
 
 ### 1. Performans Optimizasyonları
 
@@ -476,7 +476,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - Screen reader support
 - Keyboard navigation
 
-## 🚀 Gelecek Özellikler
+## Gelecek Özellikler
 
 ### Yakın Gelecek (Q1 2025)
 
@@ -557,7 +557,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - Monetization
 - Creator tools
 
-## 📱 Platform Specific Features
+## Platform Specific Features
 
 ### iOS Specific
 
@@ -591,7 +591,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - App shortcuts
 - Notification channels
 
-## 🎨 Design System
+## Design System
 
 ### Theming
 - Light mode (default)
@@ -621,7 +621,7 @@ MonzieAI, kullanıcıların fotoğraflarını AI ile işleyerek farklı sahneler
 - Slide transitions
 - Scale effects
 
-## 📊 Feature Metrics
+## Feature Metrics
 
 ### Adoption Rates (Estimated)
 

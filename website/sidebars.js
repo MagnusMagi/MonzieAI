@@ -7,129 +7,129 @@ const sidebars = {
     {
       type: 'doc',
       id: 'intro',
-      label: '👋 Introduction',
+      label: 'Introduction',
     },
     {
       type: 'category',
-      label: '🚀 Getting Started',
+      label: 'Getting Started',
       collapsed: false,
       items: [
         {
           type: 'doc',
           id: 'setup',
-          label: '⚙️ Setup',
+          label: 'Setup',
         },
         {
           type: 'doc',
           id: 'deployment',
-          label: '🌐 Deployment',
+          label: 'Deployment',
         },
       ],
     },
     {
       type: 'category',
-      label: '🏗️ Architecture',
+      label: 'Architecture',
       collapsed: false,
       items: [
         {
           type: 'doc',
           id: 'architecture',
-          label: '📐 Overview',
+          label: 'Overview',
         },
         {
           type: 'doc',
           id: 'database',
-          label: '🗄️ Database',
+          label: 'Database',
         },
         {
           type: 'doc',
           id: 'services',
-          label: '⚡ Services',
+          label: 'Services',
         },
         {
           type: 'doc',
           id: 'components',
-          label: '🧩 Components',
+          label: 'Components',
         },
       ],
     },
     {
       type: 'category',
-      label: '📱 Features & Screens',
+      label: 'Features & Screens',
       collapsed: true,
       items: [
         {
           type: 'doc',
           id: 'features',
-          label: '✨ Features',
+          label: 'Features',
         },
         {
           type: 'doc',
           id: 'screens',
-          label: '📲 Screens',
+          label: 'Screens',
         },
       ],
     },
     {
       type: 'category',
-      label: '🔌 API Reference',
+      label: 'API Reference',
       collapsed: true,
       items: [
         {
           type: 'doc',
           id: 'api',
-          label: '📡 API Docs',
+          label: 'API Documentation',
         },
       ],
     },
     {
       type: 'category',
-      label: '🧪 Testing & Quality',
+      label: 'Testing & Quality',
       collapsed: true,
       items: [
         {
           type: 'doc',
           id: 'testing',
-          label: '🔬 Testing',
+          label: 'Testing',
         },
         {
           type: 'doc',
           id: 'troubleshooting',
-          label: '🔧 Troubleshooting',
+          label: 'Troubleshooting',
         },
       ],
     },
     {
       type: 'category',
-      label: '🎨 Design & UX',
+      label: 'Design & UX',
       collapsed: true,
       items: [
         {
           type: 'doc',
           id: 'design-system',
-          label: '🎭 Design System',
+          label: 'Design System',
         },
       ],
     },
     {
       type: 'category',
-      label: '🤝 Contributing',
+      label: 'Contributing',
       collapsed: true,
       items: [
         {
           type: 'doc',
           id: 'contributing',
-          label: '💡 Guide',
+          label: 'Contributing Guide',
         },
         {
           type: 'doc',
           id: 'security',
-          label: '🔒 Security',
+          label: 'Security',
         },
         {
           type: 'doc',
           id: 'changelog',
-          label: '📋 Changelog',
+          label: 'Changelog',
         },
       ],
     },

@@ -1,6 +1,6 @@
 # MonzieAI - Proje Dokümantasyonu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Proje Hakkında](#proje-hakkında)
 2. [Teknoloji Stack](#teknoloji-stack)
@@ -10,7 +10,7 @@
 6. [Deployment](#deployment)
 7. [Dokümantasyon](#dokümantasyon)
 
-## 🎯 Proje Hakkında
+## Proje Hakkında
 
 MonzieAI, kullanıcıların fotoğraflarını yapay zeka ile işleyerek farklı sahneler ve stiller oluşturmasını sağlayan bir mobil uygulamadır. Uygulama, React Native ve Expo kullanılarak geliştirilmiştir.
 
@@ -110,7 +110,7 @@ monzieai/
 └── eslint.config.js           # ESLint config
 ```
 
-## 🚀 Kurulum
+## Kurulum
 
 Detaylı kurulum talimatları için [SETUP.md](./SETUP.md) dosyasına bakın.
 

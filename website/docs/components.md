@@ -1,6 +1,6 @@
 # MonzieAI - UI Components Documentation
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Overview](#overview)
 2. [Component Library](#component-library)
@@ -13,7 +13,7 @@
 9. [Design System](#design-system)
 10. [Usage Examples](#usage-examples)
 
-## 🎨 Overview
+## Overview
 
 MonzieAI uses a custom component library built on React Native and Expo. All components follow a consistent design system with reusable patterns.
 
@@ -68,7 +68,7 @@ src/components/
 | EmptyState | Feedback | ✅ | Empty content state |
 | ErrorBoundary | Utility | ✅ | Error handling |
 
-## 🔧 Core Components
+## Core Components
 
 ### Button Component
 
@@ -833,7 +833,7 @@ const Tab = createBottomTabNavigator();
 </Tab.Navigator>
 ```
 
-## 🎨 Design System
+## Design System
 
 ### Colors
 
@@ -984,7 +984,7 @@ export const shadows = {
 };
 ```
 
-## 💡 Usage Examples
+## Usage Examples
 
 ### Form with Validation
 
@@ -1143,7 +1143,7 @@ function SceneSelection() {
 }
 ```
 
-## 🎯 Best Practices
+## Best Practices
 
 ### Component Design
 

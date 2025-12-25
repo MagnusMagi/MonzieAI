@@ -1,6 +1,6 @@
 # MonzieAI - Kurulum Kılavuzu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Sistem Gereksinimleri](#sistem-gereksinimleri)
 2. [Ön Gereksinimler](#ön-gereksinimler)
@@ -106,7 +106,7 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
-## 🚀 Proje Kurulumu
+## Proje Kurulumu
 
 ### 1. Repository Klonlama
 
@@ -157,7 +157,7 @@ touch .env
 nano .env
 ```
 
-## 🔐 Environment Variables
+## Environment Variables
 
 ### .env Dosyası
 
@@ -205,7 +205,7 @@ APP_VERSION=1.0.0
 }
 ```
 
-## 🗄️ Supabase Kurulumu
+## ️ Supabase Kurulumu
 
 ### 1. Supabase Hesabı Oluşturma
 
@@ -304,7 +304,7 @@ CREATE POLICY "Users can update own profile"
   USING (auth.uid() = id);
 ```
 
-## 🎨 FAL.AI Kurulumu
+## FAL.AI Kurulumu
 
 ### 1. FAL.AI Hesabı
 
@@ -335,7 +335,7 @@ curl -X POST "https://fal.run/fal-ai/flux-pro/v1.1" \
   }'
 ```
 
-## 💎 RevenueCat Kurulumu
+## RevenueCat Kurulumu
 
 ### 1. RevenueCat Hesabı
 
@@ -388,7 +388,7 @@ supabase functions new revenuecat-webhook
 # https://your-project.supabase.co/functions/v1/revenuecat-webhook
 ```
 
-## 📱 iOS Kurulumu
+## iOS Kurulumu
 
 ### 1. Apple Developer Account
 
@@ -455,7 +455,7 @@ supabase functions new revenuecat-webhook
 <string>We use tracking to provide personalized content</string>
 ```
 
-## 🤖 Android Kurulumu
+## Android Kurulumu
 
 ### 1. Package Name Configuration
 
@@ -555,7 +555,7 @@ eas build --profile development --platform android
 # Android: .apk dosyasını direkt yükleyin
 ```
 
-## 🧪 Testing Setup
+## Testing Setup
 
 ### Unit Tests
 
@@ -667,7 +667,7 @@ curl -H "Authorization: Key YOUR_KEY:SECRET" \
 # Settings > Restore Purchases
 ```
 
-## 📱 Device Testing
+## Device Testing
 
 ### iOS Device
 

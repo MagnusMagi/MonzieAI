@@ -1,6 +1,6 @@
 # MonzieAI - Veritabanı Dokümantasyonu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Bakış](#genel-bakış)
 2. [Database Schema](#database-schema)
@@ -13,7 +13,7 @@
 9. [Migrations](#migrations)
 10. [Backup & Recovery](#backup--recovery)
 
-## 🎯 Genel Bakış
+## Genel Bakış
 
 MonzieAI, Supabase (PostgreSQL) veritabanını kullanır. Veritabanı aşağıdaki ana bileşenleri içerir:
 
@@ -28,7 +28,7 @@ MonzieAI, Supabase (PostgreSQL) veritabanını kullanır. Veritabanı aşağıda
 - **Connection String**: `postgresql://postgres:[PASSWORD]@db.groguatbjerebweinuef.supabase.co:5432/postgres`
 - **Schema**: `public`
 
-## 📊 Database Schema
+## Database Schema
 
 ### Schema Diagram
 
@@ -65,7 +65,7 @@ MonzieAI, Supabase (PostgreSQL) veritabanını kullanır. Veritabanı aşağıda
 └─────────────────┘         └──────────────────┘
 ```
 
-## 📋 Tablolar
+## Tablolar
 
 ### 1. profiles
 
@@ -393,7 +393,7 @@ CREATE INDEX idx_analytics_date_range ON analytics_events(created_at) WHERE crea
 CREATE INDEX idx_usage_current ON usage_tracking(user_id, date) WHERE date >= CURRENT_DATE - interval '30 days';
 ```
 
-## 🔒 Row Level Security (RLS)
+## Row Level Security (RLS)
 
 ### Enable RLS on All Tables
 
@@ -505,7 +505,7 @@ CREATE POLICY "Service role can view all events"
   USING (auth.role() = 'service_role');
 ```
 
-## ⚙️ Triggers & Functions
+## ️ Triggers & Functions
 
 ### 1. Auto Update Timestamp
 
@@ -842,7 +842,7 @@ WHERE schemaname = 'public'
 ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
 ```
 
-## 🔧 Performance Optimization
+## Performance Optimization
 
 ### Connection Pooling
 

@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to MonzieAI! This document provides guidelines and instructions for contributing to the project.
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Code of Conduct](#code-of-conduct)
 2. [Getting Started](#getting-started)
@@ -14,7 +14,7 @@ Thank you for your interest in contributing to MonzieAI! This document provides 
 8. [Documentation](#documentation)
 9. [Issue Reporting](#issue-reporting)
 
-## 🤝 Code of Conduct
+## Code of Conduct
 
 ### Our Pledge
 
@@ -35,7 +35,7 @@ We are committed to providing a welcoming and inspiring community for all. Pleas
 - Publishing others' private information
 - Any conduct that would be inappropriate in a professional setting
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -401,7 +401,7 @@ Reviewers will check for:
 - ✅ Consistent coding style
 - ✅ No breaking changes (unless intentional)
 
-## 🧪 Testing Guidelines
+## Testing Guidelines
 
 ### Writing Tests
 
@@ -541,7 +541,7 @@ Other solutions you've thought about
 Any other relevant information
 ```
 
-## 🎯 Areas for Contribution
+## Areas for Contribution
 
 ### High Priority
 
@@ -566,7 +566,7 @@ Look for issues labeled:
 - `documentation`
 - `help wanted`
 
-## 💡 Tips for Contributors
+## Tips for Contributors
 
 ### Communication
 

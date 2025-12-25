@@ -8,7 +8,7 @@ description: MonzieAI Design System - Colors, Typography, Components, and Guidel
 
 The MonzieAI design system provides a comprehensive set of design standards, components, and guidelines to ensure consistency across all documentation and user interfaces.
 
-## 🎨 Design Philosophy
+## Design Philosophy
 
 ### Minimalist & Clean
 Our design philosophy emphasizes:
@@ -20,7 +20,7 @@ Our design philosophy emphasizes:
 
 ---
 
-## 🎨 Color System
+## Color System
 
 ### Primary Colors
 
@@ -142,7 +142,7 @@ Body text with **bold emphasis** and *italic style*.
 
 ---
 
-## 📐 Spacing System
+## Spacing System
 
 ### Base Unit: 4px
 
@@ -188,7 +188,7 @@ All spacing follows an 8-point grid system (multiples of 4px):
 
 ---
 
-## 🎭 Shadows
+## Shadows
 
 ### Shadow Scale
 
@@ -392,7 +392,7 @@ All spacing follows an 8-point grid system (multiples of 4px):
 
 ---
 
-## 🎯 Interactive Elements
+## Interactive Elements
 
 ### Links
 
@@ -436,7 +436,7 @@ a:hover {
 
 ---
 
-## 🎨 Badge System
+## Badge System
 
 ### Badge Types
 
@@ -457,7 +457,7 @@ a:hover {
 
 ---
 
-## 📊 Data Visualization
+## Data Visualization
 
 ### Color Palette for Charts
 
@@ -541,7 +541,7 @@ background: radial-gradient(
 
 ---
 
-## 📱 Responsive Design
+## Responsive Design
 
 ### Breakpoints
 
@@ -574,7 +574,7 @@ background: radial-gradient(
 
 ---
 
-## 🎨 Dark Mode
+## Dark Mode
 
 ### Dark Mode Colors
 
@@ -614,7 +614,7 @@ All colors automatically adjust in dark mode:
 
 ---
 
-## 📋 Code Examples
+## Code Examples
 
 ### Button with Icon
 
@@ -645,7 +645,7 @@ All colors automatically adjust in dark mode:
 
 ---
 
-## 🎯 Best Practices
+## Best Practices
 
 ### Do's ✅
 
@@ -667,7 +667,7 @@ All colors automatically adjust in dark mode:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Using the Design System
 
@@ -720,7 +720,7 @@ When adding new components:
 
 ---
 
-## 🤝 Support
+## Support
 
 For questions or suggestions about the design system:
 

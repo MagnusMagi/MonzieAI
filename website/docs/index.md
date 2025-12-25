@@ -104,7 +104,7 @@ PostgreSQL database schema, tablolar, ilişkiler ve queries.
 
 ---
 
-### 🚀 Kurulum ve Deployment
+### Kurulum ve Deployment
 
 #### [SETUP.md](./SETUP.md)
 **Kurulum Kılavuzu**
@@ -164,7 +164,7 @@ Production'a deploy etmek için tam rehber.
 
 ---
 
-### 📋 Özellik Dokümantasyonu
+### Özellik Dokümantasyonu
 
 #### [FEATURES.md](./FEATURES.md)
 **Özellikler Dokümantasyon**
@@ -254,7 +254,7 @@ Yaygın sorunlar ve çözümleri.
 
 ---
 
-## 🎯 Hızlı Başlangıç Yolları
+## Hızlı Başlangıç Yolları
 
 ### Yeni Geliştirici
 ```
@@ -292,7 +292,7 @@ Yaygın sorunlar ve çözümleri.
 3. API.md → Teknik limitler
 ```
 
-## 📊 Dokümantasyon İstatistikleri
+## Dokümantasyon İstatistikleri
 
 | Doküman | Satır | Kelime | Karakter | Seviye |
 |---------|-------|--------|----------|---------|
@@ -336,7 +336,7 @@ grep -rn "API" docs/
 - Tüm core dokümanlar tamamlandı
 - 7 ana doküman, ~6,000 satır
 
-## 🤝 Geri Bildirim
+## Geri Bildirim
 
 Dokümantasyon eksikleri veya hataları için:
 - GitHub Issues açın
@@ -432,7 +432,7 @@ Dokümantasyon eksikleri veya hataları için:
 
 ---
 
-## 📋 Checklist: Hangi Dokümanı Okumalıyım?
+## Checklist: Hangi Dokümanı Okumalıyım?
 
 ### ❓ "Yeni başlıyorum, nereden başlamalıyım?"
 → **README.md** ile başla, sonra **SETUP.md**

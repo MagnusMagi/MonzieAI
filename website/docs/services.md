@@ -1,6 +1,6 @@
 # MonzieAI - Servis Dokümantasyonu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Bakış](#genel-bakış)
 2. [Core Services](#core-services)
@@ -10,7 +10,7 @@
 6. [Utility Services](#utility-services)
 7. [Service Architecture](#service-architecture)
 
-## 🎯 Genel Bakış
+## Genel Bakış
 
 MonzieAI uygulaması, modüler ve yeniden kullanılabilir servis katmanına sahiptir. Tüm servisler `src/services/` dizininde bulunur ve singleton pattern kullanılarak implement edilmiştir.
 
@@ -33,7 +33,7 @@ src/services/
 └── usageService.ts              # Usage tracking ve limits
 ```
 
-## 🔧 Core Services
+## Core Services
 
 ### 1. databaseService.ts
 
@@ -490,7 +490,7 @@ class ImageGenerationService {
 export const imageGenerationService = ImageGenerationService.getInstance();
 ```
 
-## 🎨 API Services
+## API Services
 
 ### 1. falAIService.ts
 
@@ -941,7 +941,7 @@ class LocalStorageService {
 export const localStorageService = LocalStorageService.getInstance();
 ```
 
-## 📊 Analytics Services
+## Analytics Services
 
 ### 1. analyticsService.ts
 
@@ -1360,7 +1360,7 @@ class ErrorLoggingService {
 export const logger = ErrorLoggingService.getInstance();
 ```
 
-## 🏗️ Service Architecture
+## ️ Service Architecture
 
 ### Service Layer Pattern
 

@@ -1,6 +1,6 @@
 # MonzieAI - Ekran Dokümantasyonu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Bakış](#genel-bakış)
 2. [Screen Flow](#screen-flow)
@@ -11,7 +11,7 @@
 7. [Premium Flow Screens](#premium-flow-screens)
 8. [Screen Props & Navigation](#screen-props--navigation)
 
-## 🎯 Genel Bakış
+## Genel Bakış
 
 MonzieAI uygulaması 37 farklı ekrandan oluşur. Her ekran belirli bir işlevi yerine getirir ve kullanıcı deneyimini optimize etmek için tasarlanmıştır.
 
@@ -103,7 +103,7 @@ PhotoUploadScreen            FavoritesScreen
    [Save/Share/Regenerate]
 ```
 
-## 🔐 Auth Flow Screens
+## Auth Flow Screens
 
 ### 1. SplashScreen
 
@@ -602,7 +602,7 @@ navigation.replace('MainTabs');
 - Scene info
 - Quick regenerate option
 
-## 🎨 Generation Flow Screens
+## Generation Flow Screens
 
 ### 1. SceneSelectionScreen
 
@@ -937,7 +937,7 @@ navigation.navigate('Generating', { sceneId, photoUri });
 navigation.navigate('SceneSelection');
 ```
 
-## ⚙️ Settings & Profile Screens
+## ️ Settings & Profile Screens
 
 ### 1. SettingsScreen
 
@@ -1002,7 +1002,7 @@ navigation.navigate('SceneSelection');
 
 ---
 
-## 💎 Premium Flow Screens
+## Premium Flow Screens
 
 ### 1. PaywallScreen
 
@@ -1071,7 +1071,7 @@ navigation.navigate('SceneSelection');
 └─────────────────────────────────┘
 ```
 
-## 📊 Screen Props & Navigation
+## Screen Props & Navigation
 
 ### Navigation Types
 
@@ -1156,7 +1156,7 @@ const screenOptions = {
 };
 ```
 
-## 🎯 Best Practices
+## Best Practices
 
 ### 1. Loading States
 - Show skeleton screens

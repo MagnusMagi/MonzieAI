@@ -1,6 +1,6 @@
 # MonzieAI - Deployment Kılavuzu
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Bakış](#genel-bakış)
 2. [Pre-Deployment Checklist](#pre-deployment-checklist)
@@ -13,7 +13,7 @@
 9. [Monitoring & Analytics](#monitoring--analytics)
 10. [Rollback Strategy](#rollback-strategy)
 
-## 🎯 Genel Bakış
+## Genel Bakış
 
 MonzieAI, Expo Application Services (EAS) kullanarak build ve deployment işlemlerini yönetir.
 
@@ -151,7 +151,7 @@ curl -H "Authorization: Key YOUR_KEY" https://fal.run/health
 # Dashboard'dan DSN kontrol
 ```
 
-## 🏗️ EAS Build Setup
+## ️ EAS Build Setup
 
 ### 1. EAS CLI Installation
 
@@ -201,7 +201,7 @@ eas credentials
 # Generate new keystore or upload existing
 ```
 
-## 📱 iOS Deployment
+## iOS Deployment
 
 ### Development Build
 
@@ -273,7 +273,7 @@ rm ios/Podfile.lock
 eas build --profile production --platform ios --clear-cache
 ```
 
-## 🤖 Android Deployment
+## Android Deployment
 
 ### Development Build
 
@@ -506,7 +506,7 @@ IMPORTANT NOTES FOR REVIEWERS:
 Thank you for reviewing MonzieAI!
 ```
 
-## 🤖 Play Store Submission (Yakında)
+## Play Store Submission (Yakında)
 
 ### 1. Play Console Setup
 
@@ -611,7 +611,7 @@ jobs:
       - uses: codecov/codecov-action@v3
 ```
 
-## 📊 Monitoring & Analytics
+## Monitoring & Analytics
 
 ### Post-Deployment Monitoring
 

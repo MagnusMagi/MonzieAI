@@ -5,11 +5,11 @@ description: Welcome to MonzieAI documentation - AI-powered photo enhancement pl
 slug: /
 ---
 
-# Welcome to MonzieAI 👋
+# Welcome to MonzieAI
 
 **MonzieAI** is an AI-powered photo enhancement and social platform that allows users to transform their photos using cutting-edge artificial intelligence models. Built with React Native and Expo, MonzieAI delivers a seamless cross-platform experience with enterprise-grade security and performance.
 
-## 🎯 What is MonzieAI?
+## What is MonzieAI?
 
 MonzieAI enables users to:
 
@@ -19,43 +19,43 @@ MonzieAI enables users to:
 - **Manage subscriptions** with built-in monetization via RevenueCat
 - **Enjoy secure authentication** with Google, Apple, and email sign-in
 
-## ✨ Key Features
+## Key Features
 
-### 🤖 AI-Powered Enhancement
+### AI-Powered Enhancement
 Leverage FAL.AI's advanced models (Flux Pro) to transform photos with professional-grade AI enhancement techniques, style transfers, and creative effects.
 
-### 📸 Rich Media Management
+### Rich Media Management
 - Photo gallery with favorites and history
 - Cloud storage via Supabase Storage
 - Optimized image processing with Expo Image
 - Media library integration
 
-### 🎭 Scene Library
+### Scene Library
 Access 100+ different scenes and styles:
 - Portrait styles
 - Artistic effects
 - Environment transformations
 - Gender-specific customizations
 
-### 💎 Premium Features
+### Premium Features
 - RevenueCat-powered subscription management
 - iOS and Android support
 - Flexible pricing tiers
 - Paywall integration
 
-### 🔐 Enterprise Security
+### Enterprise Security
 - Supabase authentication (Google, Apple, Email)
 - Row Level Security (RLS)
 - Encrypted data storage
 - Secure API communication
 
-### 🚀 Performance & Scalability
+### Performance & Scalability
 - Real-time updates with Supabase Realtime
 - Optimized image loading and caching
 - Scalable PostgreSQL backend
 - CDN-delivered assets
 
-## 🏗️ Technology Stack
+## Technology Stack
 
 MonzieAI is built with modern, production-ready technologies:
 
@@ -72,7 +72,7 @@ MonzieAI is built with modern, production-ready technologies:
 | **Testing** | Jest + Maestro |
 | **Build** | EAS Build |
 
-## 📱 Platform Support
+## Platform Support
 
 | Platform | Status | Notes |
 |----------|--------|-------|
@@ -80,7 +80,7 @@ MonzieAI is built with modern, production-ready technologies:
 | **Android** | ⏳ Planned | Coming Soon |
 | **Web** | ❌ Not Supported | Mobile-first approach |
 
-## 🚀 Quick Start
+## Quick Start
 
 Get started with MonzieAI in minutes:
 
@@ -106,28 +106,28 @@ npm start
 
 Our documentation is organized into the following sections:
 
-### 🚀 Getting Started
+### Getting Started
 - **[Setup Guide](./setup)** - Installation and configuration
 - **[Deployment](./deployment)** - Building and releasing
 
-### 🏗️ Architecture
+### ️ Architecture
 - **[Architecture Overview](./architecture)** - System design and patterns
 - **[Database Schema](./database)** - PostgreSQL structure
 - **[Services](./services)** - Service layer documentation
 - **[Components](./components)** - UI component library
 
-### 📱 Features & Screens
+### Features & Screens
 - **[Features](./features)** - Detailed feature documentation
 - **[Screens](./screens)** - Screen flows and navigation
 
-### 🔌 API Reference
+### API Reference
 - **[API Documentation](./api)** - Complete API reference
 
-### 🧪 Testing & Quality
+### Testing & Quality
 - **[Testing Guide](./testing)** - Testing strategies and coverage
 - **[Troubleshooting](./troubleshooting)** - Common issues and solutions
 
-### 🤝 Contributing
+### Contributing
 - **[Contributing Guide](./contributing)** - How to contribute
 - **[Security Policy](./security)** - Security guidelines
 - **[Changelog](./changelog)** - Version history
@@ -171,14 +171,14 @@ New to MonzieAI? Follow this learning path:
 - Enterprise security
 - Analytics and insights
 
-## 📊 Project Status
+## Project Status
 
 - **Version**: 1.0.0
 - **Status**: ✅ Production (iOS)
 - **App Store**: [Live on App Store](https://apps.apple.com/app/id6756293363)
 - **Last Updated**: 2024
 
-## 🎯 Roadmap
+## Roadmap
 
 - ✅ iOS Production Release
 - ⏳ Android Support

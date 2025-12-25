@@ -1,6 +1,6 @@
 # MonzieAI - Mimari Dokümantasyon
 
-## 📋 İçindekiler
+## İçindekiler
 
 1. [Genel Bakış](#genel-bakış)
 2. [Mimari Prensipler](#mimari-prensipler)
@@ -13,7 +13,7 @@
 9. [Performans Optimizasyonları](#performans-optimizasyonları)
 10. [Tasarım Desenleri](#tasarım-desenleri)
 
-## 🎯 Genel Bakış
+## Genel Bakış
 
 MonzieAI, Clean Architecture prensiplerine dayalı, katmanlı bir mimari yapısına sahiptir. Uygulama, maintainability, testability ve scalability odaklı tasarlanmıştır.
 
@@ -49,7 +49,7 @@ MonzieAI, Clean Architecture prensiplerine dayalı, katmanlı bir mimari yapıs�
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🏗️ Mimari Prensipler
+## ️ Mimari Prensipler
 
 ### 1. Separation of Concerns (SoC)
 - Her katman kendi sorumluluğuna odaklanır
@@ -329,7 +329,7 @@ await Purchases.configure({
 7. Subscription status alınır
 8. Navigation ana ekrana yönlendirir
 
-## 🔧 Servis Mimarisi
+## Servis Mimarisi
 
 ### Service Layer Organizasyonu
 
@@ -602,7 +602,7 @@ Splash → Onboarding → Auth → Gender Selection → Home
                       Gallery    Share    Regenerate
 ```
 
-## 🔐 Güvenlik Mimarisi
+## Güvenlik Mimarisi
 
 ### Authentication Security
 
@@ -657,7 +657,7 @@ Splash → Onboarding → Auth → Gender Selection → Home
    - Right to be forgotten
    - Privacy policy and terms acceptance
 
-## ⚡ Performans Optimizasyonları
+## Performans Optimizasyonları
 
 ### 1. Image Optimization
 
@@ -763,7 +763,7 @@ module.exports = {
 const SceneDetail = lazy(() => import('./screens/SceneDetailScreen'));
 ```
 
-## 🎨 Tasarım Desenleri
+## Tasarım Desenleri
 
 ### 1. Repository Pattern
 
@@ -922,7 +922,7 @@ class ImageService {
 }
 ```
 
-## 📊 Monitoring & Logging
+## Monitoring & Logging
 
 ### Logging Architecture
 
@@ -1023,7 +1023,7 @@ export const useRealtimeScenes = () => {
 };
 ```
 
-## 🧪 Testing Architecture
+## Testing Architecture
 
 ### Testing Strategy
 

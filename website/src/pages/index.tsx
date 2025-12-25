@@ -83,8 +83,8 @@ function Particles() {
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fillStyle = isDarkMode
-          ? `rgba(129, 140, 248, ${particle.opacity})`
-          : `rgba(99, 102, 241, ${particle.opacity})`;
+          ? `rgba(167, 139, 250, ${particle.opacity})`
+          : `rgba(109, 40, 217, ${particle.opacity})`;
         ctx.fill();
 
         // Draw connections
@@ -99,8 +99,8 @@ function Particles() {
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(otherParticle.x, otherParticle.y);
             ctx.strokeStyle = isDarkMode
-              ? `rgba(129, 140, 248, ${0.1 * (1 - distance / 120)})`
-              : `rgba(99, 102, 241, ${0.1 * (1 - distance / 120)})`;
+              ? `rgba(167, 139, 250, ${0.1 * (1 - distance / 120)})`
+              : `rgba(109, 40, 217, ${0.1 * (1 - distance / 120)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
