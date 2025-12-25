@@ -57,12 +57,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Copy documentation files
-        run: |
-          echo "📚 Copying documentation files..."
-          chmod +x copy-docs.sh
-          ./copy-docs.sh
-
       - name: Build website
         run: npm run build
         env:
@@ -126,12 +120,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Copy documentation files
-        run: |
-          echo "📚 Copying documentation files..."
-          chmod +x copy-docs.sh
-          ./copy-docs.sh
 
       - name: Build website (preview)
         run: npm run build
