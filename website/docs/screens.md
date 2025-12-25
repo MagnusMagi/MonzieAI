@@ -1,8 +1,3 @@
----
-sidebar_position: 9
-title: Screens
----
-
 # MonzieAI - Ekran Dokümantasyonu
 
 ## 📋 İçindekiler

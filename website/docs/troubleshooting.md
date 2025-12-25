@@ -1,8 +1,3 @@
----
-sidebar_position: 12
-title: Troubleshooting
----
-
 # MonzieAI - Sorun Giderme Kılavuzu
 
 ## 📋 İçindekiler

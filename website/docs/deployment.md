@@ -1,8 +1,3 @@
----
-sidebar_position: 3
-title: Deployment
----
-
 # MonzieAI - Deployment Kılavuzu
 
 ## 📋 İçindekiler

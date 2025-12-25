@@ -1,8 +1,3 @@
----
-sidebar_position: 11
-title: Testing
----
-
 # MonzieAI - Testing Guide
 
 ## 📋 Table of Contents

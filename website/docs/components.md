@@ -1,8 +1,3 @@
----
-sidebar_position: 7
-title: Components
----
-
 # MonzieAI - UI Components Documentation
 
 ## 📋 Table of Contents

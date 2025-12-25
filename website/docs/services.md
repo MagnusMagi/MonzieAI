@@ -1,8 +1,3 @@
----
-sidebar_position: 6
-title: Services
----
-
 # MonzieAI - Servis Dokümantasyonu
 
 ## 📋 İçindekiler

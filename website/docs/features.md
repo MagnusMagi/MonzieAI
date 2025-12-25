@@ -1,8 +1,3 @@
----
-sidebar_position: 8
-title: Features
----
-
 # MonzieAI - Özellikler Dokümantasyonu
 
 ## 📋 İçindekiler

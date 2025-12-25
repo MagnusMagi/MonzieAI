@@ -1,8 +1,3 @@
----
-sidebar_position: 4
-title: Architecture
----
-
 # MonzieAI - Mimari Dokümantasyon
 
 ## 📋 İçindekiler
