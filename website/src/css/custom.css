@@ -14,35 +14,50 @@
    COLOR PALETTE - Minimalist Theme
    ============================================ */
 :root {
-  /* Primary Colors - Subtle Purple */
+  /* Brand Colors - Modern Gradient System */
+  --brand-primary: #6366f1;
+  --brand-primary-dark: #4f46e5;
+  --brand-primary-light: #818cf8;
+  --brand-secondary: #8b5cf6;
+  --brand-accent: #06b6d4;
+
+  /* Primary Colors */
   --ifm-color-primary: #6366f1;
   --ifm-color-primary-dark: #4f46e5;
   --ifm-color-primary-darker: #4338ca;
   --ifm-color-primary-darkest: #3730a3;
   --ifm-color-primary-light: #818cf8;
   --ifm-color-primary-lighter: #a5b4fc;
-  --ifm-color-primary-lightest: #c7d2fe;
+  --ifm-color-primary-lightest: #e0e7ff;
 
-  /* Accent Colors */
+  /* Accent Colors - Vibrant & Modern */
   --ifm-color-success: #10b981;
-  --ifm-color-info: #3b82f6;
+  --ifm-color-success-light: #34d399;
+  --ifm-color-info: #06b6d4;
+  --ifm-color-info-light: #22d3ee;
   --ifm-color-warning: #f59e0b;
+  --ifm-color-warning-light: #fbbf24;
   --ifm-color-danger: #ef4444;
+  --ifm-color-danger-light: #f87171;
 
-  /* Background & Surface */
+  /* Background & Surface - Clean Hierarchy */
   --ifm-background-color: #ffffff;
-  --ifm-background-surface-color: #f9fafb;
+  --ifm-background-surface-color: #fafbfc;
+  --ifm-background-surface-alt: #f5f7fa;
   --ifm-card-background-color: #ffffff;
 
-  /* Text Colors */
-  --ifm-font-color-base: #1f2937;
-  --ifm-color-emphasis-700: #374151;
-  --ifm-color-emphasis-600: #4b5563;
-  --ifm-color-emphasis-500: #6b7280;
-  --ifm-color-emphasis-400: #9ca3af;
-  --ifm-color-emphasis-300: #d1d5db;
-  --ifm-color-emphasis-200: #e5e7eb;
-  --ifm-color-emphasis-100: #f3f4f6;
+  /* Text Colors - Better Contrast */
+  --ifm-font-color-base: #0f172a;
+  --ifm-font-color-secondary: #475569;
+  --ifm-color-emphasis-900: #0f172a;
+  --ifm-color-emphasis-800: #1e293b;
+  --ifm-color-emphasis-700: #334155;
+  --ifm-color-emphasis-600: #475569;
+  --ifm-color-emphasis-500: #64748b;
+  --ifm-color-emphasis-400: #94a3b8;
+  --ifm-color-emphasis-300: #cbd5e1;
+  --ifm-color-emphasis-200: #e2e8f0;
+  --ifm-color-emphasis-100: #f1f5f9;
 
   /* Typography */
   --ifm-font-family-base:
@@ -55,27 +70,52 @@
   --ifm-line-height-base: 1.7;
   --ifm-heading-font-weight: 600;
 
-  /* Spacing */
-  --ifm-spacing-horizontal: 1.5rem;
-  --ifm-spacing-vertical: 1.5rem;
+  /* Spacing System - Consistent Scale */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-3xl: 4rem; /* 64px */
+  --spacing-4xl: 6rem; /* 96px */
+  --spacing-5xl: 8rem; /* 128px */
 
-  /* Layout */
-  --ifm-navbar-height: 64px;
-  --ifm-navbar-padding-vertical: 0.75rem;
-  --ifm-navbar-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --ifm-footer-padding-vertical: 2rem;
+  --ifm-spacing-horizontal: var(--spacing-lg);
+  --ifm-spacing-vertical: var(--spacing-lg);
 
-  /* Border Radius */
-  --ifm-global-radius: 8px;
-  --ifm-button-border-radius: 6px;
-  --ifm-card-border-radius: 12px;
+  /* Layout - Modern Spacing */
+  --ifm-navbar-height: 72px;
+  --ifm-navbar-padding-vertical: var(--spacing-md);
+  --ifm-navbar-padding-horizontal: var(--spacing-xl);
+  --ifm-navbar-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --ifm-footer-padding-vertical: var(--spacing-3xl);
+  --ifm-footer-padding-horizontal: var(--spacing-xl);
 
-  /* Shadows */
+  /* Border Radius - Consistent System */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --ifm-global-radius: var(--radius-md);
+  --ifm-button-border-radius: var(--radius-md);
+  --ifm-card-border-radius: var(--radius-lg);
+
+  /* Shadows - Modern Depth System */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  /* Colored Shadows for CTAs */
+  --shadow-primary: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
+  --shadow-primary-lg: 0 20px 40px -10px rgba(99, 102, 241, 0.4);
 
   /* Code Blocks */
   --ifm-code-font-size: 0.9em;
@@ -94,6 +134,14 @@
    DARK MODE
    ============================================ */
 [data-theme='dark'] {
+  /* Brand Colors */
+  --brand-primary: #818cf8;
+  --brand-primary-dark: #6366f1;
+  --brand-primary-light: #a5b4fc;
+  --brand-secondary: #a78bfa;
+  --brand-accent: #22d3ee;
+
+  /* Primary Colors */
   --ifm-color-primary: #818cf8;
   --ifm-color-primary-dark: #6366f1;
   --ifm-color-primary-darker: #4f46e5;
@@ -102,11 +150,27 @@
   --ifm-color-primary-lighter: #c7d2fe;
   --ifm-color-primary-lightest: #e0e7ff;
 
+  /* Accent Colors */
+  --ifm-color-success: #34d399;
+  --ifm-color-success-light: #6ee7b7;
+  --ifm-color-info: #22d3ee;
+  --ifm-color-info-light: #67e8f9;
+  --ifm-color-warning: #fbbf24;
+  --ifm-color-warning-light: #fcd34d;
+  --ifm-color-danger: #f87171;
+  --ifm-color-danger-light: #fca5a5;
+
+  /* Background & Surface */
   --ifm-background-color: #0f172a;
   --ifm-background-surface-color: #1e293b;
+  --ifm-background-surface-alt: #334155;
   --ifm-card-background-color: #1e293b;
 
+  /* Text Colors */
   --ifm-font-color-base: #f1f5f9;
+  --ifm-font-color-secondary: #cbd5e1;
+  --ifm-color-emphasis-900: #f8fafc;
+  --ifm-color-emphasis-800: #f1f5f9;
   --ifm-color-emphasis-700: #e2e8f0;
   --ifm-color-emphasis-600: #cbd5e1;
   --ifm-color-emphasis-500: #94a3b8;
@@ -117,6 +181,10 @@
 
   --ifm-code-background: #1e293b;
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.05);
+
+  /* Colored Shadows for Dark Mode */
+  --shadow-primary: 0 10px 25px -5px rgba(129, 140, 248, 0.4);
+  --shadow-primary-lg: 0 20px 40px -10px rgba(129, 140, 248, 0.5);
 
   --ifm-navbar-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
 }
@@ -142,74 +210,92 @@ body {
    ============================================ */
 .navbar {
   background: var(--ifm-background-color);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--ifm-color-emphasis-200);
-  box-shadow: none;
-  padding: var(--ifm-navbar-padding-vertical) 0;
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) 0;
 }
 
 .navbar__title {
-  font-weight: 600;
-  font-size: 1.125rem;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
   color: var(--ifm-font-color-base);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .navbar__logo {
-  height: 28px;
-  margin-right: 0.75rem;
+  height: 32px;
+  margin-right: var(--spacing-md);
 }
 
 .navbar__link {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 500;
-  color: var(--ifm-color-emphasis-600);
-  transition: color var(--ifm-transition-fast);
+  color: var(--ifm-font-color-secondary);
+  transition: all var(--ifm-transition-fast);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
 }
 
 .navbar__link:hover {
-  color: var(--ifm-color-primary);
+  color: var(--brand-primary);
+  background: var(--ifm-background-surface-color);
 }
 
 .navbar__link--active {
-  color: var(--ifm-color-primary);
+  color: var(--brand-primary);
   font-weight: 600;
+  background: var(--ifm-color-primary-lightest);
 }
 
 /* ============================================
    HERO SECTION
    ============================================ */
 .hero {
-  background: var(--ifm-background-color);
+  background: linear-gradient(
+    135deg,
+    var(--ifm-background-color) 0%,
+    var(--ifm-background-surface-color) 100%
+  );
   border-bottom: 1px solid var(--ifm-color-emphasis-200);
-  padding: 4rem 0 5rem;
+  padding: var(--spacing-5xl) 0 var(--spacing-4xl);
 }
 
 .hero__title {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   line-height: 1.1;
-  margin-bottom: 1.5rem;
-  color: var(--ifm-font-color-base);
+  margin-bottom: var(--spacing-xl);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero__subtitle {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 400;
-  line-height: 1.6;
-  color: var(--ifm-color-emphasis-600);
-  max-width: 600px;
-  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+  color: var(--ifm-font-color-secondary);
+  max-width: 700px;
+  margin: 0 auto var(--spacing-3xl);
 }
 
 /* ============================================
    BUTTONS
    ============================================ */
 .button {
-  font-weight: 500;
-  font-size: 0.9375rem;
-  padding: 0.625rem 1.5rem;
-  border-radius: var(--ifm-button-border-radius);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  transition: all var(--ifm-transition-fast);
+  border: 2px solid transparent;
   border: none;
   transition: all var(--ifm-transition-fast);
   box-shadow: var(--shadow-sm);
@@ -243,13 +329,16 @@ body {
 
 .button--outline {
   background: transparent;
-  color: var(--ifm-color-primary);
-  border: 1.5px solid var(--ifm-color-primary);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
 }
 
 .button--outline:hover {
-  background: var(--ifm-color-primary);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  border-color: transparent;
   color: white;
+  box-shadow: var(--shadow-primary);
+  transform: translateY(-2px);
 }
 
 /* ============================================
@@ -257,17 +346,35 @@ body {
    ============================================ */
 .card {
   background: var(--ifm-card-background-color);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: var(--ifm-card-border-radius);
-  padding: 2rem;
-  transition: all var(--ifm-transition-slow);
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
   box-shadow: var(--shadow-sm);
+  transition: all var(--ifm-transition-slow);
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  opacity: 0;
+  transition: opacity var(--ifm-transition-fast);
 }
 
 .card:hover {
-  border-color: var(--ifm-color-primary-light);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 /* Feature sections */

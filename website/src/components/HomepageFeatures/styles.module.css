@@ -6,64 +6,81 @@
    FEATURES SECTION
    ============================================ */
 .features {
-  padding: 5rem 2rem;
+  padding: var(--spacing-5xl) var(--spacing-xl);
   background: var(--ifm-background-surface-color);
 }
 
 .sectionTitle {
   text-align: center;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--spacing-md);
   color: var(--ifm-font-color-base);
 }
 
 .sectionSubtitle {
   text-align: center;
-  font-size: 1.125rem;
-  color: var(--ifm-color-emphasis-600);
-  max-width: 700px;
-  margin: 0 auto 3rem;
-  line-height: 1.6;
+  font-size: 1.25rem;
+  color: var(--ifm-font-color-secondary);
+  max-width: 750px;
+  margin: 0 auto var(--spacing-4xl);
+  line-height: 1.7;
 }
 
 /* ============================================
    FEATURE CARDS
    ============================================ */
 .feature {
-  padding: 2rem;
+  padding: var(--spacing-2xl);
   text-align: center;
   height: 100%;
   background: var(--ifm-card-background-color);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 12px;
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: var(--radius-xl);
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature:hover::before {
+  transform: scaleX(1);
 }
 
 .feature:hover {
-  border-color: var(--ifm-color-primary-light);
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-4px);
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-8px);
 }
 
 .featureIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
+  width: 88px;
+  height: 88px;
   font-size: 2.5rem;
   line-height: 1;
-  margin-bottom: 1.5rem;
-  background: var(--ifm-color-primary-lightest);
+  margin-bottom: var(--spacing-xl);
+  background: linear-gradient(135deg, var(--ifm-color-primary-lightest), rgba(129, 140, 248, 0.15));
   color: var(--ifm-color-primary);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -73,24 +90,24 @@
 }
 
 .feature:hover .featureIcon {
-  background: var(--ifm-color-primary);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
   color: white;
-  transform: scale(1.1) rotate(-5deg);
-  box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.3);
+  transform: scale(1.15) rotate(-5deg);
+  box-shadow: var(--shadow-primary);
 }
 
 .featureTitle {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--spacing-md);
   color: var(--ifm-font-color-base);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .featureDescription {
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--ifm-color-emphasis-600);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ifm-font-color-secondary);
   margin: 0;
 }
 
@@ -99,28 +116,28 @@
    ============================================ */
 @media screen and (max-width: 996px) {
   .features {
-    padding: 3rem 1.5rem;
+    padding: var(--spacing-4xl) var(--spacing-lg);
   }
 
   .sectionTitle {
-    font-size: 1.75rem;
+    font-size: 2rem;
   }
 
   .sectionSubtitle {
-    font-size: 1rem;
-    margin-bottom: 2rem;
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-3xl);
   }
 
   .feature {
-    padding: 1.75rem;
-    margin-bottom: 1.5rem;
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
   }
 
   .featureIcon {
-    width: 70px;
-    height: 70px;
+    width: 76px;
+    height: 76px;
     font-size: 2.25rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: var(--spacing-lg);
   }
 
   .featureIcon svg {
@@ -129,7 +146,7 @@
   }
 
   .featureTitle {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
   }
 
   .featureDescription {
@@ -139,12 +156,12 @@
 
 @media screen and (max-width: 768px) {
   .sectionTitle {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .featureIcon {
-    width: 64px;
-    height: 64px;
+    width: 68px;
+    height: 68px;
     font-size: 2rem;
   }
 
@@ -154,7 +171,7 @@
   }
 
   .feature {
-    padding: 1.5rem;
+    padding: var(--spacing-lg);
   }
 }
 
@@ -171,19 +188,17 @@
 }
 
 [data-theme='dark'] .feature:hover {
-  border-color: var(--ifm-color-primary-dark);
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.3),
-    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  border-color: var(--brand-primary-light);
+  box-shadow: var(--shadow-2xl);
 }
 
 [data-theme='dark'] .featureIcon {
-  background: rgba(129, 140, 248, 0.15);
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.2), rgba(167, 139, 250, 0.15));
   color: var(--ifm-color-primary-light);
 }
 
 [data-theme='dark'] .feature:hover .featureIcon {
-  background: var(--ifm-color-primary-light);
+  background: linear-gradient(135deg, var(--brand-primary-light), var(--brand-secondary));
   color: var(--ifm-background-color);
-  box-shadow: 0 8px 16px -4px rgba(129, 140, 248, 0.4);
+  box-shadow: 0 10px 25px -5px rgba(129, 140, 248, 0.5);
 }

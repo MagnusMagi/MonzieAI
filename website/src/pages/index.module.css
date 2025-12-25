@@ -6,13 +6,17 @@
    HERO SECTION
    ============================================ */
 .heroBanner {
-  padding: 5rem 2rem;
+  padding: var(--spacing-5xl) var(--spacing-xl);
   text-align: center;
   position: relative;
-  background: var(--ifm-background-color);
+  background: linear-gradient(
+    135deg,
+    var(--ifm-background-color) 0%,
+    var(--ifm-background-surface-color) 100%
+  );
   border-bottom: 1px solid var(--ifm-color-emphasis-200);
   overflow: hidden;
-  min-height: 600px;
+  min-height: 700px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,12 +50,16 @@
 }
 
 .heroBanner h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   line-height: 1.1;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-xl);
   color: var(--ifm-font-color-base);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .titleWord {
@@ -81,31 +89,62 @@
 }
 
 .heroBanner p {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 400;
-  line-height: 1.6;
-  color: var(--ifm-color-emphasis-600);
-  max-width: 600px;
-  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+  color: var(--ifm-font-color-secondary);
+  max-width: 700px;
+  margin: 0 auto var(--spacing-3xl);
 }
 
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: var(--spacing-lg);
   flex-wrap: wrap;
-  margin-bottom: 3rem;
+  margin-bottom: var(--spacing-4xl);
 }
 
 .buttons a {
-  min-width: 160px;
+  min-width: 180px;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.buttons a:first-child {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  border: none;
+  box-shadow: var(--shadow-primary);
+}
+
+.buttons a:first-child:hover {
+  box-shadow: var(--shadow-primary-lg);
+  transform: translateY(-2px);
+}
+
+.buttons a:last-child {
+  background: transparent;
+  border: 2px solid var(--ifm-color-emphasis-300);
+  color: var(--ifm-font-color-base);
+}
+
+.buttons a:last-child:hover {
+  background: var(--ifm-background-surface-color);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
 }
 
 .ctaButton {
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .ctaButton::before {
@@ -152,10 +191,10 @@
 /* Stats Badges */
 .statsBadges {
   display: flex;
-  gap: 2rem;
+  gap: var(--spacing-2xl);
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 3rem;
+  margin-top: var(--spacing-4xl);
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
@@ -168,34 +207,57 @@
 
 .statBadge {
   text-align: center;
-  padding: 1.5rem 2rem;
+  padding: var(--spacing-xl) var(--spacing-2xl);
   background: var(--ifm-card-background-color);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 12px;
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: var(--radius-xl);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 150px;
+  min-width: 160px;
+  position: relative;
+}
+
+.statBadge::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius-xl);
+  padding: 2px;
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .statBadge:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border-color: var(--ifm-color-primary-light);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+
+.statBadge:hover::before {
+  opacity: 1;
 }
 
 .statNumber {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 700;
-  color: var(--ifm-color-primary);
-  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-sm);
   line-height: 1;
 }
 
 .statLabel {
-  font-size: 0.875rem;
-  color: var(--ifm-color-emphasis-600);
+  font-size: 0.9375rem;
+  color: var(--ifm-font-color-secondary);
   font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 /* Scroll Indicator */
@@ -257,16 +319,16 @@
 
 @media screen and (max-width: 996px) {
   .heroBanner {
-    padding: 3rem 1.5rem;
-    min-height: 500px;
+    padding: var(--spacing-4xl) var(--spacing-lg);
+    min-height: 600px;
   }
 
   .heroBanner h1 {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
   }
 
   .heroBanner p {
-    font-size: 1.125rem;
+    font-size: 1.1875rem;
   }
 
   .buttons {
@@ -284,8 +346,8 @@
   }
 
   .statBadge {
-    padding: 1rem 1.5rem;
-    min-width: 120px;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    min-width: 140px;
   }
 
   .statNumber {
@@ -342,97 +404,116 @@
    QUICK LINKS SECTION
    ============================================ */
 .quickLinks {
-  padding: 5rem 2rem;
-  background: var(--ifm-background-surface-color);
+  padding: var(--spacing-5xl) var(--spacing-xl);
+  background: var(--ifm-background-color);
   position: relative;
 }
 
 .sectionTitle {
   text-align: center;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--spacing-md);
   color: var(--ifm-font-color-base);
 }
 
 .sectionSubtitle {
   text-align: center;
-  font-size: 1.125rem;
-  color: var(--ifm-color-emphasis-600);
-  max-width: 600px;
-  margin: 0 auto 3rem;
-  line-height: 1.6;
+  font-size: 1.25rem;
+  color: var(--ifm-font-color-secondary);
+  max-width: 700px;
+  margin: 0 auto var(--spacing-4xl);
+  line-height: 1.7;
 }
 
 .quickLinkCard {
   background: var(--ifm-card-background-color);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 12px;
-  padding: 2rem;
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
   height: 100%;
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.quickLinkCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quickLinkCard:hover::before {
+  transform: scaleX(1);
 }
 
 .quickLinkIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: var(--ifm-color-primary-lightest);
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--ifm-color-primary-lightest), rgba(129, 140, 248, 0.1));
   color: var(--ifm-color-primary);
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  font-size: 1.75rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quickLinkCard:hover .quickLinkIcon {
-  background: var(--ifm-color-primary);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
   color: white;
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.15) rotate(-5deg);
+  box-shadow: var(--shadow-primary);
 }
 
 .quickLinkCard:hover {
-  border-color: var(--ifm-color-primary-light);
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-4px);
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-8px);
 }
 
 .quickLinkCard h3 {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--spacing-md);
   color: var(--ifm-font-color-base);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .quickLinkCard p {
-  color: var(--ifm-color-emphasis-600);
-  margin-bottom: 1.25rem;
-  line-height: 1.6;
+  color: var(--ifm-font-color-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.7;
   flex-grow: 1;
-  font-size: 0.9375rem;
+  font-size: 1rem;
 }
 
 .quickLinkCard a {
-  color: var(--ifm-color-primary);
-  font-weight: 500;
+  color: var(--brand-primary);
+  font-weight: 600;
   text-decoration: none;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  gap: var(--spacing-sm);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quickLinkCard a:hover {
-  color: var(--ifm-color-primary-dark);
+  color: var(--brand-secondary);
+  gap: var(--spacing-md);
 }
 
 .quickLinkCard a svg {
@@ -474,11 +555,11 @@
 
 @media screen and (max-width: 996px) {
   .quickLinks {
-    padding: 3rem 1.5rem;
+    padding: var(--spacing-4xl) var(--spacing-lg);
   }
 
   .sectionTitle {
-    font-size: 1.75rem;
+    font-size: 2rem;
   }
 
   .quickLinkCard {
@@ -490,32 +571,32 @@
    TECH STACK SECTION
    ============================================ */
 .techStack {
-  padding: 5rem 2rem;
-  background: var(--ifm-background-color);
-  border-top: 1px solid var(--ifm-color-emphasis-200);
+  padding: var(--spacing-5xl) var(--spacing-xl);
+  background: var(--ifm-background-surface-color);
+  border-top: none;
 }
 
 .techBadges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--spacing-md);
   justify-content: center;
   align-items: center;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .techBadge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
   background: var(--ifm-card-background-color);
   color: var(--ifm-font-color-base);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.9375rem;
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 1rem;
   transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
 }
@@ -526,12 +607,11 @@
 }
 
 .techBadge:hover {
-  border-color: var(--ifm-color-primary);
-  color: var(--ifm-color-primary);
-  transform: translateY(-2px) scale(1.05);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: var(--brand-primary);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  color: white;
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: var(--shadow-primary);
 }
 
 .techBadge:hover svg {
@@ -594,16 +674,16 @@
 
 @media screen and (max-width: 996px) {
   .techStack {
-    padding: 3rem 1.5rem;
+    padding: var(--spacing-4xl) var(--spacing-lg);
   }
 
   .techBadges {
-    gap: 0.5rem;
+    gap: var(--spacing-sm);
   }
 
   .techBadge {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9375rem;
   }
 }
 
@@ -611,23 +691,22 @@
    CTA SECTION
    ============================================ */
 .cta {
-  padding: 5rem 2rem;
-  background: var(--ifm-background-surface-color);
-  border-top: 1px solid var(--ifm-color-emphasis-200);
+  padding: var(--spacing-5xl) var(--spacing-xl);
+  background: var(--ifm-background-color);
+  border-top: none;
 }
 
 .ctaCard {
-  background: var(--ifm-color-primary);
-  border-radius: 16px;
-  padding: 4rem 3rem;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-4xl) var(--spacing-3xl);
   text-align: center;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-primary-lg);
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .ctaCard::before {
@@ -678,30 +757,31 @@
 }
 
 .ctaCard h2 {
-  font-size: 2.25rem;
+  font-size: 2.75rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--spacing-lg);
   color: white;
   position: relative;
   z-index: 1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .ctaCard p {
-  font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 2rem;
-  max-width: 600px;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: var(--spacing-2xl);
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.6;
+  line-height: 1.7;
   position: relative;
   z-index: 1;
 }
 
 .ctaButtons {
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing-lg);
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -710,45 +790,56 @@
 }
 
 .ctaButtons a {
-  min-width: 180px;
+  min-width: 200px;
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
 }
 
 .ctaButtons .button--primary {
   background: white;
-  color: var(--ifm-color-primary);
+  color: var(--brand-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .ctaButtons .button--primary:hover {
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--ifm-color-primary-dark);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--brand-secondary);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
 }
 
 .ctaButtons .button--outline {
-  border-color: white;
+  border: 2px solid rgba(255, 255, 255, 0.5);
   color: white;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .ctaButtons .button--outline:hover {
-  background: white;
-  color: var(--ifm-color-primary);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
 }
 
 @media screen and (max-width: 996px) {
   .cta {
-    padding: 3rem 1.5rem;
+    padding: var(--spacing-4xl) var(--spacing-lg);
   }
 
   .ctaCard {
-    padding: 3rem 2rem;
+    padding: var(--spacing-3xl) var(--spacing-xl);
   }
 
   .ctaCard h2 {
-    font-size: 1.875rem;
+    font-size: 2.25rem;
   }
 
   .ctaCard p {
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 
   .ctaButtons {
