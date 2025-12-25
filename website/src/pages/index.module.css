@@ -1,0 +1,219 @@
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+@media screen and (max-width: 996px) {
+  .buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .buttons a {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+}
+
+/* Quick Links Section */
+.quickLinks {
+  padding: 4rem 0;
+  background-color: var(--ifm-background-surface-color);
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 3rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.quickLinkCard {
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  padding: 2rem;
+  height: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quickLinkCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2);
+  border-color: var(--ifm-color-primary);
+}
+
+.quickLinkCard h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--ifm-color-primary);
+}
+
+.quickLinkCard p {
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.quickLinkCard a {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.quickLinkCard a:hover {
+  color: var(--ifm-color-primary-dark);
+  text-decoration: underline;
+}
+
+/* Tech Stack Section */
+.techStack {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+}
+
+.techBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.techBadge {
+  background: white;
+  color: var(--ifm-color-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid var(--ifm-color-primary-lightest);
+}
+
+[data-theme='dark'] .techBadge {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ifm-color-primary-lightest);
+  border-color: var(--ifm-color-primary-dark);
+}
+
+.techBadge:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+  background: var(--ifm-color-primary);
+  color: white;
+  border-color: var(--ifm-color-primary);
+}
+
+/* CTA Section */
+.cta {
+  padding: 4rem 0;
+  background-color: var(--ifm-background-surface-color);
+}
+
+.ctaCard {
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-light) 100%);
+  border-radius: 16px;
+  padding: 3rem;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.3);
+}
+
+.ctaCard h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.ctaCard p {
+  font-size: 1.2rem;
+  opacity: 0.95;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 996px) {
+  .ctaButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ctaButtons a {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .ctaCard {
+    padding: 2rem 1rem;
+  }
+
+  .ctaCard h2 {
+    font-size: 1.8rem;
+  }
+
+  .ctaCard p {
+    font-size: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.heroBanner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+}

@@ -1,0 +1,106 @@
+import React from 'react';
+import clsx from 'clsx';
+import styles from './styles.module.css';
+
+type FeatureItem = {
+  title: string;
+  emoji: string;
+  description: JSX.Element;
+};
+
+const FeatureList: FeatureItem[] = [
+  {
+    title: 'AI-Powered Enhancement',
+    emoji: '🤖',
+    description: (
+      <>
+        Leverage cutting-edge AI models from FAL.AI to transform photos with
+        advanced enhancement techniques, style transfers, and creative effects.
+      </>
+    ),
+  },
+  {
+    title: 'Real-time Collaboration',
+    emoji: '🚀',
+    description: (
+      <>
+        Built with React Native and Expo for seamless cross-platform performance.
+        Real-time updates powered by Supabase for instant social interactions.
+      </>
+    ),
+  },
+  {
+    title: 'Secure & Scalable',
+    emoji: '🔒',
+    description: (
+      <>
+        Enterprise-grade security with Supabase authentication, Row Level Security,
+        and encrypted data storage. Scales effortlessly with PostgreSQL backend.
+      </>
+    ),
+  },
+  {
+    title: 'Rich Media Support',
+    emoji: '📸',
+    description: (
+      <>
+        Advanced image processing with Expo Image, media library integration,
+        and optimized storage with Supabase Storage buckets.
+      </>
+    ),
+  },
+  {
+    title: 'Monetization Ready',
+    emoji: '💰',
+    description: (
+      <>
+        Built-in RevenueCat integration for seamless subscription management,
+        paywalls, and in-app purchases across iOS and Android.
+      </>
+    ),
+  },
+  {
+    title: 'Developer Friendly',
+    emoji: '🛠️',
+    description: (
+      <>
+        Comprehensive documentation, TypeScript support, Jest testing suite,
+        and E2E testing with Maestro for reliable development workflows.
+      </>
+    ),
+  },
+];
+
+function Feature({title, emoji, description}: FeatureItem) {
+  return (
+    <div className={clsx('col col--4')}>
+      <div className={styles.feature}>
+        <div className={styles.featureIcon}>{emoji}</div>
+        <h3 className={styles.featureTitle}>{title}</h3>
+        <p className={styles.featureDescription}>{description}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function HomepageFeatures(): JSX.Element {
+  return (
+    <section className={styles.features}>
+      <div className="container">
+        <div className="row">
+          <div className="col col--12">
+            <h2 className={styles.sectionTitle}>Why MonzieAI?</h2>
+            <p className={styles.sectionSubtitle}>
+              A comprehensive AI-powered photo platform built with modern technologies
+            </p>
+          </div>
+        </div>
+        <div className="row">
+          {FeatureList.map((props, idx) => (
+            <Feature key={idx} {...props} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
