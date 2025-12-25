@@ -1,5 +1,5 @@
 /**
- * Homepage Styles - Minimalist & Clean Design
+ * Homepage Styles - Minimalist & Clean Design with Animations
  */
 
 /* ============================================
@@ -11,6 +11,38 @@
   position: relative;
   background: var(--ifm-background-color);
   border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  overflow: hidden;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+}
+
+.heroText {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.heroText.fadeInUp {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.particleCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
 }
 
 .heroBanner h1 {
@@ -20,6 +52,32 @@
   line-height: 1.1;
   margin-bottom: 1.5rem;
   color: var(--ifm-font-color-base);
+}
+
+.titleWord {
+  display: inline-block;
+  margin-right: 0.5rem;
+  animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.titleWord:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.titleWord:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .heroBanner p {
@@ -37,15 +95,164 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-bottom: 3rem;
 }
 
 .buttons a {
   min-width: 160px;
 }
 
+.ctaButton {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ctaButton::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.6s,
+    height 0.6s;
+}
+
+.ctaButton:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.ctaButton span {
+  position: relative;
+  z-index: 1;
+}
+
+.buttonIcon {
+  display: inline-block;
+  margin-left: 0.5rem;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ctaButton:hover .buttonIcon {
+  transform: translateX(4px);
+}
+
+/* Stats Badges */
+.statsBadges {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
+}
+
+.statsBadges.fadeInUp {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.statBadge {
+  text-align: center;
+  padding: 1.5rem 2rem;
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 150px;
+}
+
+.statBadge:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: var(--ifm-color-primary-light);
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: var(--ifm-color-emphasis-600);
+  font-weight: 500;
+}
+
+/* Scroll Indicator */
+.scrollIndicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  animation: bounce 2s infinite;
+}
+
+.scrollMouse {
+  width: 24px;
+  height: 40px;
+  border: 2px solid var(--ifm-color-emphasis-400);
+  border-radius: 12px;
+  position: relative;
+}
+
+.scrollWheel {
+  width: 4px;
+  height: 8px;
+  background: var(--ifm-color-primary);
+  border-radius: 2px;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: scrollWheel 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+@keyframes scrollWheel {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+}
+
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 3rem 1.5rem;
+    min-height: 500px;
   }
 
   .heroBanner h1 {
@@ -65,6 +272,64 @@
     width: 100%;
     max-width: 320px;
   }
+
+  .statsBadges {
+    gap: 1rem;
+  }
+
+  .statBadge {
+    padding: 1rem 1.5rem;
+    min-width: 120px;
+  }
+
+  .statNumber {
+    font-size: 1.5rem;
+  }
+
+  .scrollIndicator {
+    display: none;
+  }
+}
+
+/* ============================================
+   SCROLL REVEAL ANIMATIONS
+   ============================================ */
+.scrollReveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scrollReveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   WAVE DIVIDER
+   ============================================ */
+.waveDivider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  margin: 0;
+}
+
+.waveDivider svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 60px;
+  fill: var(--ifm-background-surface-color);
+}
+
+.waveDividerFlipped {
+  transform: rotate(180deg);
+}
+
+[data-theme='dark'] .waveDivider svg {
+  fill: var(--ifm-background-surface-color);
 }
 
 /* ============================================
@@ -73,6 +338,7 @@
 .quickLinks {
   padding: 5rem 2rem;
   background: var(--ifm-background-surface-color);
+  position: relative;
 }
 
 .sectionTitle {
@@ -146,10 +412,40 @@
   content: '→';
   margin-left: 0.5rem;
   transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
 }
 
 .quickLinkCard a:hover::after {
   transform: translateX(4px);
+}
+
+/* Staggered animation for cards */
+.quickLinkCard {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.quickLinks.revealed .quickLinkCard:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.quickLinks.revealed .quickLinkCard:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.quickLinks.revealed .quickLinkCard:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media screen and (max-width: 996px) {
@@ -202,10 +498,64 @@
 .techBadge:hover {
   border-color: var(--ifm-color-primary);
   color: var(--ifm-color-primary);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.05);
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Staggered animation for tech badges */
+.techBadge {
+  animation: fadeInScale 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.techStack.revealed .techBadge:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.techStack.revealed .techBadge:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.techStack.revealed .techBadge:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.techStack.revealed .techBadge:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.techStack.revealed .techBadge:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.techStack.revealed .techBadge:nth-child(6) {
+  animation-delay: 0.35s;
+}
+.techStack.revealed .techBadge:nth-child(7) {
+  animation-delay: 0.4s;
+}
+.techStack.revealed .techBadge:nth-child(8) {
+  animation-delay: 0.45s;
+}
+.techStack.revealed .techBadge:nth-child(9) {
+  animation-delay: 0.5s;
+}
+.techStack.revealed .techBadge:nth-child(10) {
+  animation-delay: 0.55s;
+}
+.techStack.revealed .techBadge:nth-child(11) {
+  animation-delay: 0.6s;
+}
+.techStack.revealed .techBadge:nth-child(12) {
+  animation-delay: 0.65s;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @media screen and (max-width: 996px) {
@@ -242,6 +592,48 @@
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaCard::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.ctaIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .ctaCard h2 {
@@ -250,6 +642,8 @@
   letter-spacing: -0.02em;
   margin-bottom: 1rem;
   color: white;
+  position: relative;
+  z-index: 1;
 }
 
 .ctaCard p {
@@ -260,6 +654,8 @@
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
+  position: relative;
+  z-index: 1;
 }
 
 .ctaButtons {
@@ -268,6 +664,8 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .ctaButtons a {
@@ -347,4 +745,49 @@
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.3),
     0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   LOADING STATES & SKELETON
+   ============================================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--ifm-color-emphasis-200) 0%,
+    var(--ifm-color-emphasis-100) 50%,
+    var(--ifm-color-emphasis-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY - REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .scrollIndicator {
+    display: none;
+  }
+
+  .particleCanvas {
+    display: none;
+  }
 }

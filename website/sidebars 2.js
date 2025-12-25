@@ -13,43 +13,57 @@ const sidebars = {
       type: 'category',
       label: '🚀 Getting Started',
       collapsed: false,
-      items: ['setup', 'deployment'],
+      items: [
+        'setup',
+        'deployment',
+      ],
     },
     {
       type: 'category',
       label: '🏗️ Architecture',
       collapsed: false,
-      items: ['architecture', 'database', 'services', 'components'],
+      items: [
+        'architecture',
+        'database',
+        'services',
+        'components',
+      ],
     },
     {
       type: 'category',
       label: '📱 Features & Screens',
       collapsed: true,
-      items: ['features', 'screens'],
+      items: [
+        'features',
+        'screens',
+      ],
     },
     {
       type: 'category',
       label: '🔌 API Reference',
       collapsed: true,
-      items: ['api'],
+      items: [
+        'api',
+      ],
     },
     {
       type: 'category',
       label: '🧪 Testing & Quality',
       collapsed: true,
-      items: ['testing', 'troubleshooting'],
-    },
-    {
-      type: 'category',
-      label: '🎨 Design & UX',
-      collapsed: true,
-      items: ['design-system'],
+      items: [
+        'testing',
+        'troubleshooting',
+      ],
     },
     {
       type: 'category',
       label: '🤝 Contributing',
       collapsed: true,
-      items: ['contributing', 'security', 'changelog'],
+      items: [
+        'contributing',
+        'security',
+        'changelog',
+      ],
     },
   ],
 };

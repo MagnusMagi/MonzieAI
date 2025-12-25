@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "3677ad34acae418787194a85c13c1cfd"
+      },
+      "supabaseUrl": "YOUR_SUPABASE_URL_HERE",
+      "supabaseAnonKey": "YOUR_SUPABASE_ANON_KEY_HERE",
+      "neonDatabaseUrl": "YOUR_NEON_DATABASE_URL_HERE",
+      "neonProjectId": "YOUR_NEON_PROJECT_ID_HERE",
+      "falApiKey": "YOUR_FAL_API_KEY_HERE",
+      "googleWebClientId": "YOUR_GOOGLE_WEB_CLIENT_ID_HERE",
+      "googleIosClientId": "YOUR_GOOGLE_IOS_CLIENT_ID_HERE"
+    }
+  }
+}
+

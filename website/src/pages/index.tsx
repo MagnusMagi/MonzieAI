@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
@@ -7,25 +7,189 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 
 import styles from './index.module.css';
 
+// Particle effect component
+function Particles() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Particle system
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      opacity: number;
+    }> = [];
+
+    const particleCount = 50;
+    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    // Create particles
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 1,
+        opacity: Math.random() * 0.5 + 0.1,
+      });
+    }
+
+    // Animation loop
+    let animationFrameId: number;
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update and draw particles
+      particles.forEach((particle, i) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        // Wrap around edges
+        if (particle.x < 0) particle.x = canvas.width;
+        if (particle.x > canvas.width) particle.x = 0;
+        if (particle.y < 0) particle.y = canvas.height;
+        if (particle.y > canvas.height) particle.y = 0;
+
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = isDarkMode
+          ? `rgba(129, 140, 248, ${particle.opacity})`
+          : `rgba(99, 102, 241, ${particle.opacity})`;
+        ctx.fill();
+
+        // Draw connections
+        particles.forEach((otherParticle, j) => {
+          if (i === j) return;
+          const dx = particle.x - otherParticle.x;
+          const dy = particle.y - otherParticle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(otherParticle.x, otherParticle.y);
+            ctx.strokeStyle = isDarkMode
+              ? `rgba(129, 140, 248, ${0.1 * (1 - distance / 120)})`
+              : `rgba(99, 102, 241, ${0.1 * (1 - distance / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        });
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className={styles.particleCanvas} aria-hidden="true" />;
+}
+
+// Scroll reveal hook
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add(styles.revealed);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -100px 0px' }
+    );
+
+    const elements = document.querySelectorAll(`.${styles.scrollReveal}`);
+    elements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+}
+
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/setup">
-            Get Started 🚀
-          </Link>
-          <Link
-            className="button button--outline button--secondary button--lg"
-            to="/docs/intro"
-            style={{marginLeft: '1rem'}}>
-            Read the Docs 📚
-          </Link>
+      <Particles />
+      <div className={clsx('container', styles.heroContent)}>
+        <div className={clsx(styles.heroText, isVisible && styles.fadeInUp)}>
+          <h1 className="hero__title">
+            <span className={styles.titleWord}>MonzieAI</span>
+            <span className={styles.titleWord}>Documentation</span>
+          </h1>
+          <p className="hero__subtitle">{siteConfig.tagline}</p>
+          <div className={styles.buttons}>
+            <Link
+              className={clsx('button button--primary button--lg', styles.ctaButton)}
+              to="/docs/setup"
+            >
+              <span>Get Started</span>
+              <span className={styles.buttonIcon}>→</span>
+            </Link>
+            <Link
+              className={clsx(
+                'button button--outline button--secondary button--lg',
+                styles.ctaButton
+              )}
+              to="/docs/intro"
+            >
+              <span>Read the Docs</span>
+              <span className={styles.buttonIcon}>📚</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Stats badges */}
+        <div className={clsx(styles.statsBadges, isVisible && styles.fadeInUp)}>
+          <div className={styles.statBadge}>
+            <div className={styles.statNumber}>15+</div>
+            <div className={styles.statLabel}>Documentation Pages</div>
+          </div>
+          <div className={styles.statBadge}>
+            <div className={styles.statNumber}>100+</div>
+            <div className={styles.statLabel}>AI Scenes</div>
+          </div>
+          <div className={styles.statBadge}>
+            <div className={styles.statNumber}>75%+</div>
+            <div className={styles.statLabel}>Test Coverage</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className={styles.scrollIndicator}>
+        <div className={styles.scrollMouse}>
+          <div className={styles.scrollWheel}></div>
         </div>
       </div>
     </header>
@@ -33,34 +197,50 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
+  useScrollReveal();
+
   return (
     <Layout
       title={`${siteConfig.title} - Documentation`}
-      description="MonzieAI - AI-powered photo enhancement and social platform. Comprehensive documentation for developers.">
+      description="MonzieAI - AI-powered photo enhancement and social platform. Comprehensive documentation for developers."
+    >
       <HomepageHeader />
       <main>
         <HomepageFeatures />
 
-        <section className={styles.quickLinks}>
+        {/* Wave Divider */}
+        <div className={styles.waveDivider}>
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+          </svg>
+        </div>
+
+        <section className={clsx(styles.quickLinks, styles.scrollReveal)}>
           <div className="container">
             <div className="row">
               <div className="col col--12">
                 <h2 className={styles.sectionTitle}>Quick Links</h2>
+                <p className={styles.sectionSubtitle}>Jump directly to what you need</p>
               </div>
             </div>
             <div className="row">
               <div className="col col--4">
                 <div className={styles.quickLinkCard}>
                   <h3>🏗️ Architecture</h3>
-                  <p>Learn about the system architecture, tech stack, and design patterns used in MonzieAI.</p>
+                  <p>
+                    Learn about the system architecture, tech stack, and design patterns used in
+                    MonzieAI.
+                  </p>
                   <Link to="/docs/architecture">View Architecture →</Link>
                 </div>
               </div>
               <div className="col col--4">
                 <div className={styles.quickLinkCard}>
                   <h3>🔌 API Reference</h3>
-                  <p>Complete API documentation with examples for all endpoints and integrations.</p>
+                  <p>
+                    Complete API documentation with examples for all endpoints and integrations.
+                  </p>
                   <Link to="/docs/api">Explore API →</Link>
                 </div>
               </div>
@@ -75,11 +255,21 @@ export default function Home(): JSX.Element {
           </div>
         </section>
 
-        <section className={styles.techStack}>
+        {/* Wave Divider */}
+        <div className={clsx(styles.waveDivider, styles.waveDividerFlipped)}>
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+          </svg>
+        </div>
+
+        <section className={clsx(styles.techStack, styles.scrollReveal)}>
           <div className="container">
             <div className="row">
               <div className="col col--12">
                 <h2 className={styles.sectionTitle}>Tech Stack</h2>
+                <p className={styles.sectionSubtitle}>
+                  Built with modern, production-ready technologies
+                </p>
               </div>
             </div>
             <div className="row">
@@ -103,24 +293,40 @@ export default function Home(): JSX.Element {
           </div>
         </section>
 
-        <section className={styles.cta}>
+        {/* Wave Divider */}
+        <div className={styles.waveDivider}>
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+          </svg>
+        </div>
+
+        <section className={clsx(styles.cta, styles.scrollReveal)}>
           <div className="container">
             <div className="row">
               <div className="col col--12">
                 <div className={styles.ctaCard}>
+                  <div className={styles.ctaIcon}>🚀</div>
                   <h2>Ready to contribute?</h2>
-                  <p>Check out our contributing guidelines and start building with MonzieAI today!</p>
+                  <p>
+                    Check out our contributing guidelines and start building with MonzieAI today!
+                  </p>
                   <div className={styles.ctaButtons}>
                     <Link
-                      className="button button--primary button--lg"
-                      to="/docs/contributing">
-                      Contributing Guide
+                      className={clsx('button button--primary button--lg', styles.ctaButton)}
+                      to="/docs/contributing"
+                    >
+                      <span>Contributing Guide</span>
+                      <span className={styles.buttonIcon}>→</span>
                     </Link>
                     <Link
-                      className="button button--outline button--primary button--lg"
+                      className={clsx(
+                        'button button--outline button--primary button--lg',
+                        styles.ctaButton
+                      )}
                       to="https://github.com/magnusmagi/monzieai"
-                      style={{marginLeft: '1rem'}}>
-                      View on GitHub
+                    >
+                      <span>View on GitHub</span>
+                      <span className={styles.buttonIcon}>↗</span>
                     </Link>
                   </div>
                 </div>
