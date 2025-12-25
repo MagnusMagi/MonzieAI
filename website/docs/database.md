@@ -153,7 +153,7 @@ CREATE INDEX idx_scenes_usage ON public.scenes(usage_count DESC);
 - `subcategory`: Alt kategori
 - `preview_url`: Önizleme görseli URL
 - `thumbnail_url`: Küçük önizleme URL
-- `prompt_template`: AI prompt şablonu ({gender}, {style} gibi placeholder'lar içerir)
+- `prompt_template`: AI prompt şablonu (`{gender}`, `{style}` gibi placeholder'lar içerir)
 - `negative_prompt`: Olumsuz prompt (istenmeyen özellikler)
 - `style_keywords`: Stil anahtar kelimeleri (array)
 - `is_active`: Aktif/pasif durumu
@@ -165,11 +165,11 @@ CREATE INDEX idx_scenes_usage ON public.scenes(usage_count DESC);
 ```sql
 INSERT INTO scenes (name, category, prompt_template) VALUES
   ('Professional Portrait', 'portrait', 
-   'A professional {gender} portrait with studio lighting, highly detailed, 8k resolution'),
+   'A professional person portrait with studio lighting, highly detailed, 8k resolution'),
   ('Casual Outdoor', 'outdoor', 
-   'A casual {gender} in an outdoor park setting, natural lighting, photorealistic'),
+   'A casual person in an outdoor park setting, natural lighting, photorealistic'),
   ('Business Formal', 'business', 
-   'A professional {gender} in business attire, office background, corporate style');
+   'A professional person in business attire, office background, corporate style');
 ```
 
 ### 3. generated_images

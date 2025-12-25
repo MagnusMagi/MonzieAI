@@ -621,10 +621,10 @@ jobs:
 ### Post-Deployment Monitoring
 
 **Metrics to Track**:
-- Crash-free rate (target: >99.5%)
-- App launch time (target: <3s)
-- API response times (target: <2s)
-- Image generation success rate (target: >95%)
+- Crash-free rate (target: greater than 99.5%)
+- App launch time (target: less than 3 seconds)
+- API response times (target: less than 2 seconds)
+- Image generation success rate (target: greater than 95%)
 - Daily/Monthly Active Users
 - Conversion rate (free to premium)
 - Retention rates (D1, D7, D30)

@@ -13,43 +13,125 @@ const sidebars = {
       type: 'category',
       label: '🚀 Getting Started',
       collapsed: false,
-      items: ['setup', 'deployment'],
+      items: [
+        {
+          type: 'doc',
+          id: 'setup',
+          label: '⚙️ Setup',
+        },
+        {
+          type: 'doc',
+          id: 'deployment',
+          label: '🌐 Deployment',
+        },
+      ],
     },
     {
       type: 'category',
       label: '🏗️ Architecture',
       collapsed: false,
-      items: ['architecture', 'database', 'services', 'components'],
+      items: [
+        {
+          type: 'doc',
+          id: 'architecture',
+          label: '📐 Overview',
+        },
+        {
+          type: 'doc',
+          id: 'database',
+          label: '🗄️ Database',
+        },
+        {
+          type: 'doc',
+          id: 'services',
+          label: '⚡ Services',
+        },
+        {
+          type: 'doc',
+          id: 'components',
+          label: '🧩 Components',
+        },
+      ],
     },
     {
       type: 'category',
       label: '📱 Features & Screens',
       collapsed: true,
-      items: ['features', 'screens'],
+      items: [
+        {
+          type: 'doc',
+          id: 'features',
+          label: '✨ Features',
+        },
+        {
+          type: 'doc',
+          id: 'screens',
+          label: '📲 Screens',
+        },
+      ],
     },
     {
       type: 'category',
       label: '🔌 API Reference',
       collapsed: true,
-      items: ['api'],
+      items: [
+        {
+          type: 'doc',
+          id: 'api',
+          label: '📡 API Docs',
+        },
+      ],
     },
     {
       type: 'category',
       label: '🧪 Testing & Quality',
       collapsed: true,
-      items: ['testing', 'troubleshooting'],
+      items: [
+        {
+          type: 'doc',
+          id: 'testing',
+          label: '🔬 Testing',
+        },
+        {
+          type: 'doc',
+          id: 'troubleshooting',
+          label: '🔧 Troubleshooting',
+        },
+      ],
     },
     {
       type: 'category',
       label: '🎨 Design & UX',
       collapsed: true,
-      items: ['design-system'],
+      items: [
+        {
+          type: 'doc',
+          id: 'design-system',
+          label: '🎭 Design System',
+        },
+      ],
     },
     {
       type: 'category',
       label: '🤝 Contributing',
       collapsed: true,
-      items: ['contributing', 'security', 'changelog'],
+      items: [
+        {
+          type: 'doc',
+          id: 'contributing',
+          label: '💡 Guide',
+        },
+        {
+          type: 'doc',
+          id: 'security',
+          label: '🔒 Security',
+        },
+        {
+          type: 'doc',
+          id: 'changelog',
+          label: '📋 Changelog',
+        },
+      ],
     },
   ],
 };

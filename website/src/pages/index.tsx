@@ -4,6 +4,18 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import {
+  FiArrowRight,
+  FiBook,
+  FiGithub,
+  FiCode,
+  FiDatabase,
+  FiZap,
+  FiCpu,
+  FiLayers,
+  FiPackage,
+} from 'react-icons/fi';
+import { SiReact, SiTypescript, SiPostgresql, SiJest } from 'react-icons/si';
 
 import styles from './index.module.css';
 
@@ -154,7 +166,9 @@ function HomepageHeader() {
               to="/docs/setup"
             >
               <span>Get Started</span>
-              <span className={styles.buttonIcon}>→</span>
+              <span className={styles.buttonIcon}>
+                <FiArrowRight />
+              </span>
             </Link>
             <Link
               className={clsx(
@@ -164,7 +178,9 @@ function HomepageHeader() {
               to="/docs/intro"
             >
               <span>Read the Docs</span>
-              <span className={styles.buttonIcon}>📚</span>
+              <span className={styles.buttonIcon}>
+                <FiBook />
+              </span>
             </Link>
           </div>
         </div>
@@ -227,28 +243,43 @@ export default function Home(): JSX.Element {
             <div className="row">
               <div className="col col--4">
                 <div className={styles.quickLinkCard}>
-                  <h3>🏗️ Architecture</h3>
+                  <div className={styles.quickLinkIcon}>
+                    <FiLayers />
+                  </div>
+                  <h3>Architecture</h3>
                   <p>
                     Learn about the system architecture, tech stack, and design patterns used in
                     MonzieAI.
                   </p>
-                  <Link to="/docs/architecture">View Architecture →</Link>
+                  <Link to="/docs/architecture">
+                    View Architecture <FiArrowRight />
+                  </Link>
                 </div>
               </div>
               <div className="col col--4">
                 <div className={styles.quickLinkCard}>
-                  <h3>🔌 API Reference</h3>
+                  <div className={styles.quickLinkIcon}>
+                    <FiCode />
+                  </div>
+                  <h3>API Reference</h3>
                   <p>
                     Complete API documentation with examples for all endpoints and integrations.
                   </p>
-                  <Link to="/docs/api">Explore API →</Link>
+                  <Link to="/docs/api">
+                    Explore API <FiArrowRight />
+                  </Link>
                 </div>
               </div>
               <div className="col col--4">
                 <div className={styles.quickLinkCard}>
-                  <h3>🧪 Testing</h3>
+                  <div className={styles.quickLinkIcon}>
+                    <FiZap />
+                  </div>
+                  <h3>Testing</h3>
                   <p>Testing strategies, coverage reports, and quality assurance guidelines.</p>
-                  <Link to="/docs/testing">View Testing →</Link>
+                  <Link to="/docs/testing">
+                    View Testing <FiArrowRight />
+                  </Link>
                 </div>
               </div>
             </div>
@@ -275,18 +306,42 @@ export default function Home(): JSX.Element {
             <div className="row">
               <div className="col col--12">
                 <div className={styles.techBadges}>
-                  <span className={styles.techBadge}>React Native</span>
-                  <span className={styles.techBadge}>Expo</span>
-                  <span className={styles.techBadge}>TypeScript</span>
-                  <span className={styles.techBadge}>Supabase</span>
-                  <span className={styles.techBadge}>PostgreSQL</span>
-                  <span className={styles.techBadge}>FAL.AI</span>
-                  <span className={styles.techBadge}>RevenueCat</span>
-                  <span className={styles.techBadge}>Google Sign-In</span>
-                  <span className={styles.techBadge}>Apple Sign-In</span>
-                  <span className={styles.techBadge}>React Query</span>
-                  <span className={styles.techBadge}>Jest</span>
-                  <span className={styles.techBadge}>Maestro</span>
+                  <span className={styles.techBadge}>
+                    <SiReact /> React Native
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiPackage /> Expo
+                  </span>
+                  <span className={styles.techBadge}>
+                    <SiTypescript /> TypeScript
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiDatabase /> Supabase
+                  </span>
+                  <span className={styles.techBadge}>
+                    <SiPostgresql /> PostgreSQL
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiCpu /> FAL.AI
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiZap /> RevenueCat
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiPackage /> Google Sign-In
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiPackage /> Apple Sign-In
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiCode /> React Query
+                  </span>
+                  <span className={styles.techBadge}>
+                    <SiJest /> Jest
+                  </span>
+                  <span className={styles.techBadge}>
+                    <FiZap /> Maestro
+                  </span>
                 </div>
               </div>
             </div>
@@ -305,7 +360,9 @@ export default function Home(): JSX.Element {
             <div className="row">
               <div className="col col--12">
                 <div className={styles.ctaCard}>
-                  <div className={styles.ctaIcon}>🚀</div>
+                  <div className={styles.ctaIcon}>
+                    <FiZap size={48} />
+                  </div>
                   <h2>Ready to contribute?</h2>
                   <p>
                     Check out our contributing guidelines and start building with MonzieAI today!
@@ -316,7 +373,9 @@ export default function Home(): JSX.Element {
                       to="/docs/contributing"
                     >
                       <span>Contributing Guide</span>
-                      <span className={styles.buttonIcon}>→</span>
+                      <span className={styles.buttonIcon}>
+                        <FiArrowRight />
+                      </span>
                     </Link>
                     <Link
                       className={clsx(
@@ -326,7 +385,9 @@ export default function Home(): JSX.Element {
                       to="https://github.com/magnusmagi/monzieai"
                     >
                       <span>View on GitHub</span>
-                      <span className={styles.buttonIcon}>↗</span>
+                      <span className={styles.buttonIcon}>
+                        <FiGithub />
+                      </span>
                     </Link>
                   </div>
                 </div>

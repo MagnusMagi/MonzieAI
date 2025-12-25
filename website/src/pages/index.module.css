@@ -134,9 +134,15 @@
 }
 
 .buttonIcon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-left: 0.5rem;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.buttonIcon svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .ctaButton:hover .buttonIcon {
@@ -370,6 +376,26 @@
   flex-direction: column;
 }
 
+.quickLinkIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quickLinkCard:hover .quickLinkIcon {
+  background: var(--ifm-color-primary);
+  color: white;
+  transform: scale(1.1) rotate(5deg);
+}
+
 .quickLinkCard:hover {
   border-color: var(--ifm-color-primary-light);
   box-shadow:
@@ -401,6 +427,7 @@
   font-size: 0.9375rem;
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -408,14 +435,11 @@
   color: var(--ifm-color-primary-dark);
 }
 
-.quickLinkCard a::after {
-  content: '→';
-  margin-left: 0.5rem;
+.quickLinkCard a svg {
   transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-block;
 }
 
-.quickLinkCard a:hover::after {
+.quickLinkCard a:hover svg {
   transform: translateX(4px);
 }
 
@@ -484,6 +508,7 @@
 .techBadge {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   padding: 0.625rem 1.25rem;
   background: var(--ifm-card-background-color);
   color: var(--ifm-font-color-base);
@@ -495,6 +520,11 @@
   white-space: nowrap;
 }
 
+.techBadge svg {
+  font-size: 1.125rem;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .techBadge:hover {
   border-color: var(--ifm-color-primary);
   color: var(--ifm-color-primary);
@@ -502,6 +532,10 @@
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.techBadge:hover svg {
+  transform: scale(1.2) rotate(5deg);
 }
 
 /* Staggered animation for tech badges */
@@ -622,8 +656,15 @@
 .ctaIcon {
   font-size: 3rem;
   margin-bottom: 1rem;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   animation: float 3s ease-in-out infinite;
+}
+
+.ctaIcon svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 @keyframes float {
